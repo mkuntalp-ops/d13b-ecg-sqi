@@ -1,0 +1,9 @@
+model,sens_at_fpr_le_5,t1_actual_fpr,t1_thresh,t1_status,false_reject_at_sens_ge_80,t2_actual_sens,t2_thresh,t2_status
+Logistic_Regression_SQI,75.08%,4.80%,0.5654329,Achievable,7.20%,80.47%,0.4276698,Achievable
+LightGBM_SQI,81.14%,4.67%,0.3518299,Achievable,4.67%,81.14%,0.3518299,Achievable
+Independent_SQI_MLP,71.72%,4.67%,0.6081484,Achievable,9.47%,80.13%,0.5283502,Achievable
+1D_CNN_RawECG,93.27%,4.27%,0.015030009,Achievable,1.60%,80.13%,0.32222825,Achievable
+2D_CNN_Image,91.25%,4.93%,0.12464999,Achievable,2.27%,80.81%,0.27582505,Achievable
+Multimodal_Fusion,85.19%,4.80%,0.24545921,Achievable,3.47%,80.81%,0.39571962,Achievable
+Rule_Based_SQI_Heuristic,84.18%,4.80%,0.37981278,Achievable,4.13%,80.47%,0.40700996,Achievable
+LiquidAI_d1_3B_Neural,52.19%,4.40%,0.5,Achievable,36.27%,80.81%,0.377541,Achievable

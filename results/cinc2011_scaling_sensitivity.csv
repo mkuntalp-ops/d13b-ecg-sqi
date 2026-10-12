@@ -1,0 +1,17 @@
+model,features,scaler,transfer_auroc,transfer_ap
+LR,All 13 features,StandardScaler,0.3832888888888889,0.45080103359173124
+LR,All 13 features,RobustScaler,0.37653333333333333,0.44182079329594803
+LR,All 13 features,"Z-clip [-3,3]",0.7491555555555555,0.7907275295315626
+Independent_SQI_MLP,All 13 features,internal StandardScaler,0.6167111111111111,0.6266666666666667
+LR,Drop signal_std,StandardScaler,0.43128888888888883,0.5294662334427189
+LR,Drop signal_std,RobustScaler,0.3704888888888889,0.44127802229545865
+LR,Drop signal_std,"Z-clip [-3,3]",0.7233777777777778,0.7747372084993909
+Independent_SQI_MLP,Drop signal_std,internal StandardScaler,0.6266666666666667,0.6266666666666667
+LR,"Drop saturation, flatline, constants",StandardScaler,0.7464888888888889,0.796117966905497
+LR,"Drop saturation, flatline, constants",RobustScaler,0.7459555555555555,0.8045971171660835
+LR,"Drop saturation, flatline, constants","Z-clip [-3,3]",0.7507555555555555,0.7918891301224176
+Independent_SQI_MLP,"Drop saturation, flatline, constants",internal StandardScaler,0.749511111111111,0.7493299028931264
+LR,"Drop signal_std, saturation, flatline, constants",StandardScaler,0.7128888888888889,0.7699230183903883
+LR,"Drop signal_std, saturation, flatline, constants",RobustScaler,0.7214222222222221,0.7808655318327429
+LR,"Drop signal_std, saturation, flatline, constants","Z-clip [-3,3]",0.7232,0.7741096340589695
+Independent_SQI_MLP,"Drop signal_std, saturation, flatline, constants",internal StandardScaler,0.7287111111111111,0.7622890515617483

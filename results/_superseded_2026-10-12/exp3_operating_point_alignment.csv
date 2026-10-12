@@ -1,0 +1,7 @@
+Model,Sens@FPR<=5%,tau(FPR<=5%),FPR@Sens>=80%,tau(Sens>=80%)
+Logistic_Regression_SQI,36.0%,0.992,49.3%,0.263
+LightGBM_SQI,37.3%,0.904,65.3%,0.183
+Independent_SQI_MLP,0.0%,inf,100.0%,1.000
+1D_CNN_RawECG,9.3%,0.976,34.7%,0.205
+2D_CNN_Image,41.3%,0.807,36.0%,0.467
+Multimodal_Fusion,42.7%,0.482,48.0%,0.254

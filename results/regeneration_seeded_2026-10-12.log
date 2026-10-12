@@ -1,0 +1,141 @@
+================================================================================
+TRAINING SUPERVISED BASELINES ON 1,000-COHORT (5-FOLD SUBJECT CV)
+================================================================================
+
+Evaluating Rule-Based SQI Heuristic...
+
+>>> Fold 0: Train=833 (InnerTrain=601, InnerVal=232), Test=214
+
+>>> Fold 1: Train=837 (InnerTrain=665, InnerVal=172), Test=210
+
+>>> Fold 2: Train=837 (InnerTrain=665, InnerVal=172), Test=210
+
+>>> Fold 3: Train=837 (InnerTrain=605, InnerVal=232), Test=210
+
+>>> Fold 4: Train=844 (InnerTrain=634, InnerVal=210), Test=203
+
+[Saved] Supervised OOF predictions saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_supervised_cohort1000_oof_predictions.csv
+================================================================================
+CONSOLIDATING 1,000-COHORT BENCHMARK METRICS FROM RAW AUDIT PREDICTIONS
+================================================================================
+Loaded manifest: 1047 segments across 15 subjects.
+[Saved] Consolidated OOF predictions saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cohort1000_consolidated_oof_predictions.csv
+[Saved] Consolidated summary saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cohort1000_consolidated_summary.csv
+[Saved] Consolidated operating points (extracted for target transfer) saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cohort1000_consolidated_operating_points.csv
+
+==========================================================================================
+CONSOLIDATED 1,000-COHORT BENCHMARK SUMMARY (1,047 SAMPLES)
+==========================================================================================
+                   model    auroc    auprc  bal_acc_fixed  sens_fixed  false_reject_fixed  brier_score
+ Logistic_Regression_SQI 0.937895 0.887598       0.850822    0.764310            0.062667     0.083674
+            LightGBM_SQI 0.963919 0.928150       0.846337    0.734007            0.041333     0.074106
+     Independent_SQI_MLP 0.939169 0.880018       0.845556    0.777778            0.086667     0.087865
+           1D_CNN_RawECG 0.989154 0.974539       0.880505    0.767677            0.006667     0.058325
+            2D_CNN_Image 0.988525 0.971366       0.889273    0.787879            0.009333     0.052190
+       Multimodal_Fusion 0.966869 0.928434       0.808848    0.636364            0.018667     0.093953
+Rule_Based_SQI_Heuristic 0.976714 0.948096       0.823966    0.659933            0.012000     0.104711
+   LiquidAI_d1_3B_Neural 0.852334 0.740241       0.745993    0.531987            0.040000     0.154088
+
+==========================================================================================
+EXTRACTED OPERATING POINTS FOR CROSS-DATASET TRANSFER (CALIBRATION ONLY, NOT TEST METRICS)
+==========================================================================================
+                   model  sens_at_fpr_le_5  thresh_at_fpr_le_5  false_reject_at_sens_ge_80  thresh_at_sens_ge_80
+ Logistic_Regression_SQI          0.740741            0.563913                    0.082667              0.392487
+            LightGBM_SQI          0.804714            0.359788                    0.048000              0.360779
+     Independent_SQI_MLP          0.700337            0.724439                    0.093333              0.436087
+           1D_CNN_RawECG          0.952862            0.010000                    0.013333              0.331052
+            2D_CNN_Image          0.942761            0.055581                    0.009333              0.488605
+       Multimodal_Fusion          0.690236            0.174489                    0.065333              0.105126
+Rule_Based_SQI_Heuristic          0.841751            0.379606                    0.041333              0.406360
+   LiquidAI_d1_3B_Neural          0.531987            0.499505                    0.326667              0.376633
+================================================================================
+INDEPENDENT TRANSFER BENCHMARK: CINC 2011 SET A (LOCKED THRESHOLDS)
+================================================================================
+Loading development set from: /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/manifest_butqdb_1000_cohort.csv
+[CinC 2011] Loading cached segments from /Volumes/KIOXIA/Projects/d13b-ecg-sqi/cache/datasets/cinc2011/cinc2011_segments_lead1_max150.csv
+Transfer Target: 150 records (Acceptable=75, Unacceptable=75)
+
+[Transfer] Training supervised models on BUT QDB...
+
+Predicting on CinC 2011 Set A...
+Loading verified d1 neural predictions from /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_d1_neural_cinc2011_predictions.csv...
+Predictions saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_expanded_predictions.csv
+Summary table saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_expanded_transfer_summary.csv
+
+==========================================================================================
+CINC 2011 SET A TRANSFER BENCHMARK SUMMARY (150 RECORDS)
+==========================================================================================
+                   model  transfer_auroc  transfer_auprc  bal_acc_fixed  sens_fixed  false_reject_fixed
+ Logistic_Regression_SQI        0.383289        0.450801       0.373333    0.746667            1.000000
+            LightGBM_SQI        0.730756        0.791919       0.540000    0.093333            0.013333
+     Independent_SQI_MLP        0.616711        0.626667       0.500000    0.000000            0.000000
+           1D_CNN_RawECG        0.726044        0.682530       0.733333    0.613333            0.146667
+            2D_CNN_Image        0.745600        0.748194       0.566667    0.173333            0.040000
+       Multimodal_Fusion        0.626667        0.626667       0.626667    0.253333            0.000000
+Rule_Based_SQI_Heuristic        0.700622        0.760795       0.560000    0.960000            0.840000
+   LiquidAI_d1_3B_Neural        0.635556        0.711219       0.500000    1.000000            1.000000
+================================================================================
+REVISED EXPERIMENT 4: CALIBRATED NOISE STRESS TEST (NSTDB 118 & 119)
+================================================================================
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  22%|██▏       | 159/707 [00:00<00:00, 1575.15it/s]Loading weights:  45%|████▍     | 317/707 [00:00<00:00, 1536.33it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 2476.47it/s]
+[RealD1Neural] Successfully loaded weights in 14.16s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+Loaded calibrated NSTDB dataset: 528 windows.
+
+[NSTDB Degradation Summary - Combined Active Noise (Records 118 & 119)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+12      24         44  0.899351  ...     0.574864         0.763268    0.759008
+13      18         44  0.811862  ...     0.366577         0.391034    0.741697
+14      12         44  0.500167  ...     0.083114         0.081540    0.705250
+15       6         44  0.176056  ...     0.019435         0.016642    0.689702
+16       0         44  0.037385  ...     0.016702         0.005570    0.686768
+17      -6         44  0.011085  ...     0.114713         0.052800    0.762487
+
+[6 rows x 8 columns]
+
+[NSTDB Clean Control Windows (Integrity Check)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+18      24         44  0.941692  ...     0.648364         0.785703    0.765259
+19      18         44  0.941700  ...     0.628857         0.780107    0.762119
+20      12         44  0.941779  ...     0.650593         0.787001    0.763966
+21       6         44  0.941787  ...     0.645520         0.790166    0.761382
+22       0         44  0.941683  ...     0.629066         0.787600    0.762487
+23      -6         44  0.941292  ...     0.634580         0.786905    0.765399
+
+[6 rows x 8 columns]
+
+[Completed] Revised NSTDB analysis saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/exp4_revised_nstdb_summary.csv
+Chart saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/figures/figure_revised_nstdb_degradation_curve.png
+              model                                         features                  scaler  transfer_auroc  transfer_ap
+                 LR                                  All 13 features          StandardScaler           0.383        0.451
+                 LR                                  All 13 features            RobustScaler           0.377        0.442
+                 LR                                  All 13 features           Z-clip [-3,3]           0.749        0.791
+Independent_SQI_MLP                                  All 13 features internal StandardScaler           0.617        0.627
+                 LR                                  Drop signal_std          StandardScaler           0.431        0.529
+                 LR                                  Drop signal_std            RobustScaler           0.370        0.441
+                 LR                                  Drop signal_std           Z-clip [-3,3]           0.723        0.775
+Independent_SQI_MLP                                  Drop signal_std internal StandardScaler           0.627        0.627
+                 LR             Drop saturation, flatline, constants          StandardScaler           0.746        0.796
+                 LR             Drop saturation, flatline, constants            RobustScaler           0.746        0.805
+                 LR             Drop saturation, flatline, constants           Z-clip [-3,3]           0.751        0.792
+Independent_SQI_MLP             Drop saturation, flatline, constants internal StandardScaler           0.750        0.749
+                 LR Drop signal_std, saturation, flatline, constants          StandardScaler           0.713        0.770
+                 LR Drop signal_std, saturation, flatline, constants            RobustScaler           0.721        0.781
+                 LR Drop signal_std, saturation, flatline, constants           Z-clip [-3,3]           0.723        0.774
+Independent_SQI_MLP Drop signal_std, saturation, flatline, constants internal StandardScaler           0.729        0.762
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_scaling_sensitivity.csv
+================================================================================
+REGENERATING AUDITED PUBLICATION FIGURES (300 DPI PNG & VECTOR PDF)
+================================================================================
+
+[Figure Generation] figure_1_butqdb_combined_roc_pr: 1047 samples, Unusable prevalence: 28.4%
+  Saved combined 2-panel figure to figure_1_butqdb_combined_roc_pr.png and figure_1_butqdb_combined_roc_pr.pdf
+
+[Figure Generation] figure_2_cinc2011_combined_roc_pr: 150 samples, Unacceptable prevalence: 50.0%
+  Saved combined 2-panel figure to figure_2_cinc2011_combined_roc_pr.png and figure_2_cinc2011_combined_roc_pr.pdf
+  Saved Figure 3 to figure_revised_nstdb_degradation_curve.png and figure_revised_nstdb_degradation_curve.pdf
+  Saved Figure 4 to latency_vs_auroc.png and latency_vs_auroc.pdf
+
+[ALL 4 REVISED PUBLICATION FIGURES GENERATED SUCCESSFULLY]
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/manuscript_tables_2026-10-12.md
+SEEDED STAGE DONE

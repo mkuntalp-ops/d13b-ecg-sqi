@@ -1,0 +1,31 @@
+# Python / environment
+.venv/
+__pycache__/
+*.pyc
+
+# macOS and Office lock files
+.DS_Store
+~$*
+
+# Data caches are regenerable from PhysioNet by the extraction scripts, so only the CSVs that the
+# analysis scripts read directly are tracked: BUT QDB annotations, the CinC and NSTDB segment manifests.
+cache/*
+!cache/datasets/
+cache/datasets/*
+!cache/datasets/butqdb/
+cache/datasets/butqdb/*
+!cache/datasets/butqdb/*_ANN.csv
+!cache/datasets/cinc2011/
+cache/datasets/cinc2011/*
+!cache/datasets/cinc2011/cinc2011_segments_lead1_max150.csv
+!cache/datasets/nstdb/
+cache/datasets/nstdb/*
+!cache/datasets/nstdb/nstdb_calibrated_active_noise_series.csv
+
+# Out of scope for this repository
+ecg_quality_benchmark_audit_package/
+*.zip
+
+# Manuscript exports: the markdown is the source of truth
+manuscript/*.docx
+manuscript/*.pdf

@@ -1,0 +1,13 @@
+================================================================================
+REGENERATING AUDITED PUBLICATION FIGURES (300 DPI PNG & VECTOR PDF)
+================================================================================
+
+[Figure Generation] figure_1_butqdb_combined_roc_pr: 1047 samples, Unusable prevalence: 28.4%
+  Saved combined 2-panel figure to figure_1_butqdb_combined_roc_pr.png and figure_1_butqdb_combined_roc_pr.pdf
+
+[Figure Generation] figure_2_cinc2011_combined_roc_pr: 150 samples, Unacceptable prevalence: 50.0%
+  Saved combined 2-panel figure to figure_2_cinc2011_combined_roc_pr.png and figure_2_cinc2011_combined_roc_pr.pdf
+  Saved Figure 3 to figure_revised_nstdb_degradation_curve.png and figure_revised_nstdb_degradation_curve.pdf
+  Saved Figure 4 to latency_vs_auroc.png and latency_vs_auroc.pdf
+
+[ALL 4 REVISED PUBLICATION FIGURES GENERATED SUCCESSFULLY]

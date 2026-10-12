@@ -1,0 +1,32 @@
+================================================================================
+EMPIRICAL LATENCY & MEMORY PROFILING (STRICT MPS SYNCHRONIZATION)
+================================================================================
+Profiling across 25 diverse ECG samples from 15 subjects.
+
+[1/7] Profiling Rule-Based SQI Heuristic...
+[2/7] Profiling Logistic Regression (SQI)...
+[2b/7] Profiling LightGBM (SQI)...
+[3/7] Profiling Independent SQI MLP...
+[4/7] Profiling 1D CNN (Raw Signal)...
+[5/7] Profiling 2D CNN (Image)...
+[6/7] Profiling SinglePass Multimodal Net...
+[7/7] Profiling Real LiquidAI/d1-3B Neural Decision Model with torch.mps.synchronize()...
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  17%|█▋        | 123/707 [00:00<00:00, 1159.84it/s]Loading weights:  40%|████      | 284/707 [00:00<00:00, 1418.06it/s]Loading weights:  64%|██████▎   | 449/707 [00:00<00:00, 1522.30it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 1798.09it/s]
+[RealD1Neural] Successfully loaded weights in 13.41s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+
+[Saved] Raw sample-by-sample measurements (200 rows) saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/empirical_latency_raw_measurements.csv
+[Saved] Empirical summary saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/empirical_computational_profile_summary.csv
+
+==========================================================================================
+EMPIRICAL COMPUTATIONAL PROFILE (50 DIVERSE REAL ECG RECORDINGS, SYNCHRONIZED MPS)
+==========================================================================================
+                              Model  Parameters  Forward_Median_ms  Forward_p95_ms  Total_End_to_End_Median_ms  Total_End_to_End_p95_ms Post_Infer_MPS_Tensor_MiB Post_Infer_Driver_MiB
+           Rule-Based SQI Heuristic           0           0.229000        0.249200                    3.029332                 3.511508                 N/A (CPU)             N/A (CPU)
+          Logistic Regression (SQI)          14           0.190750        0.252251                    1.588667                 1.735124                 N/A (CPU)             N/A (CPU)
+                     LightGBM (SQI)        1092           0.219292        0.346092                    1.680250                 2.027116                 N/A (CPU)             N/A (CPU)
+                Independent SQI MLP        3201           1.175292        1.508309                    2.642084                 3.222067                       N/A                   N/A
+                1D CNN (Raw Signal)      167489           1.504500        2.099491                    1.504792                 2.099992                       N/A                   N/A
+            2D CNN (Rendered Image)      245697           4.860708        7.306367                   71.426417               156.879633                       N/A                   N/A
+          SinglePass Multimodal Net      131969           5.379417        6.037158                   77.231459               159.153150                       N/A                   N/A
+Liquid AI d1-3B (Real Neural Model)  3120000000         845.099625      857.152300                  916.304541              1048.478092                    5979.0                6977.8

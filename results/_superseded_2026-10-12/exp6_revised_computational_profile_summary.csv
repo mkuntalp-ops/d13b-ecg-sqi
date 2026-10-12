@@ -1,0 +1,9 @@
+Model,Parameters,Weights_MB,Forward_Pass_Median_ms,Forward_Pass_p95_ms,Preprocessing_Pipeline,Total_End_to_End_Median_ms,Total_End_to_End_p95_ms,Dominant_Bottleneck
+Logistic Regression (SQI),14,0.01,0.1510209986008703,0.239152176072821,Resample (1.3 ms) + SQI (1.4 ms),1.6444795182906091,3.3613193023484182,Signal processing (SQI computation)
+LightGBM (SQI),1500,0.25,0.1411040429957211,0.2057812584098428,Resample (1.3 ms) + SQI (1.4 ms),1.63456256268546,3.32794838468544,Signal processing (SQI computation)
+Independent SQI MLP,3201,0.012,0.413083063904196,1.2830767489504058,Resample (1.3 ms) + SQI (1.4 ms),1.9065415835939348,4.405243875226003,Signal processing (SQI computation)
+1D CNN (Raw Signal),167489,0.639,1.1198125430382788,2.161087200511246,Resample (1.3 ms) + Normalize (0.1 ms),1.25379155613482,2.4139434528071426,Signal resampling (Minimal overhead)
+2D CNN (ECG Image),245697,0.937,2.248938020784408,3.457702463492751,Matplotlib Render (84 ms) + Tensor Prep (0.5 ms),74.2193550686352,163.15726945176718,Image rendering (Matplotlib CPU canvas)
+SinglePass Multimodal Net,123713,0.472,2.131812507286668,3.3356747473590076,Render (84 ms) + SQI (1.4 ms) + Tensor (0.5 ms),75.56170906173065,166.10455260961314,Image rendering (Matplotlib CPU canvas)
+Rule-Based SQI Heuristic,0,0.0,0.05,0.12,SQI Feature Extraction (1.46 ms),1.51,3.45,"Deterministic log-odds rule (0 parameters, non-neural)"
+Liquid AI d1-3B (Real Neural Model),3120000000,5958.0,514.9,530.0,Render (71.3 ms) + SQI Text Prompt (0.1 ms),586.3,650.0,"Neural forward pass on MPS (3.12B parameters, bfloat16, 5.8GB weights)"

@@ -1,0 +1,19 @@
+record_name,subject_id,total_ann_sec,c1_sec,c2_sec,c3_sec,theo_usable_windows,theo_unusable_windows,theo_total_windows,cached_usable_windows,cached_unusable_windows,cached_total_windows,excluded_windows,exclusion_reason
+100001_ECG,100,87086.2,59775.6,27090.1,220.5,8342,22,8364,5,5,10,8354,Quota cap (5/class/record) in pilot cache
+100002_ECG,100,2399.8,1564.6,835.2,0.0,163,0,163,5,0,5,158,Quota cap (5/class/record) in pilot cache
+103001_ECG,103,2399.8,1738.3,653.1,8.3,175,0,175,5,0,5,170,Quota cap (5/class/record) in pilot cache
+103002_ECG,103,2399.9,2172.0,227.9,0.0,206,0,206,5,0,5,201,Quota cap (5/class/record) in pilot cache
+103003_ECG,103,2399.8,2036.7,363.1,0.0,189,0,189,5,0,5,184,Quota cap (5/class/record) in pilot cache
+104001_ECG,104,2399.9,1591.0,808.9,0.0,203,0,203,5,0,5,198,Quota cap (5/class/record) in pilot cache
+105001_ECG,105,139145.6,58281.8,33513.4,47350.4,8550,4734,13284,5,5,10,13274,Quota cap (5/class/record) in pilot cache
+111001_ECG,111,90642.3,38020.9,48603.5,4017.9,7726,292,8018,5,5,10,8008,Quota cap (5/class/record) in pilot cache
+113001_ECG,113,3599.8,2374.6,1123.7,101.5,274,4,278,5,4,9,269,Quota cap (5/class/record) in pilot cache
+114001_ECG,114,3720.0,2323.3,556.6,840.1,280,83,363,5,5,10,353,Quota cap (5/class/record) in pilot cache
+115001_ECG,115,2399.9,1640.2,759.6,0.0,179,0,179,5,0,5,174,Quota cap (5/class/record) in pilot cache
+118001_ECG,118,2399.9,1523.7,876.2,0.0,192,0,192,5,0,5,187,Quota cap (5/class/record) in pilot cache
+121001_ECG,121,2399.8,2014.9,384.9,0.0,180,0,180,5,0,5,175,Quota cap (5/class/record) in pilot cache
+122001_ECG,122,2400.0,814.1,385.8,1200.0,112,119,231,5,5,10,221,Quota cap (5/class/record) in pilot cache
+123001_ECG,123,2399.9,2166.4,224.4,9.1,205,0,205,5,0,5,200,Quota cap (5/class/record) in pilot cache
+124001_ECG,124,4799.5,1381.4,2730.5,687.5,243,31,274,5,5,10,264,Quota cap (5/class/record) in pilot cache
+125001_ECG,125,2400.0,2350.3,46.4,3.2,228,0,228,5,0,5,223,Quota cap (5/class/record) in pilot cache
+126001_ECG,126,2399.9,2365.5,34.4,0.0,224,0,224,5,0,5,219,Quota cap (5/class/record) in pilot cache

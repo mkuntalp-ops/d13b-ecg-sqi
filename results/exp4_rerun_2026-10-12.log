@@ -1,0 +1,32 @@
+================================================================================
+REVISED EXPERIMENT 4: CALIBRATED NOISE STRESS TEST (NSTDB 118 & 119)
+================================================================================
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  12%|█▏        | 82/707 [00:00<00:00, 805.33it/s]Loading weights:  25%|██▍       | 176/707 [00:00<00:00, 870.15it/s]Loading weights:  52%|█████▏    | 369/707 [00:00<00:00, 1331.56it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 2158.16it/s]
+[RealD1Neural] Successfully loaded weights in 13.94s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+Loaded calibrated NSTDB dataset: 528 windows.
+
+[NSTDB Degradation Summary - Combined Active Noise (Records 118 & 119)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+12      24         44  0.899351  ...     0.517815         0.761127    0.759008
+13      18         44  0.811862  ...     0.305162         0.425380    0.741697
+14      12         44  0.500167  ...     0.037300         0.070134    0.705250
+15       6         44  0.176056  ...     0.009509         0.017824    0.689702
+16       0         44  0.037385  ...     0.005917         0.007357    0.686768
+17      -6         44  0.011085  ...     0.091794         0.021888    0.762487
+
+[6 rows x 8 columns]
+
+[NSTDB Clean Control Windows (Integrity Check)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+18      24         44  0.941692  ...     0.589277         0.837912    0.765259
+19      18         44  0.941700  ...     0.579946         0.828114    0.762119
+20      12         44  0.941779  ...     0.592279         0.836497    0.763966
+21       6         44  0.941787  ...     0.581422         0.839917    0.761382
+22       0         44  0.941683  ...     0.571813         0.834861    0.762487
+23      -6         44  0.941292  ...     0.575032         0.831946    0.765399
+
+[6 rows x 8 columns]
+
+[Completed] Revised NSTDB analysis saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/exp4_revised_nstdb_summary.csv
+Chart saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/figures/figure_revised_nstdb_degradation_curve.png

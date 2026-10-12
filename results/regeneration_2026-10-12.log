@@ -1,0 +1,201 @@
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+[recompute] manifest_butqdb_1000_cohort.csv: 1047 rows, units={'uV': 1047}
+[recompute] manifest_butqdb_subject_folds.csv: 124 rows, units={'uV': 124}
+[recompute] cinc2011_segments_lead1_max150.csv: 150 rows, units={'mV': 150}
+[recompute] nstdb_calibrated_active_noise_series.csv: 528 rows, units={'mV': 528}
+================================================================================
+TRAINING SUPERVISED BASELINES ON 1,000-COHORT (5-FOLD SUBJECT CV)
+================================================================================
+
+Evaluating Rule-Based SQI Heuristic...
+
+>>> Fold 0: Train=833 (InnerTrain=601, InnerVal=232), Test=214
+
+>>> Fold 1: Train=837 (InnerTrain=665, InnerVal=172), Test=210
+
+>>> Fold 2: Train=837 (InnerTrain=665, InnerVal=172), Test=210
+
+>>> Fold 3: Train=837 (InnerTrain=605, InnerVal=232), Test=210
+
+>>> Fold 4: Train=844 (InnerTrain=634, InnerVal=210), Test=203
+
+[Saved] Supervised OOF predictions saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_supervised_cohort1000_oof_predictions.csv
+
+=======================================================
+RUNNING REAL d1-3B NEURAL INFERENCE ON: BUT_QDB_1000
+=======================================================
+Dataset total samples: 1047
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  27%|██▋       | 194/707 [00:00<00:00, 1931.02it/s]Loading weights:  98%|█████████▊| 693/707 [00:00<00:00, 3726.89it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 3521.72it/s]
+[RealD1Neural] Successfully loaded weights in 13.62s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+[BUT_QDB_1000] Processed 25/1047 (2.4%) | Rate: 1.0 samp/s | Est remaining: 17.5 min | Last P(unusable): 0.3775
+[BUT_QDB_1000] Processed 50/1047 (4.8%) | Rate: 1.0 samp/s | Est remaining: 15.9 min | Last P(unusable): 0.2689
+[BUT_QDB_1000] Processed 75/1047 (7.2%) | Rate: 1.1 samp/s | Est remaining: 15.1 min | Last P(unusable): 0.2451
+[BUT_QDB_1000] Processed 100/1047 (9.6%) | Rate: 1.1 samp/s | Est remaining: 14.5 min | Last P(unusable): 0.2689
+[BUT_QDB_1000] Processed 125/1047 (11.9%) | Rate: 1.1 samp/s | Est remaining: 14.0 min | Last P(unusable): 0.2227
+[BUT_QDB_1000] Processed 150/1047 (14.3%) | Rate: 1.1 samp/s | Est remaining: 13.6 min | Last P(unusable): 0.1259
+[BUT_QDB_1000] Processed 175/1047 (16.7%) | Rate: 1.1 samp/s | Est remaining: 13.2 min | Last P(unusable): 0.5000
+[BUT_QDB_1000] Processed 200/1047 (19.1%) | Rate: 1.1 samp/s | Est remaining: 12.7 min | Last P(unusable): 0.5000
+[BUT_QDB_1000] Processed 225/1047 (21.5%) | Rate: 1.1 samp/s | Est remaining: 12.3 min | Last P(unusable): 0.4688
+[BUT_QDB_1000] Processed 250/1047 (23.9%) | Rate: 1.1 samp/s | Est remaining: 11.9 min | Last P(unusable): 0.3208
+[BUT_QDB_1000] Processed 275/1047 (26.3%) | Rate: 1.1 samp/s | Est remaining: 11.6 min | Last P(unusable): 0.4688
+[BUT_QDB_1000] Processed 300/1047 (28.7%) | Rate: 1.1 samp/s | Est remaining: 11.2 min | Last P(unusable): 0.5622
+[BUT_QDB_1000] Processed 325/1047 (31.0%) | Rate: 1.1 samp/s | Est remaining: 10.8 min | Last P(unusable): 0.5622
+[BUT_QDB_1000] Processed 350/1047 (33.4%) | Rate: 1.1 samp/s | Est remaining: 10.4 min | Last P(unusable): 0.6225
+[BUT_QDB_1000] Processed 375/1047 (35.8%) | Rate: 1.1 samp/s | Est remaining: 10.0 min | Last P(unusable): 0.3775
+[BUT_QDB_1000] Processed 400/1047 (38.2%) | Rate: 1.1 samp/s | Est remaining: 9.6 min | Last P(unusable): 0.4073
+[BUT_QDB_1000] Processed 425/1047 (40.6%) | Rate: 1.1 samp/s | Est remaining: 9.3 min | Last P(unusable): 0.4073
+[BUT_QDB_1000] Processed 450/1047 (43.0%) | Rate: 1.1 samp/s | Est remaining: 8.9 min | Last P(unusable): 0.5622
+[BUT_QDB_1000] Processed 475/1047 (45.4%) | Rate: 1.1 samp/s | Est remaining: 8.5 min | Last P(unusable): 0.7311
+[BUT_QDB_1000] Processed 500/1047 (47.8%) | Rate: 1.1 samp/s | Est remaining: 8.1 min | Last P(unusable): 0.6792
+[BUT_QDB_1000] Processed 525/1047 (50.1%) | Rate: 1.1 samp/s | Est remaining: 7.8 min | Last P(unusable): 0.3486
+[BUT_QDB_1000] Processed 550/1047 (52.5%) | Rate: 1.1 samp/s | Est remaining: 7.4 min | Last P(unusable): 0.3486
+[BUT_QDB_1000] Processed 575/1047 (54.9%) | Rate: 1.1 samp/s | Est remaining: 7.0 min | Last P(unusable): 0.5312
+[BUT_QDB_1000] Processed 600/1047 (57.3%) | Rate: 1.1 samp/s | Est remaining: 6.6 min | Last P(unusable): 0.3208
+[BUT_QDB_1000] Processed 625/1047 (59.7%) | Rate: 1.1 samp/s | Est remaining: 6.3 min | Last P(unusable): 0.3486
+[BUT_QDB_1000] Processed 650/1047 (62.1%) | Rate: 1.1 samp/s | Est remaining: 5.9 min | Last P(unusable): 0.4073
+[BUT_QDB_1000] Processed 675/1047 (64.5%) | Rate: 1.1 samp/s | Est remaining: 5.5 min | Last P(unusable): 0.4688
+[BUT_QDB_1000] Processed 700/1047 (66.9%) | Rate: 1.1 samp/s | Est remaining: 5.2 min | Last P(unusable): 0.5312
+[BUT_QDB_1000] Processed 725/1047 (69.2%) | Rate: 1.1 samp/s | Est remaining: 4.8 min | Last P(unusable): 0.6792
+[BUT_QDB_1000] Processed 750/1047 (71.6%) | Rate: 1.1 samp/s | Est remaining: 4.4 min | Last P(unusable): 0.7058
+[BUT_QDB_1000] Processed 775/1047 (74.0%) | Rate: 1.1 samp/s | Est remaining: 4.0 min | Last P(unusable): 0.3486
+[BUT_QDB_1000] Processed 800/1047 (76.4%) | Rate: 1.1 samp/s | Est remaining: 3.7 min | Last P(unusable): 0.3486
+[BUT_QDB_1000] Processed 825/1047 (78.8%) | Rate: 1.1 samp/s | Est remaining: 3.3 min | Last P(unusable): 0.3486
+[BUT_QDB_1000] Processed 850/1047 (81.2%) | Rate: 1.1 samp/s | Est remaining: 2.9 min | Last P(unusable): 0.2121
+[BUT_QDB_1000] Processed 875/1047 (83.6%) | Rate: 1.1 samp/s | Est remaining: 2.6 min | Last P(unusable): 0.3208
+[BUT_QDB_1000] Processed 900/1047 (86.0%) | Rate: 1.1 samp/s | Est remaining: 2.2 min | Last P(unusable): 0.2942
+[BUT_QDB_1000] Processed 925/1047 (88.3%) | Rate: 1.1 samp/s | Est remaining: 1.8 min | Last P(unusable): 0.1480
+[BUT_QDB_1000] Processed 950/1047 (90.7%) | Rate: 1.1 samp/s | Est remaining: 1.4 min | Last P(unusable): 0.2689
+[BUT_QDB_1000] Processed 975/1047 (93.1%) | Rate: 1.1 samp/s | Est remaining: 1.1 min | Last P(unusable): 0.1403
+[BUT_QDB_1000] Processed 1000/1047 (95.5%) | Rate: 1.1 samp/s | Est remaining: 0.7 min | Last P(unusable): 0.1645
+[BUT_QDB_1000] Processed 1025/1047 (97.9%) | Rate: 1.1 samp/s | Est remaining: 0.3 min | Last P(unusable): 0.2689
+[BUT_QDB_1000] Processed 1047/1047 (100.0%) | Rate: 1.1 samp/s | Est remaining: 0.0 min | Last P(unusable): 0.1645
+Finished inference on BUT_QDB_1000. Results saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_d1_neural_cohort1000_predictions.csv
+
+=======================================================
+RUNNING REAL d1-3B NEURAL INFERENCE ON: CinC_2011_SetA
+=======================================================
+Dataset total samples: 150
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  13%|█▎        | 92/707 [00:00<00:00, 859.88it/s]Loading weights:  34%|███▍      | 242/707 [00:00<00:00, 1212.96it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 2331.85it/s]
+[RealD1Neural] Successfully loaded weights in 15.12s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+[CinC_2011_SetA] Processed 25/150 (16.7%) | Rate: 1.0 samp/s | Est remaining: 2.1 min | Last P(unusable): 0.9325
+[CinC_2011_SetA] Processed 50/150 (33.3%) | Rate: 1.1 samp/s | Est remaining: 1.6 min | Last P(unusable): 0.5622
+[CinC_2011_SetA] Processed 75/150 (50.0%) | Rate: 1.1 samp/s | Est remaining: 1.2 min | Last P(unusable): 0.9868
+[CinC_2011_SetA] Processed 100/150 (66.7%) | Rate: 1.1 samp/s | Est remaining: 0.8 min | Last P(unusable): 0.8670
+[CinC_2011_SetA] Processed 125/150 (83.3%) | Rate: 1.1 samp/s | Est remaining: 0.4 min | Last P(unusable): 0.9868
+[CinC_2011_SetA] Processed 150/150 (100.0%) | Rate: 1.1 samp/s | Est remaining: 0.0 min | Last P(unusable): 0.8808
+Finished inference on CinC_2011_SetA. Results saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_d1_neural_cinc2011_predictions.csv
+================================================================================
+CONSOLIDATING 1,000-COHORT BENCHMARK METRICS FROM RAW AUDIT PREDICTIONS
+================================================================================
+Loaded manifest: 1047 segments across 15 subjects.
+[Saved] Consolidated OOF predictions saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cohort1000_consolidated_oof_predictions.csv
+[Saved] Consolidated summary saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cohort1000_consolidated_summary.csv
+[Saved] Consolidated operating points (extracted for target transfer) saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cohort1000_consolidated_operating_points.csv
+
+==========================================================================================
+CONSOLIDATED 1,000-COHORT BENCHMARK SUMMARY (1,047 SAMPLES)
+==========================================================================================
+                   model    auroc    auprc  bal_acc_fixed  sens_fixed  false_reject_fixed  brier_score
+ Logistic_Regression_SQI 0.937895 0.887598       0.850822    0.764310            0.062667     0.083674
+            LightGBM_SQI 0.963919 0.928150       0.846337    0.734007            0.041333     0.074106
+     Independent_SQI_MLP 0.929863 0.861817       0.851273    0.787879            0.085333     0.092817
+           1D_CNN_RawECG 0.983560 0.968702       0.894323    0.797980            0.009333     0.050464
+            2D_CNN_Image 0.980418 0.949874       0.817333    0.666667            0.032000     0.071156
+       Multimodal_Fusion 0.962815 0.920266       0.795064    0.612795            0.022667     0.098166
+Rule_Based_SQI_Heuristic 0.976714 0.948096       0.823966    0.659933            0.012000     0.104711
+   LiquidAI_d1_3B_Neural 0.852334 0.740241       0.745993    0.531987            0.040000     0.154088
+
+==========================================================================================
+EXTRACTED OPERATING POINTS FOR CROSS-DATASET TRANSFER (CALIBRATION ONLY, NOT TEST METRICS)
+==========================================================================================
+                   model  sens_at_fpr_le_5  thresh_at_fpr_le_5  false_reject_at_sens_ge_80  thresh_at_sens_ge_80
+ Logistic_Regression_SQI          0.740741            0.563913                    0.082667              0.392487
+            LightGBM_SQI          0.804714            0.359788                    0.048000              0.360779
+     Independent_SQI_MLP          0.676768            0.759120                    0.096000              0.450950
+           1D_CNN_RawECG          0.936027            0.032791                    0.009333              0.499505
+            2D_CNN_Image          0.882155            0.227998                    0.042667              0.298352
+       Multimodal_Fusion          0.649832            0.265652                    0.066667              0.109090
+Rule_Based_SQI_Heuristic          0.841751            0.379606                    0.041333              0.406360
+   LiquidAI_d1_3B_Neural          0.531987            0.499505                    0.326667              0.376633
+================================================================================
+INDEPENDENT TRANSFER BENCHMARK: CINC 2011 SET A (LOCKED THRESHOLDS)
+================================================================================
+Loading development set from: /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/manifest_butqdb_1000_cohort.csv
+[CinC 2011] Loading cached segments from /Volumes/KIOXIA/Projects/d13b-ecg-sqi/cache/datasets/cinc2011/cinc2011_segments_lead1_max150.csv
+Transfer Target: 150 records (Acceptable=75, Unacceptable=75)
+
+[Transfer] Training supervised models on BUT QDB...
+
+Predicting on CinC 2011 Set A...
+Loading verified d1 neural predictions from /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_d1_neural_cinc2011_predictions.csv...
+Predictions saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_expanded_predictions.csv
+Summary table saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_expanded_transfer_summary.csv
+
+==========================================================================================
+CINC 2011 SET A TRANSFER BENCHMARK SUMMARY (150 RECORDS)
+==========================================================================================
+                   model  transfer_auroc  transfer_auprc  bal_acc_fixed  sens_fixed  false_reject_fixed
+ Logistic_Regression_SQI        0.383289        0.450801       0.373333    0.746667            1.000000
+            LightGBM_SQI        0.730756        0.791919       0.540000    0.093333            0.013333
+     Independent_SQI_MLP        0.626667        0.626667       0.626667    0.253333            0.000000
+           1D_CNN_RawECG        0.710667        0.664073       0.706667    0.640000            0.226667
+            2D_CNN_Image        0.737778        0.735646       0.553333    0.160000            0.053333
+       Multimodal_Fusion        0.533689        0.517777       0.513333    0.973333            0.946667
+Rule_Based_SQI_Heuristic        0.700622        0.760795       0.560000    0.960000            0.840000
+   LiquidAI_d1_3B_Neural        0.635556        0.711219       0.500000    1.000000            1.000000
+================================================================================
+REVISED EXPERIMENT 4: CALIBRATED NOISE STRESS TEST (NSTDB 118 & 119)
+================================================================================
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  15%|█▍        | 104/707 [00:00<00:00, 1003.77it/s]Loading weights:  37%|███▋      | 261/707 [00:00<00:00, 1325.22it/s]Loading weights:  56%|█████▌    | 394/707 [00:00<00:00, 1264.06it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 1975.50it/s]
+[RealD1Neural] Successfully loaded weights in 14.55s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+Loaded calibrated NSTDB dataset: 528 windows.
+
+[NSTDB Degradation Summary - Combined Active Noise (Records 118 & 119)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+12      24         44  0.899351  ...     0.571974         0.446076    0.759008
+13      18         44  0.811862  ...     0.297837         0.222529    0.741697
+14      12         44  0.500167  ...     0.024634         0.016603    0.705250
+15       6         44  0.176056  ...     0.005648         0.005201    0.689702
+16       0         44  0.037385  ...     0.003490         0.002108    0.686768
+17      -6         44  0.011085  ...     0.041088         0.041156    0.762487
+
+[6 rows x 8 columns]
+
+[NSTDB Clean Control Windows (Integrity Check)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+18      24         44  0.941692  ...     0.657865         0.606127    0.765259
+19      18         44  0.941700  ...     0.653561         0.600520    0.762119
+20      12         44  0.941779  ...     0.668738         0.616099    0.763966
+21       6         44  0.941787  ...     0.654803         0.608639    0.761382
+22       0         44  0.941683  ...     0.654339         0.600812    0.762487
+23      -6         44  0.941292  ...     0.655097         0.586122    0.765399
+
+[6 rows x 8 columns]
+
+[Completed] Revised NSTDB analysis saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/exp4_revised_nstdb_summary.csv
+Chart saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/figures/figure_revised_nstdb_degradation_curve.png
+              model                                         features                  scaler  transfer_auroc  transfer_ap
+                 LR                                  All 13 features          StandardScaler           0.383        0.451
+                 LR                                  All 13 features            RobustScaler           0.377        0.442
+                 LR                                  All 13 features           Z-clip [-3,3]           0.749        0.791
+Independent_SQI_MLP                                  All 13 features internal StandardScaler           0.617        0.627
+                 LR                                  Drop signal_std          StandardScaler           0.431        0.529
+                 LR                                  Drop signal_std            RobustScaler           0.370        0.441
+                 LR                                  Drop signal_std           Z-clip [-3,3]           0.723        0.775
+Independent_SQI_MLP                                  Drop signal_std internal StandardScaler           0.627        0.627
+                 LR             Drop saturation, flatline, constants          StandardScaler           0.746        0.796
+                 LR             Drop saturation, flatline, constants            RobustScaler           0.746        0.805
+                 LR             Drop saturation, flatline, constants           Z-clip [-3,3]           0.751        0.792
+Independent_SQI_MLP             Drop saturation, flatline, constants internal StandardScaler           0.763        0.797
+                 LR Drop signal_std, saturation, flatline, constants          StandardScaler           0.713        0.770
+                 LR Drop signal_std, saturation, flatline, constants            RobustScaler           0.721        0.781
+                 LR Drop signal_std, saturation, flatline, constants           Z-clip [-3,3]           0.723        0.774
+Independent_SQI_MLP Drop signal_std, saturation, flatline, constants internal StandardScaler           0.733        0.757
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_scaling_sensitivity.csv
+REGENERATION DONE

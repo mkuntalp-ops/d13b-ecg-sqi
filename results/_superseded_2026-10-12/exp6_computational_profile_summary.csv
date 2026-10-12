@@ -1,0 +1,7 @@
+Model,Parameters,Model_Size_MB,Latency_ms,Throughput_samples_per_sec,Edge_Deployable
+Logistic Regression (SQI),14,0.01,0.4273283202201128,2340.1210560650634,"Ultra-light (<1 ms, MCU / smartwatch)"
+LightGBM (SQI),1500,0.25,0.14406918082386255,6941.109779909066,"Very light (<2 ms, mobile/wearable)"
+1D CNN (Raw Signal),167489,0.6389198303222656,0.7251699990592897,1378.986997941486,"High efficiency (<5 ms, on-device DSP/NPU)"
+2D CNN (Image),245697,0.9372596740722656,1.281480840407312,780.3472111858928,Mobile vision NPU (<10 ms)
+SinglePass Multimodal Net (Fusion),123713,0.4719276428222656,1.2166716787032783,821.9144223573892,High efficiency multimodal (<12 ms)
+Liquid AI d1-3B (Decision VLM),3120000000,5818.0,62.0,16.129032258064516,Workstation / Edge Gateway (Apple Silicon / RTX 4090)
