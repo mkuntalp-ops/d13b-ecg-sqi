@@ -275,6 +275,53 @@ def table_5() -> str:
         out.append(row("CinC false reject at τ = 0.50", f42 * 100, c["fr_at_0.5"].values, 100.0, "%"))
     return "\n".join(out)
 
+MODEL_LABELS = {"Logistic_Regression_SQI": "Logistic Regression (SQI)", "LightGBM_SQI": "LightGBM (SQI)",
+                "Independent_SQI_MLP": "Independent SQI MLP", "1D_CNN_RawECG": "1D CNN (Raw Signal)",
+                "2D_CNN_Image": "2D CNN (Rendered Image)", "Multimodal_Fusion": "SinglePass Multimodal Net",
+                "Rule_Based_SQI_Heuristic": "Rule-Based SQI Heuristic", "LiquidAI_d1_3B_Neural": "LiquidAI d1-3B (Zero-Shot)"}
+
+
+def table_1d() -> str:
+    """BUT QDB sensitivity analysis: class-2 windows relabelled as unusable (experiments/butqdb_class2_sensitivity.py)."""
+    path = RESULTS / "butqdb_class2_sensitivity.csv"
+    if not path.exists():
+        return "(class-2 sensitivity results not yet available)"
+    d = pd.read_csv(path)
+    o = d[d.scheme == "original"].set_index("model")
+    c = d[d.scheme == "class2_unusable"].set_index("model")
+    out = ["| Model | AUROC, class 3 unusable (297) [95% CI] | AUROC, classes 2–3 unusable (490) [95% CI] | Sens. / FR at τ = 0.50, class 3 unusable | Sens. / FR at τ = 0.50, classes 2–3 unusable |",
+           "| :--- | :---: | :---: | :---: | :---: |"]
+    for m in MODEL_LABELS:
+        if m not in o.index:
+            continue
+        r1, r2 = o.loc[m], c.loc[m]
+        out.append(f"| **{MODEL_LABELS[m]}** | {r1.auroc:.3f} [{r1.auroc_ci_low:.3f} – {r1.auroc_ci_high:.3f}] | "
+                   f"{r2.auroc:.3f} [{r2.auroc_ci_low:.3f} – {r2.auroc_ci_high:.3f}] | "
+                   f"{pct(r1['sens_at_0.5'])} / {pct(r1['fr_at_0.5'])} | {pct(r2['sens_at_0.5'])} / {pct(r2['fr_at_0.5'])} |")
+    return "\n".join(out)
+
+
+def table_2d() -> str:
+    """CinC transfer over random balanced draws (experiments/cinc_random_draws.py); models trained once on the cohort."""
+    path = RESULTS / "cinc_random_draws_summary.csv"
+    if not path.exists():
+        return "(random-draw results not yet available)"
+    d = pd.read_csv(path)
+    rnd = d[d.draw.str.startswith("random_seed")]
+    orig = d[d.draw == "first_N_original"].set_index("model")
+    out = ["| Model | AUROC: first-N (reported) | AUROC: random draws, mean ± SD (min–max) | Sensitivity at τ = 0.50: first-N | Sensitivity at τ = 0.50: random draws, mean ± SD | False reject at τ = 0.50: random draws, mean ± SD |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    for m in MODEL_LABELS:
+        if m not in orig.index:
+            continue
+        r = rnd[rnd.model == m]
+        a = r["auroc"].values
+        sens = r["sens_at_0.5"].values * 100
+        fr = r["fr_at_0.5"].values * 100
+        out.append(f"| **{MODEL_LABELS[m]}** | {orig.loc[m, 'auroc']:.3f} | {a.mean():.3f} ± {a.std(ddof=1):.3f} ({a.min():.3f}–{a.max():.3f}) | "
+                   f"{orig.loc[m, 'sens_at_0.5'] * 100:.1f}% | {sens.mean():.1f} ± {sens.std(ddof=1):.1f}% | {fr.mean():.1f} ± {fr.std(ddof=1):.1f}% |")
+    return "\n".join(out)
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = pd.read_csv(RESULTS / "cinc2011_expanded_predictions.csv")
@@ -291,6 +338,8 @@ def main():
         ("Table 3", t3),
         ("Table 4", table_4()),
         ("Table 5", table_5()),
+        ("Table 1d", table_1d()),
+        ("Table 2d", table_2d()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("# Manuscript tables regenerated 2026-10-12\n\n")

@@ -1,0 +1,32 @@
+
+=== label scheme: original (unusable = 297) ===
+[fold 0] done
+[fold 1] done
+[fold 2] done
+[fold 3] done
+[fold 4] done
+
+=== label scheme: class2_unusable (unusable = 490) ===
+[fold 0] done
+[fold 1] done
+[fold 2] done
+[fold 3] done
+[fold 4] done
+         scheme                    model  n_unusable  auroc  auroc_ci_low  auroc_ci_high  sens_at_0.5  fr_at_0.5
+       original  Logistic_Regression_SQI         297  0.938         0.838          0.994        0.764      0.063
+       original             LightGBM_SQI         297  0.964         0.893          0.997        0.734      0.041
+       original      Independent_SQI_MLP         297  0.939         0.834          0.990        0.778      0.087
+       original            1D_CNN_RawECG         297  0.989         0.964          0.999        0.768      0.007
+       original             2D_CNN_Image         297  0.989         0.967          0.999        0.788      0.009
+       original        Multimodal_Fusion         297  0.967         0.926          0.999        0.636      0.019
+       original Rule_Based_SQI_Heuristic         297  0.977         0.926          0.998        0.660      0.012
+       original    LiquidAI_d1_3B_Neural         297  0.852         0.717          0.944        0.532      0.040
+class2_unusable  Logistic_Regression_SQI         490  0.955         0.920          0.976        0.853      0.086
+class2_unusable             LightGBM_SQI         490  0.951         0.918          0.972        0.890      0.131
+class2_unusable      Independent_SQI_MLP         490  0.837         0.594          0.966        0.759      0.147
+class2_unusable            1D_CNN_RawECG         490  0.961         0.902          0.994        0.782      0.066
+class2_unusable             2D_CNN_Image         490  0.984         0.960          0.998        0.906      0.056
+class2_unusable        Multimodal_Fusion         490  0.865         0.611          0.993        0.786      0.065
+class2_unusable Rule_Based_SQI_Heuristic         490  0.973         0.948          0.987        0.418      0.000
+class2_unusable    LiquidAI_d1_3B_Neural         490  0.785         0.655          0.875        0.353      0.027
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/butqdb_class2_sensitivity.csv

@@ -105,3 +105,29 @@ NSTDB windows: clean control = 264, active noise = 264
 | **SinglePass Multimodal Net** | CinC sensitivity at τ = 0.50 | 25.3% | 100.0% | 100.0% | 100.0% | 25.3% | 81.3 ± 37.3% |
 | **SinglePass Multimodal Net** | CinC false reject at τ = 0.50 | 0.0% | 100.0% | 100.0% | 100.0% | 0.0% | 75.0 ± 50.0% |
 
+## Table 1d
+
+| Model | AUROC, class 3 unusable (297) [95% CI] | AUROC, classes 2–3 unusable (490) [95% CI] | Sens. / FR at τ = 0.50, class 3 unusable | Sens. / FR at τ = 0.50, classes 2–3 unusable |
+| :--- | :---: | :---: | :---: | :---: |
+| **Logistic Regression (SQI)** | 0.938 [0.838 – 0.994] | 0.955 [0.920 – 0.976] | 76.4% / 6.3% | 85.3% / 8.6% |
+| **LightGBM (SQI)** | 0.964 [0.893 – 0.997] | 0.951 [0.918 – 0.972] | 73.4% / 4.1% | 89.0% / 13.1% |
+| **Independent SQI MLP** | 0.939 [0.834 – 0.990] | 0.837 [0.594 – 0.966] | 77.8% / 8.7% | 75.9% / 14.7% |
+| **1D CNN (Raw Signal)** | 0.989 [0.964 – 0.999] | 0.961 [0.902 – 0.994] | 76.8% / 0.7% | 78.2% / 6.6% |
+| **2D CNN (Rendered Image)** | 0.989 [0.967 – 0.999] | 0.984 [0.960 – 0.998] | 78.8% / 0.9% | 90.6% / 5.6% |
+| **SinglePass Multimodal Net** | 0.967 [0.926 – 0.999] | 0.865 [0.611 – 0.993] | 63.6% / 1.9% | 78.6% / 6.5% |
+| **Rule-Based SQI Heuristic** | 0.977 [0.926 – 0.998] | 0.973 [0.948 – 0.987] | 66.0% / 1.2% | 41.8% / 0.0% |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.852 [0.717 – 0.944] | 0.785 [0.655 – 0.875] | 53.2% / 4.0% | 35.3% / 2.7% |
+
+## Table 2d
+
+| Model | AUROC: first-N (reported) | AUROC: random draws, mean ± SD (min–max) | Sensitivity at τ = 0.50: first-N | Sensitivity at τ = 0.50: random draws, mean ± SD | False reject at τ = 0.50: random draws, mean ± SD |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Logistic Regression (SQI)** | 0.383 | 0.323 ± 0.032 (0.291–0.372) | 74.7% | 67.5 ± 6.8% | 100.0 ± 0.0% |
+| **LightGBM (SQI)** | 0.731 | 0.750 ± 0.049 (0.700–0.821) | 9.3% | 16.0 ± 4.7% | 4.3 ± 1.7% |
+| **Independent SQI MLP** | 0.617 | 0.670 ± 0.030 (0.628–0.703) | 0.0% | 0.0 ± 0.0% | 0.0 ± 0.0% |
+| **1D CNN (Raw Signal)** | 0.726 | 0.707 ± 0.062 (0.660–0.816) | 61.3% | 66.7 ± 6.3% | 22.7 ± 3.7% |
+| **2D CNN (Rendered Image)** | 0.746 | 0.780 ± 0.064 (0.709–0.883) | 17.3% | 20.3 ± 5.2% | 6.7 ± 3.0% |
+| **SinglePass Multimodal Net** | 0.627 | 0.668 ± 0.038 (0.620–0.707) | 25.3% | 33.3 ± 6.9% | 0.3 ± 0.6% |
+| **Rule-Based SQI Heuristic** | 0.701 | 0.685 ± 0.046 (0.641–0.738) | 96.0% | 92.5 ± 2.9% | 88.0 ± 2.5% |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.636 | 0.652 ± 0.059 (0.584–0.725) | 100.0% | 99.7 ± 0.6% | 100.0 ± 0.0% |
+

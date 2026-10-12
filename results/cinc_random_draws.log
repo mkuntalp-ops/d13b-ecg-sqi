@@ -1,0 +1,225 @@
+[lists] acceptable 773, unacceptable 225
+[draws] 6 sets, 565 unique records to score
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+[extract] 565 of 565 records available
+[fit] cohort models trained (seed 42)
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  16%|█▌        | 114/707 [00:00<00:00, 1125.54it/s]Loading weights:  32%|███▏      | 227/707 [00:00<00:00, 1083.02it/s]Loading weights:  49%|████▊     | 343/707 [00:00<00:00, 1109.97it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 1744.71it/s]
+[RealD1Neural] Successfully loaded weights in 15.30s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+            draw                    model  auroc    ap  brier  sens_at_0.5  fr_at_0.5
+first_N_original  Logistic_Regression_SQI  0.383 0.451  0.627        0.747      1.000
+first_N_original             LightGBM_SQI  0.731 0.792  0.320        0.093      0.013
+first_N_original      Independent_SQI_MLP  0.617 0.627  0.500        0.000      0.000
+first_N_original            1D_CNN_RawECG  0.726 0.683  0.266        0.613      0.147
+first_N_original             2D_CNN_Image  0.746 0.748  0.356        0.173      0.040
+first_N_original        Multimodal_Fusion  0.627 0.627  0.373        0.253      0.000
+first_N_original Rule_Based_SQI_Heuristic  0.701 0.761  0.238        0.960      0.840
+first_N_original    LiquidAI_d1_3B_Neural  0.636 0.711  0.389        1.000      1.000
+   random_seed42  Logistic_Regression_SQI  0.291 0.419  0.693        0.613      1.000
+   random_seed42             LightGBM_SQI  0.710 0.750  0.304        0.160      0.067
+   random_seed42      Independent_SQI_MLP  0.703 0.707  0.500        0.000      0.000
+   random_seed42            1D_CNN_RawECG  0.690 0.648  0.266        0.667      0.213
+   random_seed42             2D_CNN_Image  0.757 0.741  0.327        0.187      0.080
+   random_seed42        Multimodal_Fusion  0.700 0.700  0.300        0.400      0.000
+   random_seed42 Rule_Based_SQI_Heuristic  0.728 0.811  0.234        0.920      0.907
+   random_seed42    LiquidAI_d1_3B_Neural  0.725 0.798  0.382        1.000      1.000
+    random_seed1  Logistic_Regression_SQI  0.333 0.430  0.647        0.707      1.000
+    random_seed1             LightGBM_SQI  0.746 0.768  0.311        0.187      0.053
+    random_seed1      Independent_SQI_MLP  0.660 0.660  0.500        0.000      0.000
+    random_seed1            1D_CNN_RawECG  0.679 0.607  0.276        0.680      0.253
+    random_seed1             2D_CNN_Image  0.761 0.734  0.355        0.173      0.067
+    random_seed1        Multimodal_Fusion  0.640 0.634  0.360        0.293      0.013
+    random_seed1 Rule_Based_SQI_Heuristic  0.672 0.746  0.245        0.933      0.853
+    random_seed1    LiquidAI_d1_3B_Neural  0.602 0.696  0.405        1.000      1.000
+    random_seed2  Logistic_Regression_SQI  0.297 0.422  0.693        0.613      1.000
+    random_seed2             LightGBM_SQI  0.821 0.833  0.269        0.173      0.040
+    random_seed2      Independent_SQI_MLP  0.698 0.695  0.500        0.000      0.000
+    random_seed2            1D_CNN_RawECG  0.816 0.763  0.199        0.760      0.173
+    random_seed2             2D_CNN_Image  0.883 0.869  0.281        0.227      0.027
+    random_seed2        Multimodal_Fusion  0.707 0.707  0.300        0.400      0.000
+    random_seed2 Rule_Based_SQI_Heuristic  0.738 0.812  0.235        0.933      0.867
+    random_seed2    LiquidAI_d1_3B_Neural  0.659 0.762  0.401        0.987      1.000
+    random_seed3  Logistic_Regression_SQI  0.372 0.443  0.613        0.773      1.000
+    random_seed3             LightGBM_SQI  0.771 0.803  0.296        0.200      0.027
+    random_seed3      Independent_SQI_MLP  0.628 0.633  0.500        0.000      0.000
+    random_seed3            1D_CNN_RawECG  0.692 0.614  0.304        0.587      0.227
+    random_seed3             2D_CNN_Image  0.788 0.770  0.322        0.280      0.053
+    random_seed3        Multimodal_Fusion  0.620 0.620  0.380        0.240      0.000
+    random_seed3 Rule_Based_SQI_Heuristic  0.641 0.719  0.248        0.880      0.867
+    random_seed3    LiquidAI_d1_3B_Neural  0.584 0.710  0.402        1.000      1.000
+    random_seed4  Logistic_Regression_SQI  0.322 0.428  0.667        0.667      1.000
+    random_seed4             LightGBM_SQI  0.700 0.738  0.335        0.080      0.027
+    random_seed4      Independent_SQI_MLP  0.663 0.658  0.500        0.000      0.000
+    random_seed4            1D_CNN_RawECG  0.660 0.610  0.299        0.640      0.267
+    random_seed4             2D_CNN_Image  0.709 0.690  0.371        0.147      0.107
+    random_seed4        Multimodal_Fusion  0.673 0.673  0.333        0.333      0.000
+    random_seed4 Rule_Based_SQI_Heuristic  0.645 0.741  0.250        0.960      0.907
+    random_seed4    LiquidAI_d1_3B_Neural  0.688 0.765  0.395        1.000      1.000
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc_random_draws_summary.csv
