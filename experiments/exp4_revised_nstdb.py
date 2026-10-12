@@ -46,7 +46,7 @@ def run_revised_nstdb_experiment(verbose: bool = True):
     d1 = RealD1DecisionModel()  # real weights, fail-closed (no heuristic fallback)
     
     # 2. Load calibrated NSTDB dataset
-    nstdb_csv = config.DATA_DIR / "nstdb" / "nstdb_calibrated_active_noise_series.csv"
+    nstdb_csv = config.DATA_DIR / "nstdb" / "nstdb_paired_windows.csv"  # experiments/nstdb_paired_extraction.py
     if not nstdb_csv.exists():
         raise FileNotFoundError(f"Calibrated NSTDB CSV not found at {nstdb_csv}")
     df_nstdb = pd.read_csv(nstdb_csv)
@@ -84,7 +84,7 @@ def run_revised_nstdb_experiment(verbose: bool = True):
     
     # Aggregate summaries:
     # 1. Active Noise Only (118 vs 119 vs Combined)
-    df_active = df_nstdb[df_nstdb["condition"] == "active_noise"]
+    df_active = df_nstdb[df_nstdb["condition"] == "noisy"]
     
     snr_levels = [24, 18, 12, 6, 0, -6]
     model_keys = ["LR", "LGBM", "1D_CNN", "2D_CNN", "Multimodal", "d1_3B"]
@@ -94,7 +94,6 @@ def run_revised_nstdb_experiment(verbose: bool = True):
         ("Record_118_ActiveNoise", df_active[df_active["base_record"].astype(str) == "118"]),
         ("Record_119_ActiveNoise", df_active[df_active["base_record"].astype(str) == "119"]),
         ("Combined_118_119_ActiveNoise", df_active),
-        ("Clean_Control_Windows", df_nstdb[df_nstdb["condition"] == "clean_interval"])
     ]:
         for snr in snr_levels:
             snr_df = sub_df[sub_df["snr_db"] == snr]
@@ -107,6 +106,13 @@ def run_revised_nstdb_experiment(verbose: bool = True):
                 row[f"{m}_mean"] = snr_df[f"p_usable_{m}"].mean()
                 row[f"{m}_std"] = snr_df[f"p_usable_{m}"].std()
             summary_list.append(row)
+    # Clean reference windows come from the MIT-BIH base records and carry no SNR label: one row for all of them
+    clean_all = df_nstdb[df_nstdb["condition"] == "clean_reference"]
+    row = {"subset": "Clean_Control_Windows", "snr_db": np.nan, "n_windows": len(clean_all)}
+    for m in model_keys:
+        row[f"{m}_mean"] = clean_all[f"p_usable_{m}"].mean()
+        row[f"{m}_std"] = clean_all[f"p_usable_{m}"].std()
+    summary_list.append(row)
             
     df_summary = pd.DataFrame(summary_list)
     out_summary_csv = RESULTS_DIR / "exp4_revised_nstdb_summary.csv"

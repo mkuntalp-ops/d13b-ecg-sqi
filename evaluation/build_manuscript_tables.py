@@ -197,13 +197,13 @@ def table_3(nstdb: pd.DataFrame) -> str:
 
     out = ["| SNR Level | " + " | ".join(n for n, _ in cols) + " |",
            "| :--- | " + " | ".join([":---:"] * len(cols)) + " |"]
-    clean = nstdb[nstdb["condition"] == "clean_interval"]
-    out.append("| **Clean Control (Baseline)** | " + " | ".join(cell(clean, c) for _, c in cols) + " |")
+    clean = nstdb[nstdb["condition"] == "clean_reference"]
+    out.append("| **Clean reference (MIT-BIH base)** | " + " | ".join(cell(clean, c) for _, c in cols) + " |")
     for snr in [24, 18, 12, 6, 0, -6]:
-        sub = nstdb[(nstdb["condition"] == "active_noise") & (nstdb["snr_db"] == snr)]
+        sub = nstdb[(nstdb["condition"] == "noisy") & (nstdb["snr_db"] == snr)]
         label = {24: "+24 dB (Low Noise)", 0: "0 dB (Equal Power)", -6: "-6 dB (Severe Noise)"}.get(snr, f"{'+' if snr > 0 else ''}{snr} dB")
         out.append(f"| **{label}** | " + " | ".join(cell(sub, c) for _, c in cols) + " |")
-    return "\n".join(out), len(clean), int(nstdb[nstdb["condition"] == "active_noise"].shape[0])
+    return "\n".join(out), len(clean), int(nstdb[nstdb["condition"] == "noisy"].shape[0])
 
 
 def table_4() -> str:
@@ -289,14 +289,21 @@ def table_1d() -> str:
     d = pd.read_csv(path)
     o = d[d.scheme == "original"].set_index("model")
     c = d[d.scheme == "class2_unusable"].set_index("model")
-    out = ["| Model | AUROC, class 3 unusable (297) [95% CI] | AUROC, classes 2–3 unusable (490) [95% CI] | Sens. / FR at τ = 0.50, class 3 unusable | Sens. / FR at τ = 0.50, classes 2–3 unusable |",
-           "| :--- | :---: | :---: | :---: | :---: |"]
+    bys = RESULTS / "butqdb_class2_by_seed.csv"
+    seeds = pd.read_csv(bys) if bys.exists() else None
+    out = ["| Model | AUROC, class 3 unusable (297) [95% CI] | AUROC, classes 2–3 unusable (490), seed 42 [95% CI] | AUROC, classes 2–3 unusable, seeds 1–4 (range) | Sens. / FR at τ = 0.50, class 3 unusable | Sens. / FR at τ = 0.50, classes 2–3 unusable |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: |"]
     for m in MODEL_LABELS:
         if m not in o.index:
             continue
         r1, r2 = o.loc[m], c.loc[m]
+        if seeds is not None and m in set(seeds.model):
+            a = seeds[(seeds.model == m) & (seeds.seed != 42)]["auroc"].values
+            rng = f"{a.min():.3f}–{a.max():.3f}"
+        else:
+            rng = "—"
         out.append(f"| **{MODEL_LABELS[m]}** | {r1.auroc:.3f} [{r1.auroc_ci_low:.3f} – {r1.auroc_ci_high:.3f}] | "
-                   f"{r2.auroc:.3f} [{r2.auroc_ci_low:.3f} – {r2.auroc_ci_high:.3f}] | "
+                   f"{r2.auroc:.3f} [{r2.auroc_ci_low:.3f} – {r2.auroc_ci_high:.3f}] | {rng} | "
                    f"{pct(r1['sens_at_0.5'])} / {pct(r1['fr_at_0.5'])} | {pct(r2['sens_at_0.5'])} / {pct(r2['fr_at_0.5'])} |")
     return "\n".join(out)
 
@@ -322,6 +329,25 @@ def table_2d() -> str:
                    f"{orig.loc[m, 'sens_at_0.5'] * 100:.1f}% | {sens.mean():.1f} ± {sens.std(ddof=1):.1f}% | {fr.mean():.1f} ± {fr.std(ddof=1):.1f}% |")
     return "\n".join(out)
 
+def table_6() -> str:
+    """Variance decomposition for the CinC subsets and training seeds (experiments/cinc_draws_by_seed.py)."""
+    path = RESULTS / "cinc_draws_by_seed_summary.csv"
+    if not path.exists():
+        return "(subset-by-seed results not yet available)"
+    d = pd.read_csv(path)
+    rnd = d[d.draw.str.startswith("random_seed")]
+    out = ["| Model | AUROC range over seeds × subsets | SD across training seeds (mean over subsets) | SD across subsets (mean over seeds) |",
+           "| :--- | :---: | :---: | :---: |"]
+    for m in MODEL_LABELS:
+        r = rnd[rnd.model == m]
+        if r.empty:
+            continue
+        piv = r.pivot_table(index="seed", columns="draw", values="auroc")
+        across_seeds = piv.std(axis=0, ddof=1).mean()
+        across_subsets = piv.std(axis=1, ddof=1).mean()
+        out.append(f"| **{MODEL_LABELS[m]}** | {r.auroc.min():.3f}–{r.auroc.max():.3f} | {across_seeds:.3f} | {across_subsets:.3f} |")
+    return "\n".join(out)
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = pd.read_csv(RESULTS / "cinc2011_expanded_predictions.csv")
@@ -340,6 +366,7 @@ def main():
         ("Table 5", table_5()),
         ("Table 1d", table_1d()),
         ("Table 2d", table_2d()),
+        ("Table 6", table_6()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("# Manuscript tables regenerated 2026-10-12\n\n")

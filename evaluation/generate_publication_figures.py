@@ -192,7 +192,7 @@ def generate_figure3_nstdb_degradation():
     ax_clean.set_yticklabels([l for _, _, l in model_plot_order], fontsize=9.5, fontweight='bold')
     ax_clean.invert_yaxis()
     ax_clean.set_xlabel("Mean P(Usable) ± 1 SD", fontsize=10.5, fontweight='bold')
-    ax_clean.set_title("A. Clean Control Baseline (N=264)", fontsize=11.5, fontweight='bold', pad=8)
+    ax_clean.set_title("A. Clean Reference Baseline (N=88)", fontsize=11.5, fontweight='bold', pad=8)
     ax_clean.set_xlim([0.0, 1.05])
     ax_clean.axvline(0.5, color="black", linestyle="--", alpha=0.5)
 

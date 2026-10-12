@@ -1,0 +1,19 @@
+[fit] cohort models trained (seed 42)
+[seed 42] done
+[fit] cohort models trained (seed 42)
+[seed 1] done
+[fit] cohort models trained (seed 42)
+[seed 2] done
+[fit] cohort models trained (seed 42)
+[seed 3] done
+[fit] cohort models trained (seed 42)
+[seed 4] done
+
+AUROC by model: mean SD across seeds (within a subset), and SD across subsets (within a seed):
+  Logistic_Regression_SQI    seed-SD 0.000 | subset-SD 0.032
+  LightGBM_SQI               seed-SD 0.000 | subset-SD 0.049
+  Independent_SQI_MLP        seed-SD 0.007 | subset-SD 0.033
+  1D_CNN_RawECG              seed-SD 0.009 | subset-SD 0.066
+  2D_CNN_Image               seed-SD 0.008 | subset-SD 0.064
+  Multimodal_Fusion          seed-SD 0.091 | subset-SD 0.015
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc_draws_by_seed_summary.csv

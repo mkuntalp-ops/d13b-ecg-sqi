@@ -1,0 +1,33 @@
+[fold 0] done
+[fold 1] done
+[fold 2] done
+[fold 3] done
+[fold 4] done
+[seed 1] done
+[fold 0] done
+[fold 1] done
+[fold 2] done
+[fold 3] done
+[fold 4] done
+[seed 2] done
+[fold 0] done
+[fold 1] done
+[fold 2] done
+[fold 3] done
+[fold 4] done
+[seed 3] done
+[fold 0] done
+[fold 1] done
+[fold 2] done
+[fold 3] done
+[fold 4] done
+[seed 4] done
+
+class-2 scheme, AUROC by seed (mean ± SD over seeds 1-4, with seed 42 shown):
+  Logistic_Regression_SQI    seed42 0.955 | seeds 1-4 0.955 ± 0.000 (0.955–0.955)
+  LightGBM_SQI               seed42 0.951 | seeds 1-4 0.951 ± 0.000 (0.951–0.951)
+  Independent_SQI_MLP        seed42 0.837 | seeds 1-4 0.859 ± 0.056 (0.825–0.942)
+  1D_CNN_RawECG              seed42 0.961 | seeds 1-4 0.961 ± 0.003 (0.959–0.964)
+  2D_CNN_Image               seed42 0.984 | seeds 1-4 0.985 ± 0.001 (0.984–0.986)
+  Multimodal_Fusion          seed42 0.865 | seeds 1-4 0.897 ± 0.058 (0.867–0.984)
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/butqdb_class2_by_seed.csv

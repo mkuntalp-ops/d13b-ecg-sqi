@@ -90,6 +90,12 @@ Outputs:
 
 Superseded material (v1 and 124-window pilot experiments, earlier audit outputs, the stale manuscript builders) is in `experiments/_superseded/`, `evaluation/_superseded/` and `results/_superseded_2026-10-12/`. Do not cite it.
 
+Additional analyses (run directly; see REVIEW_2026-10-12.md section 7):
+- `python experiments/nstdb_paired_extraction.py` then `python experiments/exp4_revised_nstdb.py`: paired NSTDB design (clean reference from MIT-BIH 118/119)
+- `python experiments/butqdb_class2_sensitivity.py`: class-2 relabelling (Table 1d)
+- `python experiments/cinc_random_draws.py`: five random CinC subsets (Table 2d)
+- `python experiments/cinc_draws_by_seed.py` and `python experiments/butqdb_class2_by_seed.py`: training-seed variation (Table 6 and Table 1d)
+
 ## 6. Review Status
 
 See [REVIEW_2026-10-12.md](REVIEW_2026-10-12.md) for the audit findings, what was changed, and what was verified.
