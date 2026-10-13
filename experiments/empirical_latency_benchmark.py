@@ -1,7 +1,7 @@
 """
 Empirical Latency and Memory Profiling with Explicit MPS Synchronization
 Methodology:
-1. Uses 50 diverse, verified ECG recordings from manifest_butqdb_1000_cohort.csv.
+1. Uses n_samples diverse, verified ECG recordings from manifest_butqdb_1000_cohort.csv (25 in the reported runs).
 2. For each sample and each model, measures:
    - Raw preprocessing duration (resampling, SQI extraction, waveform rendering, image decoding).
    - Forward pass duration with strict synchronization (torch.mps.synchronize() before & after).
@@ -40,7 +40,7 @@ from models.rule_heuristic_baseline import RuleBasedSQIHeuristic
 from models.d1_real_neural_model import RealD1DecisionModel
 
 
-def run_empirical_profiling(n_samples: int = 50):
+def run_empirical_profiling(n_samples: int = 25):
     print("=" * 80)
     print("EMPIRICAL LATENCY & MEMORY PROFILING (STRICT MPS SYNCHRONIZATION)")
     print("=" * 80)
@@ -515,7 +515,7 @@ def run_empirical_profiling(n_samples: int = 50):
     print(f"[Saved] Empirical summary saved to {sum_path}")
 
     print("\n" + "=" * 90)
-    print("EMPIRICAL COMPUTATIONAL PROFILE (50 DIVERSE REAL ECG RECORDINGS, SYNCHRONIZED MPS)")
+    print(f"EMPIRICAL COMPUTATIONAL PROFILE ({n_samples} DIVERSE REAL ECG RECORDINGS, SYNCHRONIZED MPS)")
     print("=" * 90)
     print(sum_df[["Model", "Parameters", "Forward_Median_ms", "Forward_p95_ms", "Total_End_to_End_Median_ms", "Total_End_to_End_p95_ms", "Post_Infer_MPS_Tensor_MiB", "Post_Infer_Driver_MiB"]].to_string(index=False))
 

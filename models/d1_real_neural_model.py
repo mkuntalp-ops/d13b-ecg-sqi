@@ -99,10 +99,12 @@ class RealD1DecisionModel:
         img: Optional[Image.Image],
         sqi_dict: Optional[Dict[str, float]],
         modality: Literal["multimodal", "image_only", "sqi_only"] = "multimodal",
-        segment_id: Optional[str] = None
+        segment_id: Optional[str] = None,
+        questions: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         Executes genuine single-pass neural decision for one ECG sample.
+        `questions` overrides the primary usability question (used only by the prompt-sensitivity analysis).
         FAIL-CLOSED: If neural forward pass fails, raises RuntimeError and records error log.
         """
         state = None
@@ -126,7 +128,7 @@ class RealD1DecisionModel:
             # Genuine system_one forward pass
             raw_response = self.model.system_one(
                 state=state,
-                questions=D1_ECG_USABILITY_QUESTION,
+                questions=questions or D1_ECG_USABILITY_QUESTION,
                 images=images
             )
             lat_ms = (time.perf_counter() - t_start) * 1000.0

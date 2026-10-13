@@ -1,0 +1,40 @@
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  22%|██▏       | 153/707 [00:00<00:00, 1441.51it/s]Loading weights:  42%|████▏     | 298/707 [00:00<00:00, 1151.82it/s]Loading weights:  63%|██████▎   | 448/707 [00:00<00:00, 1280.96it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 1722.89it/s]
+[RealD1Neural] Successfully loaded weights in 13.43s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+[validation] max |stored - recomputed| on 10 BUT windows = 0.0000
+[BUT_QDB] image_only done (1047 windows)
+[BUT_QDB] alt_wording done (1047 windows)
+[CinC_2011_SetA] image_only done (150 windows)
+[CinC_2011_SetA] alt_wording done (150 windows)
+[NSTDB_paired] image_only done (308 windows)
+[NSTDB_paired] alt_wording done (308 windows)
+       dataset     variant    n  n_unusable  auroc    ap  brier  sens_at_0.5  fr_at_0.5  snr_db  mean_p_usable       condition  paired_delta_usable
+       BUT_QDB alt_wording 1047       297.0  0.869 0.739  0.152        0.175      0.005     NaN            NaN             NaN                  NaN
+       BUT_QDB  image_only 1047       297.0  0.913 0.771  0.263        0.997      0.813     NaN            NaN             NaN                  NaN
+       BUT_QDB     primary 1047       297.0  0.852 0.740  0.154        0.532      0.040     NaN            NaN             NaN                  NaN
+CinC_2011_SetA alt_wording  150        75.0  0.631 0.704  0.361        1.000      0.987     NaN            NaN             NaN                  NaN
+CinC_2011_SetA  image_only  150        75.0  0.686 0.744  0.232        0.827      0.787     NaN            NaN             NaN                  NaN
+CinC_2011_SetA     primary  150        75.0  0.636 0.711  0.389        1.000      1.000     NaN            NaN             NaN                  NaN
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN     NaN          0.870 clean_reference                  NaN
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    -6.0          0.845           noisy               -0.025
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN     0.0          0.799           noisy               -0.071
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN     6.0          0.801           noisy               -0.069
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    12.0          0.825           noisy               -0.045
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    18.0          0.848           noisy               -0.022
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    24.0          0.853           noisy               -0.016
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN     NaN          0.462 clean_reference                  NaN
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    -6.0          0.362           noisy               -0.100
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN     0.0          0.419           noisy               -0.043
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN     6.0          0.389           noisy               -0.073
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    12.0          0.370           noisy               -0.091
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    18.0          0.400           noisy               -0.062
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    24.0          0.424           noisy               -0.038
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN     NaN          0.774 clean_reference                  NaN
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    -6.0          0.762           noisy               -0.011
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN     0.0          0.686           noisy               -0.088
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN     6.0          0.688           noisy               -0.085
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    12.0          0.704           noisy               -0.070
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    18.0          0.741           noisy               -0.033
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    24.0          0.758           noisy               -0.015
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/d1_prompt_variants_predictions.csv
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/d1_prompt_variants_summary.csv

@@ -95,6 +95,8 @@ Additional analyses (run directly; see REVIEW_2026-10-12.md section 7):
 - `python experiments/butqdb_class2_sensitivity.py`: class-2 relabelling (Table 1d)
 - `python experiments/cinc_random_draws.py`: five random CinC subsets (Table 2d)
 - `python experiments/cinc_draws_by_seed.py` and `python experiments/butqdb_class2_by_seed.py`: training-seed variation (Table 6 and Table 1d)
+- `python experiments/d1_prompt_variants.py`: d1-3B prompt sensitivity (image only; reworded question), checked against the stored primary run on 10 BUT QDB windows; Section 4.6
+- Latency repeats: three sequential runs of `python experiments/empirical_latency_benchmark.py`, each copied to `results/latency_repeats/` before the next run (Table 4 reports the median and range over the runs)
 
 ## 6. Review Status
 

@@ -2,9 +2,11 @@
 Revised Experiment 4: Calibrated Noise Stress Degradation on MIT-BIH NSTDB
 Methodological Standards:
 - Standard 118 and 119 records evaluate electrode motion ('em') noise.
-- Active noise intervals (305-415s, 545-655s) are strictly isolated from clean intervals.
+- Noisy windows start inside the noise segments only (305-415s, 545-655s); see nstdb_paired_extraction.py.
+- Each noisy window is paired with the clean base-record window at the same start time; the paired
+  change (noisy minus clean) is reported per SNR label alongside the means.
 - Evaluates Record 118, Record 119 separately, and combined.
-- Evaluates clean control intervals separately to confirm no drift.
+- Clean reference windows (base records, no SNR label) are summarised in one row.
 """
 
 import sys
@@ -84,10 +86,15 @@ def run_revised_nstdb_experiment(verbose: bool = True):
     
     # Aggregate summaries:
     # 1. Active Noise Only (118 vs 119 vs Combined)
-    df_active = df_nstdb[df_nstdb["condition"] == "noisy"]
+    df_active = df_nstdb[df_nstdb["condition"] == "noisy"].copy()
     
     snr_levels = [24, 18, 12, 6, 0, -6]
     model_keys = ["LR", "LGBM", "1D_CNN", "2D_CNN", "Multimodal", "d1_3B"]
+    # Paired change: each noisy window minus its clean base-record partner (same start time, same beats)
+    clean_idx = df_nstdb[df_nstdb["condition"] == "clean_reference"].set_index("segment_id")
+    for m in model_keys:
+        partner_p = clean_idx.loc[df_active["partner_segment_id"], f"p_usable_{m}"].values
+        df_active[f"delta_{m}"] = df_active[f"p_usable_{m}"].values - partner_p
     
     summary_list = []
     for subset_name, sub_df in [
@@ -105,6 +112,8 @@ def run_revised_nstdb_experiment(verbose: bool = True):
             for m in model_keys:
                 row[f"{m}_mean"] = snr_df[f"p_usable_{m}"].mean()
                 row[f"{m}_std"] = snr_df[f"p_usable_{m}"].std()
+                row[f"{m}_delta_mean"] = snr_df[f"delta_{m}"].mean()
+                row[f"{m}_delta_std"] = snr_df[f"delta_{m}"].std()
             summary_list.append(row)
     # Clean reference windows come from the MIT-BIH base records and carry no SNR label: one row for all of them
     clean_all = df_nstdb[df_nstdb["condition"] == "clean_reference"]

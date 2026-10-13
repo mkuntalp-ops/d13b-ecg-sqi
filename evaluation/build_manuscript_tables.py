@@ -190,7 +190,8 @@ def table_3(nstdb: pd.DataFrame) -> str:
     nstdb = nstdb.assign(p_usable_Rule=rule_p)
     cols = [("Logistic Regression (SQI)", "p_usable_LR"), ("LightGBM (SQI)", "p_usable_LGBM"),
             ("1D CNN (Raw Signal)", "p_usable_1D_CNN"), ("2D CNN (Image)", "p_usable_2D_CNN"),
-            ("Multimodal Net", "p_usable_Multimodal"), ("Rule Heuristic Baseline", "p_usable_Rule")]
+            ("Multimodal Net", "p_usable_Multimodal"), ("Rule Heuristic Baseline", "p_usable_Rule"),
+            ("d1-3B (Zero-Shot)", "p_usable_d1_3B")]
 
     def cell(sub, c):
         return f"{sub[c].mean():.3f} ± {sub[c].std(ddof=1):.3f}"
@@ -206,11 +207,66 @@ def table_3(nstdb: pd.DataFrame) -> str:
     return "\n".join(out), len(clean), int(nstdb[nstdb["condition"] == "noisy"].shape[0])
 
 
+def table_3b(nstdb: pd.DataFrame) -> str:
+    """Paired change in P(usable): each noisy window minus its clean base-record partner (same start time)."""
+    cols = [("Logistic Regression (SQI)", "p_usable_LR"), ("LightGBM (SQI)", "p_usable_LGBM"),
+            ("1D CNN (Raw Signal)", "p_usable_1D_CNN"), ("2D CNN (Image)", "p_usable_2D_CNN"),
+            ("Multimodal Net", "p_usable_Multimodal"), ("d1-3B (zero-shot)", "p_usable_d1_3B")]
+    clean = nstdb[nstdb["condition"] == "clean_reference"].set_index("segment_id")
+    noisy = nstdb[nstdb["condition"] == "noisy"]
+    out = ["| SNR Level | " + " | ".join(n for n, _ in cols) + " |",
+           "| :--- | " + " | ".join([":---:"] * len(cols)) + " |"]
+    for snr in [24, 18, 12, 6, 0, -6]:
+        sub = noisy[noisy["snr_db"] == snr]
+        label = {24: "+24 dB (Low Noise)", 0: "0 dB (Equal Power)", -6: "-6 dB (Severe Noise)"}.get(snr, f"{'+' if snr > 0 else ''}{snr} dB")
+        cells = []
+        for _, c in cols:
+            d = sub[c].values - clean.loc[sub["partner_segment_id"], c].values
+            cells.append(f"{d.mean():+.3f} ± {d.std(ddof=1):.3f}")
+        out.append(f"| **{label}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_7() -> str:
+    """Prompt sensitivity of d1-3B (experiments/d1_prompt_variants.py). The AUROC CI on BUT QDB is the subject-level
+    bootstrap used for Table 1 (seed 42); CinC has no subject identifiers and is reported as a point estimate."""
+    summary_path = RESULTS / "d1_prompt_variants_summary.csv"
+    if not summary_path.exists():
+        return "(prompt variants not yet available)"
+    s = pd.read_csv(summary_path)
+    p = pd.read_csv(RESULTS / "d1_prompt_variants_predictions.csv")
+    subj = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")[["segment_id", "subject_id"]]
+    names = {"primary": "Primary (SQI text + image)", "image_only": "Image only (no SQI text)",
+             "alt_wording": "Reworded question (SQI text + image)"}
+    out = ["| Configuration | BUT QDB AUROC [95% CI] | BUT QDB Sens. / FR at τ = 0.50 | CinC AUROC | CinC Sens. / FR at τ = 0.50 | NSTDB clean P(usable) | NSTDB paired change, +24 dB | NSTDB paired change, 0 dB |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    for variant, name in names.items():
+        b = p[(p["dataset"] == "BUT_QDB") & (p["variant"] == variant)].merge(subj, on="segment_id")
+        ci = compute_subject_level_bootstrap_ci(b, pred_col="prob_unusable", target_col="label",
+                                                subject_col="subject_id", n_bootstraps=1000, seed=42)["auroc"]
+        bs = s[(s["dataset"] == "BUT_QDB") & (s["variant"] == variant)].iloc[0]
+        cs = s[(s["dataset"] == "CinC_2011_SetA") & (s["variant"] == variant)].iloc[0]
+        nst = s[(s["dataset"] == "NSTDB_paired") & (s["variant"] == variant)]
+        clean = nst[nst["condition"] == "clean_reference"].iloc[0]
+        d24 = nst[(nst["condition"] == "noisy") & (nst["snr_db"] == 24)].iloc[0]
+        d0 = nst[(nst["condition"] == "noisy") & (nst["snr_db"] == 0)].iloc[0]
+        out.append(f"| **{name}** | {bs['auroc']:.3f} [{ci['ci_low']:.3f} – {ci['ci_high']:.3f}] | "
+                   f"{100 * bs['sens_at_0.5']:.1f}% / {100 * bs['fr_at_0.5']:.1f}% | {cs['auroc']:.3f} | "
+                   f"{100 * cs['sens_at_0.5']:.1f}% / {100 * cs['fr_at_0.5']:.1f}% | {clean['mean_p_usable']:.3f} | "
+                   f"{d24['paired_delta_usable']:+.3f} | {d0['paired_delta_usable']:+.3f} |")
+    return "\n".join(out)
+
+
 def table_4() -> str:
-    """Latency table from the per-sample measurements. Devices are the ones the profiling run actually used:
-    classifiers without an explicit device default to MPS when available, so only the sklearn models run on CPU."""
-    summary = pd.read_csv(RESULTS / "empirical_computational_profile_summary.csv").set_index("Model")
-    raw = pd.read_csv(RESULTS / "empirical_latency_raw_measurements.csv")
+    """Latency table over the sequential profiling runs in results/latency_repeats (experiments/latency_repeats.sh).
+    Each cell is the median over runs of the per-run median, with the median over runs of the per-run p95 in
+    parentheses. The last column gives the range of the per-run total medians. Devices are the ones the profiling run
+    actually used: classifiers without an explicit device default to MPS when available, so only the sklearn models run on CPU."""
+    run_raw = sorted((RESULTS / "latency_repeats").glob("run*_raw.csv"))
+    if not run_raw:
+        return "(latency repeats not yet available)"
+    raws = [pd.read_csv(p) for p in run_raw]
+    summary = pd.read_csv(run_raw[0].with_name(run_raw[0].name.replace("_raw.csv", "_summary.csv"))).set_index("Model")
     mapping = {  # raw model id -> (display name, summary row name, execution device)
         "Rule_Based_SQI_Heuristic": ("Rule-Based SQI Heuristic", "Rule-Based SQI Heuristic", "CPU"),
         "Logistic_Regression_SQI": ("Logistic Regression (SQI)", "Logistic Regression (SQI)", "CPU"),
@@ -221,24 +277,31 @@ def table_4() -> str:
         "Multimodal_Fusion": ("SinglePass Multimodal Net", "SinglePass Multimodal Net", "Apple M2 (MPS)"),
         "LiquidAI_d1_3B_Neural": ("LiquidAI d1-3B (Zero-Shot)", "Liquid AI d1-3B (Real Neural Model)", "Apple M2 (MPS)"),
     }
-    out = ["| Model Architecture | Parameters | Disk Weights | Execution Device | Preproc Median (p95) | Forward Median (p95) | Total Median (p95) | Preproc Share (Median of Ratios) |",
-           "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    out = ["| Model Architecture | Parameters | Disk Weights | Execution Device | Preproc Median (p95) | Forward Median (p95) | Total Median (p95) | Total Median, Range over Runs | Preproc Share (Median of Ratios) |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
 
     def ms(x):
         return f"{x:.2f} ms"
 
     for raw_name, (label, summary_name, device) in mapping.items():
-        r = raw[raw["model"] == raw_name]
-        if r.empty:
+        runs = [r[r["model"] == raw_name] for r in raws]
+        if any(r.empty for r in runs):
             continue
-        share = float(np.median(r["pre_ms"] / r["total_ms"]) * 100)
+        per_run = [{
+            "pre": np.median(r["pre_ms"]), "pre95": np.percentile(r["pre_ms"], 95),
+            "fwd": np.median(r["fwd_ms"]), "fwd95": np.percentile(r["fwd_ms"], 95),
+            "tot": np.median(r["total_ms"]), "tot95": np.percentile(r["total_ms"], 95),
+            "share": np.median(r["pre_ms"] / r["total_ms"]) * 100,
+        } for r in runs]
+        med = {k: float(np.median([p[k] for p in per_run])) for k in per_run[0]}
+        tot_lo, tot_hi = min(p["tot"] for p in per_run), max(p["tot"] for p in per_run)
         srow = summary.loc[summary_name]
         params = f"{int(srow['Parameters']):,}"
         wmib = f"{float(srow['Weights_MiB']):.2f} MiB"
         out.append(f"| **{label}** | {params} | {wmib} | {device} | "
-                   f"{ms(np.median(r['pre_ms']))} ({ms(np.percentile(r['pre_ms'], 95))}) | "
-                   f"{ms(np.median(r['fwd_ms']))} ({ms(np.percentile(r['fwd_ms'], 95))}) | "
-                   f"{ms(np.median(r['total_ms']))} ({ms(np.percentile(r['total_ms'], 95))}) | {share:.1f}% |")
+                   f"{ms(med['pre'])} ({ms(med['pre95'])}) | "
+                   f"{ms(med['fwd'])} ({ms(med['fwd95'])}) | "
+                   f"{ms(med['tot'])} ({ms(med['tot95'])}) | {tot_lo:.2f}–{tot_hi:.2f} ms | {med['share']:.1f}% |")
     return "\n".join(out)
 
 def table_5() -> str:
@@ -362,11 +425,13 @@ def main():
         ("Table 2b", table_2b(cinc)),
         ("Table 2c", table_2c(scal)),
         ("Table 3", t3),
+        ("Table 3b", table_3b(nstdb)),
         ("Table 4", table_4()),
         ("Table 5", table_5()),
         ("Table 1d", table_1d()),
         ("Table 2d", table_2d()),
         ("Table 6", table_6()),
+        ("Table 7", table_7()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("# Manuscript tables regenerated 2026-10-12\n\n")

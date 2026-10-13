@@ -192,7 +192,8 @@ def generate_figure3_nstdb_degradation():
     ax_clean.set_yticklabels([l for _, _, l in model_plot_order], fontsize=9.5, fontweight='bold')
     ax_clean.invert_yaxis()
     ax_clean.set_xlabel("Mean P(Usable) ± 1 SD", fontsize=10.5, fontweight='bold')
-    ax_clean.set_title("A. Clean Reference Baseline (N=88)", fontsize=11.5, fontweight='bold', pad=8)
+    n_clean = int(clean_df["n_windows"].values[0])
+    ax_clean.set_title(f"A. Clean Reference Baseline (N={n_clean})", fontsize=11.5, fontweight='bold', pad=8)
     ax_clean.set_xlim([0.0, 1.05])
     ax_clean.axvline(0.5, color="black", linestyle="--", alpha=0.5)
 
@@ -208,11 +209,12 @@ def generate_figure3_nstdb_degradation():
     ax_deg.invert_xaxis()
     ax_deg.set_xlabel("Electrode Motion (em) Noise SNR (dB, degrading ->)", fontsize=11, fontweight="bold")
     ax_deg.set_ylabel("Mean Predicted Usability Probability P(Usable)", fontsize=11, fontweight="bold")
-    ax_deg.set_title("B. Active Noise Degradation Across SNR Tiers (N=44 windows per SNR tier, ±1 SD shaded)", fontsize=11.5, fontweight="bold", pad=8)
+    n_per_snr = int(comb_df["n_windows"].values[0])
+    ax_deg.set_title(f"B. Noisy Windows Across SNR Labels (N={n_per_snr} per label, ±1 SD shaded)", fontsize=11.5, fontweight="bold", pad=8)
     ax_deg.set_ylim([-0.02, 1.05])
     ax_deg.legend(frameon=True, facecolor="white", loc="best", fontsize=8.5)
 
-    fig.suptitle("Figure 3: Predicted Usability Probability on MIT-BIH Noise Stress Test Database (NSTDB Records 118 & 119)", fontsize=12.5, fontweight="bold", y=0.98)
+    fig.suptitle("Predicted Usability Probability on MIT-BIH Noise Stress Test Database (NSTDB Records 118 & 119)", fontsize=12.5, fontweight="bold", y=0.98)
     fig.tight_layout(rect=[0, 0, 1, 0.95])
 
     png_path = FIGURES_DIR / "figure_revised_nstdb_degradation_curve.png"
@@ -228,10 +230,14 @@ def generate_figure4_latency_tradeoff():
     Generates Figure 4:
     Log-scale measured end-to-end latency vs. BUT QDB AUROC.
     """
-    lat_csv = RESULTS_DIR / "empirical_computational_profile_summary.csv"
     perf_csv = RESULTS_DIR / "cohort1000_consolidated_summary.csv"
 
-    df_lat = pd.read_csv(lat_csv)
+    # Median over the three sequential latency runs (experiments/latency_repeats.sh), as in Table 4
+    run_summaries = sorted((RESULTS_DIR / "latency_repeats").glob("run*_summary.csv"))
+    if not run_summaries:
+        raise FileNotFoundError("Latency repeats not found; run experiments/latency_repeats.sh first")
+    df_lat = (pd.concat([pd.read_csv(p) for p in run_summaries])
+              .groupby("Model", as_index=False)["Total_End_to_End_Median_ms"].median())
     df_perf = pd.read_csv(perf_csv).set_index("model")
 
     fig, ax = plt.subplots(figsize=(8.5, 6.2), dpi=300)

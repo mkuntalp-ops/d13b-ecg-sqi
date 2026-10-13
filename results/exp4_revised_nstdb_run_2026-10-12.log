@@ -1,0 +1,27 @@
+================================================================================
+REVISED EXPERIMENT 4: CALIBRATED NOISE STRESS TEST (NSTDB 118 & 119)
+================================================================================
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  30%|██▉       | 210/707 [00:00<00:00, 2085.03it/s]Loading weights:  61%|██████    | 433/707 [00:00<00:00, 2162.69it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 3122.90it/s]
+[RealD1Neural] Successfully loaded weights in 14.65s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+Loaded calibrated NSTDB dataset: 308 windows.
+
+[NSTDB Degradation Summary - Combined Active Noise (Records 118 & 119)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+12    24.0         44  0.899754  ...     0.574864         0.763637    0.758434
+13    18.0         44  0.811978  ...     0.366577         0.391008    0.740581
+14    12.0         44  0.500588  ...     0.083114         0.081570    0.704199
+15     6.0         44  0.176377  ...     0.019435         0.016646    0.688471
+16     0.0         44  0.037581  ...     0.016702         0.005573    0.685717
+17    -6.0         44  0.011085  ...     0.114713         0.052800    0.762487
+
+[6 rows x 8 columns]
+
+[NSTDB Clean Control Windows (Integrity Check)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+18     NaN         44  0.967239  ...     0.684981          0.85714    0.773879
+
+[1 rows x 8 columns]
+
+[Completed] Revised NSTDB analysis saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/exp4_revised_nstdb_summary.csv
+Chart saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/figures/figure_revised_nstdb_degradation_curve.png

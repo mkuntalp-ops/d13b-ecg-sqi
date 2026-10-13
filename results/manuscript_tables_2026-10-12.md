@@ -1,6 +1,6 @@
 # Manuscript tables regenerated 2026-10-12
 
-NSTDB windows: clean control = 88, active noise = 528
+NSTDB windows: clean control = 44, active noise = 264
 
 ## Table 1
 
@@ -65,28 +65,39 @@ NSTDB windows: clean control = 88, active noise = 528
 
 ## Table 3
 
-| SNR Level | Logistic Regression (SQI) | LightGBM (SQI) | 1D CNN (Raw Signal) | 2D CNN (Image) | Multimodal Net | Rule Heuristic Baseline |
+| SNR Level | Logistic Regression (SQI) | LightGBM (SQI) | 1D CNN (Raw Signal) | 2D CNN (Image) | Multimodal Net | Rule Heuristic Baseline | d1-3B (Zero-Shot) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Clean reference (MIT-BIH base)** | 0.967 ± 0.028 | 0.975 ± 0.082 | 0.788 ± 0.326 | 0.685 ± 0.358 | 0.857 ± 0.271 | 0.740 ± 0.011 | 0.774 ± 0.106 |
+| **+24 dB (Low Noise)** | 0.900 ± 0.136 | 0.867 ± 0.217 | 0.787 ± 0.314 | 0.575 ± 0.390 | 0.764 ± 0.310 | 0.717 ± 0.026 | 0.758 ± 0.099 |
+| **+18 dB** | 0.812 ± 0.159 | 0.538 ± 0.334 | 0.742 ± 0.311 | 0.367 ± 0.390 | 0.391 ± 0.409 | 0.695 ± 0.025 | 0.741 ± 0.075 |
+| **+12 dB** | 0.501 ± 0.225 | 0.163 ± 0.169 | 0.521 ± 0.349 | 0.083 ± 0.181 | 0.082 ± 0.187 | 0.653 ± 0.038 | 0.704 ± 0.051 |
+| **+6 dB** | 0.176 ± 0.143 | 0.074 ± 0.051 | 0.231 ± 0.307 | 0.019 ± 0.078 | 0.017 ± 0.057 | 0.606 ± 0.044 | 0.688 ± 0.047 |
+| **0 dB (Equal Power)** | 0.038 ± 0.046 | 0.072 ± 0.036 | 0.105 ± 0.188 | 0.017 ± 0.064 | 0.006 ± 0.018 | 0.550 ± 0.063 | 0.686 ± 0.049 |
+| **-6 dB (Severe Noise)** | 0.011 ± 0.013 | 0.081 ± 0.060 | 0.075 ± 0.139 | 0.115 ± 0.109 | 0.053 ± 0.066 | 0.561 ± 0.072 | 0.762 ± 0.095 |
+
+## Table 3b
+
+| SNR Level | Logistic Regression (SQI) | LightGBM (SQI) | 1D CNN (Raw Signal) | 2D CNN (Image) | Multimodal Net | d1-3B (zero-shot) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Clean reference (MIT-BIH base)** | 0.966 ± 0.029 | 0.975 ± 0.067 | 0.743 ± 0.362 | 0.678 ± 0.360 | 0.836 ± 0.285 | 0.739 ± 0.012 |
-| **+24 dB (Low Noise)** | 0.921 ± 0.110 | 0.902 ± 0.170 | 0.742 ± 0.357 | 0.612 ± 0.380 | 0.774 ± 0.306 | 0.723 ± 0.024 |
-| **+18 dB** | 0.877 ± 0.139 | 0.737 ± 0.315 | 0.719 ± 0.354 | 0.498 ± 0.412 | 0.585 ± 0.411 | 0.712 ± 0.028 |
-| **+12 dB** | 0.721 ± 0.277 | 0.550 ± 0.412 | 0.609 ± 0.381 | 0.367 ± 0.412 | 0.434 ± 0.435 | 0.691 ± 0.049 |
-| **+6 dB** | 0.559 ± 0.401 | 0.505 ± 0.440 | 0.464 ± 0.422 | 0.332 ± 0.413 | 0.403 ± 0.443 | 0.668 ± 0.070 |
-| **0 dB (Equal Power)** | 0.490 ± 0.459 | 0.504 ± 0.440 | 0.401 ± 0.428 | 0.323 ± 0.408 | 0.396 ± 0.447 | 0.639 ± 0.101 |
-| **-6 dB (Severe Noise)** | 0.477 ± 0.471 | 0.509 ± 0.437 | 0.386 ± 0.429 | 0.375 ± 0.380 | 0.420 ± 0.429 | 0.645 ± 0.099 |
+| **+24 dB (Low Noise)** | -0.067 ± 0.117 | -0.107 ± 0.240 | -0.002 ± 0.073 | -0.110 ± 0.252 | -0.094 ± 0.183 | -0.015 ± 0.060 |
+| **+18 dB** | -0.155 ± 0.141 | -0.436 ± 0.344 | -0.046 ± 0.159 | -0.318 ± 0.336 | -0.466 ± 0.402 | -0.033 ± 0.060 |
+| **+12 dB** | -0.467 ± 0.214 | -0.811 ± 0.187 | -0.267 ± 0.364 | -0.602 ± 0.354 | -0.776 ± 0.307 | -0.070 ± 0.093 |
+| **+6 dB** | -0.791 ± 0.139 | -0.901 ± 0.093 | -0.557 ± 0.417 | -0.666 ± 0.366 | -0.840 ± 0.276 | -0.085 ± 0.101 |
+| **0 dB (Equal Power)** | -0.930 ± 0.055 | -0.902 ± 0.087 | -0.683 ± 0.373 | -0.668 ± 0.365 | -0.852 ± 0.271 | -0.088 ± 0.122 |
+| **-6 dB (Severe Noise)** | -0.956 ± 0.032 | -0.893 ± 0.098 | -0.713 ± 0.356 | -0.570 ± 0.353 | -0.804 ± 0.267 | -0.011 ± 0.141 |
 
 ## Table 4
 
-| Model Architecture | Parameters | Disk Weights | Execution Device | Preproc Median (p95) | Forward Median (p95) | Total Median (p95) | Preproc Share (Median of Ratios) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Rule-Based SQI Heuristic** | 0 | 0.00 MiB | CPU | 2.79 ms (3.28 ms) | 0.23 ms (0.25 ms) | 3.03 ms (3.51 ms) | 92.3% |
-| **Logistic Regression (SQI)** | 14 | 0.01 MiB | CPU | 1.40 ms (1.52 ms) | 0.19 ms (0.25 ms) | 1.59 ms (1.74 ms) | 87.9% |
-| **LightGBM (SQI)** | 1,092 | 0.14 MiB | CPU | 1.45 ms (1.78 ms) | 0.22 ms (0.35 ms) | 1.68 ms (2.03 ms) | 87.4% |
-| **Independent SQI MLP** | 3,201 | 0.01 MiB | Apple M2 (MPS) | 1.44 ms (1.87 ms) | 1.18 ms (1.51 ms) | 2.64 ms (3.22 ms) | 55.7% |
-| **1D CNN (Raw Signal)** | 167,489 | 0.64 MiB | Apple M2 (MPS) | 0.00 ms (0.00 ms) | 1.50 ms (2.10 ms) | 1.50 ms (2.10 ms) | 0.0% |
-| **2D CNN (Rendered Image)** | 245,697 | 0.94 MiB | Apple M2 (MPS) | 66.49 ms (152.10 ms) | 4.86 ms (7.31 ms) | 71.43 ms (156.88 ms) | 93.2% |
-| **SinglePass Multimodal Net** | 131,969 | 0.47 MiB | Apple M2 (MPS) | 72.15 ms (153.65 ms) | 5.38 ms (6.04 ms) | 77.23 ms (159.15 ms) | 93.0% |
-| **LiquidAI d1-3B (Zero-Shot)** | 3,120,000,000 | 5958.00 MiB | Apple M2 (MPS) | 70.72 ms (201.70 ms) | 845.10 ms (857.15 ms) | 916.30 ms (1048.48 ms) | 7.7% |
+| Model Architecture | Parameters | Disk Weights | Execution Device | Preproc Median (p95) | Forward Median (p95) | Total Median (p95) | Total Median, Range over Runs | Preproc Share (Median of Ratios) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Rule-Based SQI Heuristic** | 0 | 0.00 MiB | CPU | 2.58 ms (3.04 ms) | 0.22 ms (0.24 ms) | 2.81 ms (3.27 ms) | 2.60–2.83 ms | 92.3% |
+| **Logistic Regression (SQI)** | 14 | 0.01 MiB | CPU | 1.34 ms (1.52 ms) | 0.18 ms (0.22 ms) | 1.52 ms (1.73 ms) | 1.51–1.54 ms | 88.4% |
+| **LightGBM (SQI)** | 1,092 | 0.14 MiB | CPU | 1.32 ms (1.49 ms) | 0.17 ms (0.25 ms) | 1.48 ms (1.72 ms) | 1.48–1.55 ms | 88.4% |
+| **Independent SQI MLP** | 3,201 | 0.01 MiB | Apple M2 (MPS) | 1.38 ms (1.76 ms) | 1.13 ms (1.77 ms) | 2.53 ms (3.62 ms) | 2.49–2.54 ms | 54.5% |
+| **1D CNN (Raw Signal)** | 167,489 | 0.64 MiB | Apple M2 (MPS) | 0.00 ms (0.00 ms) | 1.47 ms (2.28 ms) | 1.47 ms (2.28 ms) | 1.36–1.49 ms | 0.0% |
+| **2D CNN (Rendered Image)** | 245,697 | 0.94 MiB | Apple M2 (MPS) | 60.23 ms (137.53 ms) | 5.12 ms (5.63 ms) | 65.24 ms (142.53 ms) | 64.74–66.39 ms | 92.4% |
+| **SinglePass Multimodal Net** | 131,969 | 0.47 MiB | Apple M2 (MPS) | 61.41 ms (128.75 ms) | 5.56 ms (6.10 ms) | 67.09 ms (134.26 ms) | 66.59–69.04 ms | 92.4% |
+| **LiquidAI d1-3B (Zero-Shot)** | 3,120,000,000 | 5958.00 MiB | Apple M2 (MPS) | 63.37 ms (155.48 ms) | 828.47 ms (834.71 ms) | 891.19 ms (984.62 ms) | 891.06–893.27 ms | 7.1% |
 
 ## Table 5
 
@@ -141,4 +152,12 @@ NSTDB windows: clean control = 88, active noise = 528
 | **1D CNN (Raw Signal)** | 0.643–0.825 | 0.009 | 0.066 |
 | **2D CNN (Rendered Image)** | 0.709–0.903 | 0.008 | 0.064 |
 | **SinglePass Multimodal Net** | 0.500–0.707 | 0.091 | 0.015 |
+
+## Table 7
+
+| Configuration | BUT QDB AUROC [95% CI] | BUT QDB Sens. / FR at τ = 0.50 | CinC AUROC | CinC Sens. / FR at τ = 0.50 | NSTDB clean P(usable) | NSTDB paired change, +24 dB | NSTDB paired change, 0 dB |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Primary (SQI text + image)** | 0.852 [0.717 – 0.944] | 53.2% / 4.0% | 0.636 | 100.0% / 100.0% | 0.774 | -0.015 | -0.088 |
+| **Image only (no SQI text)** | 0.913 [0.855 – 0.972] | 99.7% / 81.3% | 0.686 | 82.7% / 78.7% | 0.462 | -0.038 | -0.043 |
+| **Reworded question (SQI text + image)** | 0.869 [0.732 – 0.955] | 17.5% / 0.5% | 0.631 | 100.0% / 98.7% | 0.870 | -0.016 | -0.071 |
 
