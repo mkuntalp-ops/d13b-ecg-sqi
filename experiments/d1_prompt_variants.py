@@ -44,6 +44,7 @@ PRIMARY_COL = "prob_LiquidAI_d1_3B_Neural"
 OUT_VAL = RESULTS / "d1_prompt_validation.csv"
 OUT_PRED = RESULTS / "d1_prompt_variants_predictions.csv"
 OUT_SUM = RESULTS / "d1_prompt_variants_summary.csv"
+REUSE_BUT_FROM = RESULTS / "_backup_pre_render_fix_2026-10-13" / "d1_prompt_variants_predictions.csv"
 
 ALT_QUESTION = {
     "usability": {
@@ -121,10 +122,19 @@ def main():
     pred_rows.append(pd.DataFrame({"dataset": "NSTDB_paired", "segment_id": nst_p["segment_id"], "label": np.nan,
                                    "variant": "primary", "prob_unusable": 1.0 - nst_p["p_usable_d1_3B"].values}))
 
+    # --reuse-but takes the BUT QDB variant predictions from the pre-fix run: BUT QDB images and SQIs were
+    # unchanged by the 2026-10-13 renderer fix, so only CinC and NSTDB need recomputation
+    reuse_but = None
+    if "--reuse-but" in sys.argv:
+        reuse_but = pd.read_csv(REUSE_BUT_FROM).query("dataset == 'BUT_QDB' and variant != 'primary'")
     for name, df, label in [("BUT_QDB", but, "label"), ("CinC_2011_SetA", cinc, "label"), ("NSTDB_paired", nstdb, None)]:
         src = {"BUT_QDB": but, "CinC_2011_SetA": cinc, "NSTDB_paired": nstdb}[name]
         for variant in ["image_only", "alt_wording"]:
-            p = score(d1, src, variant)
+            if name == "BUT_QDB" and reuse_but is not None:
+                prev = reuse_but[reuse_but["variant"] == variant].set_index("segment_id")["prob_unusable"]
+                p = prev.loc[src["segment_id"]].values.astype(float)
+            else:
+                p = score(d1, src, variant)
             pred_rows.append(pd.DataFrame({"dataset": name, "segment_id": src["segment_id"].values,
                                            "label": src[label].values if label else np.nan,
                                            "variant": variant, "prob_unusable": p}))

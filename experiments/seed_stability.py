@@ -104,17 +104,24 @@ def run_transfer(seed, df, sigs, imgs, X, cinc_df):
 
 
 def main():
+    # --transfer-only keeps the stored BUT QDB CV rows and recomputes only the CinC rows (used after the
+    # 2026-10-13 renderer fix, which changed CinC images but not BUT QDB images or features)
+    transfer_only = "--transfer-only" in sys.argv
     df = pd.read_csv(COHORT)
     cinc_df = pd.read_csv(CINC)
     X = np.nan_to_num(df[SQI_FEATURE_NAMES].values.astype(float))
     sigs = [np.load(p) for p in df["signal_path"]]
     imgs = df["image_path"].tolist()
+    stored_cv = pd.read_csv(OUT).query("setting == 'BUT_QDB_CV_pooled'") if transfer_only else None
     rows = []
     for seed in SEEDS:
-        oof = run_cv(seed, df, sigs, imgs, X)
-        for m in MODELS:
-            rows.append({"seed": seed, "setting": "BUT_QDB_CV_pooled", "model": m,
-                         **metrics(df["label"].values, oof[m])})
+        if transfer_only:
+            rows.extend(stored_cv[stored_cv["seed"] == seed].to_dict("records"))
+        else:
+            oof = run_cv(seed, df, sigs, imgs, X)
+            for m in MODELS:
+                rows.append({"seed": seed, "setting": "BUT_QDB_CV_pooled", "model": m,
+                             **metrics(df["label"].values, oof[m])})
         tr = run_transfer(seed, df, sigs, imgs, X, cinc_df)
         for m in MODELS:
             rows.append({"seed": seed, "setting": "CinC_transfer", "model": m,

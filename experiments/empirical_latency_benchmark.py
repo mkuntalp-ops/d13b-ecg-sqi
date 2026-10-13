@@ -32,6 +32,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from config import RESULTS_DIR, TARGET_FS, DEFAULT_WINDOW_SEC
 from features.sqi_extractor import SQI_FEATURE_NAMES, extract_sqi_features
 from data.ecg_rendering import render_ecg_image
+from data.units import to_millivolts
 from models.tabular_baselines import SQILogisticRegression, SQIGradientBoosting
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
@@ -66,7 +67,7 @@ def run_empirical_profiling(n_samples: int = 25):
     total_times = []
 
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         
         # Preprocessing: SQI extraction + Image load & ink density array conversion
         t0_pre = time.perf_counter()
@@ -122,7 +123,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     fwd_times, pre_times, total_times = [], [], []
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
         x_vec = np.array([[sqis[k] for k in SQI_FEATURE_NAMES]])
@@ -179,7 +180,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     fwd_times, pre_times, total_times = [], [], []
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
         x_vec = np.array([[sqis[k] for k in SQI_FEATURE_NAMES]])
@@ -228,7 +229,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     fwd_times, pre_times, total_times = [], [], []
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
         x_vec = np.array([[sqis[k] for k in SQI_FEATURE_NAMES]])
@@ -281,7 +282,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     fwd_times, pre_times, total_times = [], [], []
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         # Direct array slicing / normalization
         inp_sig = [raw_sig]
@@ -334,7 +335,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     fwd_times, pre_times, total_times = [], [], []
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         # Full rendering from raw signal into PIL image
         img = render_ecg_image(raw_sig, TARGET_FS, dpi=100)
@@ -387,7 +388,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     fwd_times, pre_times, total_times = [], [], []
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         img = render_ecg_image(raw_sig, TARGET_FS, dpi=100)
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
@@ -454,7 +455,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     fwd_times, pre_times, total_times = [], [], []
     for idx, row in eval_df.iterrows():
-        raw_sig = np.load(row["signal_path"])
+        raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         
         # Preprocessing: Matplotlib render + SQI prompt format
         t0_pre = time.perf_counter()

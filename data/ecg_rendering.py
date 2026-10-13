@@ -26,7 +26,7 @@ def render_ecg_image(
     Renders an ECG signal into a standard PIL Image.
     
     Args:
-        ecg: 1D numpy array of ECG amplitudes (in mV or standard units)
+        ecg: 1D numpy array of ECG amplitudes in millivolts (convert with data.units.to_millivolts first)
         fs: sampling frequency (Hz)
         dpi: resolution dots per inch
         fig_size: (width_inches, height_inches)
@@ -34,13 +34,14 @@ def render_ecg_image(
         line_color: color of the ECG trace
         grid_style: 'clinical' (traditional ECG pink/red grid), 'gray', or 'none'
         y_limits: optional fixed vertical bounds (vmin, vmax)
+
+    The vertical axis is scaled per strip (1st-99th percentile plus a margin, at least 1 mV), so the
+    image is not at a fixed 10 mm/mV gain. An earlier version guessed the unit from the amplitude
+    (|x| > 20 treated as microvolts); that divided millivolt signals with large artefacts by 1000 and
+    drew them as flat lines, so the guess was removed (2026-10-13).
     """
-    ecg = np.asarray(ecg).flatten()
-    # Normalize units: if signal amplitude is in microvolts (e.g. BUT QDB > 20 uV), convert to mV
-    abs_max = np.max(np.abs(ecg))
-    if abs_max > 20.0:
-        ecg = ecg / 1000.0
-        
+    ecg = np.asarray(ecg).flatten()  # keep the caller dtype (float32 caches) so images are reproducible
+
     duration = len(ecg) / fs
     t = np.linspace(0, duration, len(ecg), endpoint=False)
     

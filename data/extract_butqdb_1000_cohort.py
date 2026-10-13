@@ -163,7 +163,7 @@ def process_single_window(row: dict) -> dict:
     np.save(sig_path, resampled_signal)
 
     # Render & save image
-    img = render_ecg_image(resampled_signal, TARGET_FS, dpi=100)
+    img = render_ecg_image(to_millivolts(resampled_signal, unit).astype(np.float32), TARGET_FS, dpi=100)
     img.save(img_path)
 
     return {

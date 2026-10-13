@@ -270,7 +270,7 @@ def generate_figure4_latency_tradeoff():
 
     # Explanatory text annotation
     ax.text(0.03, 0.05, 
-            "* Latencies measured on Apple M2 (24 GB RAM) via synchronized torch.mps.synchronize().\n"
+            "* Latencies measured on Apple M4 (Mac mini, 16 GB) via synchronized torch.mps.synchronize().\n"
             "  1D CNN operates on standardized cached signal; 2D and multimodal models include visual rendering (Table 4).",
             transform=ax.transAxes, fontsize=8.5, fontstyle="italic",
             bbox=dict(boxstyle="round,pad=0.5", facecolor="#f8f9fa", edgecolor="#cccccc", alpha=0.9))

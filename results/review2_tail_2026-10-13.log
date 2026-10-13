@@ -1,0 +1,109 @@
+== Nested and source-selected thresholds
+[nested] outer fold 0 done
+[nested] outer fold 1 done
+[nested] outer fold 2 done
+[nested] outer fold 3 done
+[nested] outer fold 4 done
+                   model           rule  sens   fpr  posthoc_sens  posthoc_fpr  thr_min  thr_max
+           1D_CNN_RawECG      fixed_0.5 0.768 0.007         0.768        0.007    0.500    0.500
+           1D_CNN_RawECG   target1_fpr5 0.973 0.035         0.960        0.035    0.002    0.071
+           1D_CNN_RawECG target2_sens80 0.815 0.012         0.801        0.013    0.014    0.571
+           1D_CNN_RawECG         youden 0.976 0.035         0.960        0.035    0.001    0.071
+            2D_CNN_Image      fixed_0.5 0.788 0.009         0.788        0.009    0.500    0.500
+            2D_CNN_Image   target1_fpr5 0.946 0.047         0.943        0.047    0.036    0.232
+            2D_CNN_Image target2_sens80 0.768 0.009         0.801        0.009    0.258    0.674
+            2D_CNN_Image         youden 0.919 0.052         0.943        0.047    0.015    0.073
+     Independent_SQI_MLP      fixed_0.5 0.778 0.087         0.778        0.087    0.500    0.500
+     Independent_SQI_MLP   target1_fpr5 0.653 0.048         0.700        0.049    0.691    0.900
+     Independent_SQI_MLP target2_sens80 0.886 0.123         0.805        0.093    0.051    0.514
+     Independent_SQI_MLP         youden 0.663 0.091         0.879        0.125    0.196    0.915
+            LightGBM_SQI      fixed_0.5 0.734 0.041         0.734        0.041    0.500    0.500
+            LightGBM_SQI   target1_fpr5 0.704 0.037         0.805        0.048    0.407    0.658
+            LightGBM_SQI target2_sens80 0.929 0.095         0.805        0.048    0.048    0.374
+            LightGBM_SQI         youden 0.626 0.057         0.960        0.147    0.058    0.912
+   LiquidAI_d1_3B_Neural      fixed_0.5 0.532 0.040         0.532        0.040    0.500    0.500
+   LiquidAI_d1_3B_Neural   target1_fpr5 0.532 0.040         0.532        0.040    0.500    0.500
+   LiquidAI_d1_3B_Neural target2_sens80 0.761 0.343         0.801        0.327    0.349    0.407
+   LiquidAI_d1_3B_Neural         youden 0.630 0.147         0.694        0.153    0.438    0.500
+ Logistic_Regression_SQI      fixed_0.5 0.764 0.063         0.764        0.063    0.500    0.500
+ Logistic_Regression_SQI   target1_fpr5 0.774 0.067         0.741        0.048    0.346    0.735
+ Logistic_Regression_SQI target2_sens80 0.875 0.131         0.801        0.083    0.071    0.371
+ Logistic_Regression_SQI         youden 0.731 0.087         0.832        0.092    0.243    0.928
+       Multimodal_Fusion      fixed_0.5 0.636 0.019         0.636        0.019    0.500    0.500
+       Multimodal_Fusion   target1_fpr5 0.700 0.053         0.690        0.047    0.037    0.353
+       Multimodal_Fusion target2_sens80 0.781 0.111         0.801        0.065    0.001    0.376
+       Multimodal_Fusion         youden 0.855 0.079         0.970        0.119    0.021    0.468
+Rule_Based_SQI_Heuristic      fixed_0.5 0.660 0.012         0.660        0.012    0.500    0.500
+Rule_Based_SQI_Heuristic   target1_fpr5 0.848 0.053         0.845        0.049    0.352    0.396
+Rule_Based_SQI_Heuristic target2_sens80 0.690 0.032         0.805        0.041    0.376    0.489
+Rule_Based_SQI_Heuristic         youden 0.902 0.085         0.906        0.061    0.329    0.352
+                   model           rule                                  dataset  threshold  sens   fpr
+ Logistic_Regression_SQI   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.564 0.741 0.048
+ Logistic_Regression_SQI   target1_fpr5               CinC2011 first-N (lead II)      0.564 0.747 1.000
+ Logistic_Regression_SQI   target1_fpr5                CinC2017 all (record max)      0.564 0.745 0.157
+ Logistic_Regression_SQI target2_sens80       BUT_QDB pooled OOF (selection set)      0.393 0.801 0.083
+ Logistic_Regression_SQI target2_sens80               CinC2011 first-N (lead II)      0.393 0.747 1.000
+ Logistic_Regression_SQI target2_sens80                CinC2017 all (record max)      0.393 0.835 0.255
+            LightGBM_SQI   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.360 0.805 0.048
+            LightGBM_SQI   target1_fpr5               CinC2011 first-N (lead II)      0.360 0.413 0.013
+            LightGBM_SQI   target1_fpr5                CinC2017 all (record max)      0.360 0.795 0.192
+            LightGBM_SQI target2_sens80       BUT_QDB pooled OOF (selection set)      0.360 0.805 0.048
+            LightGBM_SQI target2_sens80               CinC2011 first-N (lead II)      0.360 0.413 0.013
+            LightGBM_SQI target2_sens80                CinC2017 all (record max)      0.360 0.795 0.192
+     Independent_SQI_MLP   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.725 0.700 0.049
+     Independent_SQI_MLP   target1_fpr5               CinC2011 first-N (lead II)      0.725 0.000 0.000
+     Independent_SQI_MLP   target1_fpr5                CinC2017 all (record max)      0.725 0.745 0.165
+     Independent_SQI_MLP target2_sens80       BUT_QDB pooled OOF (selection set)      0.434 0.805 0.093
+     Independent_SQI_MLP target2_sens80               CinC2011 first-N (lead II)      0.434 0.000 0.000
+     Independent_SQI_MLP target2_sens80                CinC2017 all (record max)      0.434 0.881 0.262
+           1D_CNN_RawECG   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.008 0.960 0.035
+           1D_CNN_RawECG   target1_fpr5               CinC2011 first-N (lead II)      0.008 0.707 0.280
+           1D_CNN_RawECG   target1_fpr5                CinC2017 all (record max)      0.008 0.996 0.545
+           1D_CNN_RawECG target2_sens80       BUT_QDB pooled OOF (selection set)      0.332 0.801 0.013
+           1D_CNN_RawECG target2_sens80               CinC2011 first-N (lead II)      0.332 0.627 0.160
+           1D_CNN_RawECG target2_sens80                CinC2017 all (record max)      0.332 0.935 0.369
+            2D_CNN_Image   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.056 0.943 0.047
+            2D_CNN_Image   target1_fpr5               CinC2011 first-N (lead II)      0.056 0.520 0.107
+            2D_CNN_Image   target1_fpr5                CinC2017 all (record max)      0.056 0.964 0.504
+            2D_CNN_Image target2_sens80       BUT_QDB pooled OOF (selection set)      0.489 0.801 0.009
+            2D_CNN_Image target2_sens80               CinC2011 first-N (lead II)      0.489 0.173 0.040
+            2D_CNN_Image target2_sens80                CinC2017 all (record max)      0.489 0.899 0.340
+       Multimodal_Fusion   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.175 0.690 0.047
+       Multimodal_Fusion   target1_fpr5               CinC2011 first-N (lead II)      0.175 0.253 0.000
+       Multimodal_Fusion   target1_fpr5                CinC2017 all (record max)      0.175 0.928 0.431
+       Multimodal_Fusion target2_sens80       BUT_QDB pooled OOF (selection set)      0.105 0.801 0.065
+       Multimodal_Fusion target2_sens80               CinC2011 first-N (lead II)      0.105 0.253 0.000
+       Multimodal_Fusion target2_sens80                CinC2017 all (record max)      0.105 0.946 0.462
+Rule_Based_SQI_Heuristic   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.376 0.845 0.049
+Rule_Based_SQI_Heuristic   target1_fpr5               CinC2011 first-N (lead II)      0.376 1.000 1.000
+Rule_Based_SQI_Heuristic   target1_fpr5                CinC2017 all (record max)      0.376 0.529 0.062
+Rule_Based_SQI_Heuristic target2_sens80       BUT_QDB pooled OOF (selection set)      0.407 0.805 0.041
+Rule_Based_SQI_Heuristic target2_sens80               CinC2011 first-N (lead II)      0.407 0.987 0.987
+Rule_Based_SQI_Heuristic target2_sens80                CinC2017 all (record max)      0.407 0.435 0.052
+   LiquidAI_d1_3B_Neural   target1_fpr5       BUT_QDB pooled OOF (selection set)      0.500 0.532 0.040
+   LiquidAI_d1_3B_Neural   target1_fpr5               CinC2011 first-N (lead II)      0.500 1.000 1.000
+   LiquidAI_d1_3B_Neural   target1_fpr5 CinC2017 balanced d1 subset (record max)      0.500 0.198 0.040
+   LiquidAI_d1_3B_Neural target2_sens80       BUT_QDB pooled OOF (selection set)      0.378 0.801 0.327
+   LiquidAI_d1_3B_Neural target2_sens80               CinC2011 first-N (lead II)      0.378 1.000 1.000
+   LiquidAI_d1_3B_Neural target2_sens80 CinC2017 balanced d1 subset (record max)      0.378 0.406 0.144
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/threshold_transfer_summary.csv
+== Extended latency (alone)
+[latency_extended] run 1 done
+[latency_extended] run 2 done
+[latency_extended] run 3 done
+                              median_over_runs_ms  min_run_ms  max_run_ms  p95_median_over_runs_ms
+measurement                                                                                       
+convert_ms                                   0.01        0.01        0.01                     0.02
+resample_ms                                  0.10        0.09        0.10                     0.12
+sqi_ms                                       1.72        1.70        1.76                     1.95
+render_matplotlib_ms                        58.41       58.18       59.91                   121.16
+render_raster_ms                             0.63        0.62        0.68                     0.72
+cnn1d_forward_cpu_ms                         1.30        1.27        1.35                     1.49
+cnn2d_forward_cpu_ms                         5.11        5.10        7.13                     5.61
+mm_forward_cpu_ms                            4.39        4.32        5.58                     5.10
+cnn1d_raw_to_decision_cpu_ms                 1.41        1.39        1.46                     1.61
+cnn1d_forward_mps_ms                         2.80        2.75        2.80                     3.24
+cnn2d_forward_mps_ms                         2.92        2.90        3.75                     3.87
+mm_forward_mps_ms                            3.17        3.15        3.98                     4.48
+cnn1d_raw_to_decision_mps_ms                 2.90        2.85        2.94                     3.36
+review2 tail: done

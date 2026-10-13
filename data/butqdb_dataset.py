@@ -182,7 +182,7 @@ class BUTQDBManager:
                         
                         # Render and save image
                         img_path = cache_images_dir / f"{seg_id}.png"
-                        img = render_ecg_image(resampled_signal, target_fs, dpi=100)
+                        img = render_ecg_image(to_millivolts(resampled_signal, "uV").astype(np.float32), target_fs, dpi=100)
                         img.save(img_path)
                         
                         record_entry = {

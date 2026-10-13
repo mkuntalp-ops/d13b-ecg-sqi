@@ -1,0 +1,239 @@
+== d1 CinC (BUT QDB outputs exist and are skipped)
+
+=======================================================
+RUNNING REAL d1-3B NEURAL INFERENCE ON: BUT_QDB_1000
+=======================================================
+Dataset total samples: 1047
+Found 1047 already completed samples. Resuming...
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  48%|████▊     | 337/707 [00:00<00:00, 3318.15it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 3716.87it/s]
+[RealD1Neural] Successfully loaded weights in 23.53s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+Finished inference on BUT_QDB_1000. Results saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_d1_neural_cohort1000_predictions.csv
+
+=======================================================
+RUNNING REAL d1-3B NEURAL INFERENCE ON: CinC_2011_SetA
+=======================================================
+Dataset total samples: 150
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  15%|█▌        | 108/707 [00:00<00:00, 1064.73it/s]Loading weights:  36%|███▌      | 255/707 [00:00<00:00, 1298.04it/s]Loading weights:  62%|██████▏   | 438/707 [00:00<00:00, 1520.35it/s]Loading weights:  87%|████████▋ | 617/707 [00:00<00:00, 1624.77it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 1692.09it/s]
+[RealD1Neural] Successfully loaded weights in 52.32s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+[CinC_2011_SetA] Processed 25/150 (16.7%) | Rate: 0.6 samp/s | Est remaining: 3.4 min | Last P(unusable): 0.9363
+[CinC_2011_SetA] Processed 50/150 (33.3%) | Rate: 0.8 samp/s | Est remaining: 2.2 min | Last P(unusable): 0.5622
+[CinC_2011_SetA] Processed 75/150 (50.0%) | Rate: 0.8 samp/s | Est remaining: 1.6 min | Last P(unusable): 0.9859
+[CinC_2011_SetA] Processed 100/150 (66.7%) | Rate: 0.8 samp/s | Est remaining: 1.0 min | Last P(unusable): 0.8670
+[CinC_2011_SetA] Processed 125/150 (83.3%) | Rate: 0.9 samp/s | Est remaining: 0.5 min | Last P(unusable): 0.9859
+[CinC_2011_SetA] Processed 150/150 (100.0%) | Rate: 0.9 samp/s | Est remaining: 0.0 min | Last P(unusable): 0.8741
+Finished inference on CinC_2011_SetA. Results saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_d1_neural_cinc2011_predictions.csv
+== CinC transfer (Table 2, 2b)
+================================================================================
+INDEPENDENT TRANSFER BENCHMARK: CINC 2011 SET A (LOCKED THRESHOLDS)
+================================================================================
+Loading development set from: /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/manifest_butqdb_1000_cohort.csv
+[CinC 2011] Loading cached segments from /Volumes/KIOXIA/Projects/d13b-ecg-sqi/cache/datasets/cinc2011/cinc2011_segments_lead1_max150.csv
+Transfer Target: 150 records (Acceptable=75, Unacceptable=75)
+
+[Transfer] Training supervised models on BUT QDB...
+
+Predicting on CinC 2011 Set A...
+Loading verified d1 neural predictions from /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/raw_d1_neural_cinc2011_predictions.csv...
+Predictions saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_expanded_predictions.csv
+Summary table saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc2011_expanded_transfer_summary.csv
+
+==========================================================================================
+CINC 2011 SET A TRANSFER BENCHMARK SUMMARY (150 RECORDS)
+==========================================================================================
+                   model  transfer_auroc  transfer_auprc  bal_acc_fixed  sens_fixed  false_reject_fixed
+ Logistic_Regression_SQI        0.383289        0.450801       0.373333    0.746667            1.000000
+            LightGBM_SQI        0.730756        0.791919       0.540000    0.093333            0.013333
+     Independent_SQI_MLP        0.616711        0.626667       0.500000    0.000000            0.000000
+           1D_CNN_RawECG        0.726044        0.682530       0.733333    0.613333            0.146667
+            2D_CNN_Image        0.745600        0.747564       0.566667    0.173333            0.040000
+       Multimodal_Fusion        0.626667        0.626667       0.626667    0.253333            0.000000
+Rule_Based_SQI_Heuristic        0.699556        0.758950       0.560000    0.960000            0.840000
+   LiquidAI_d1_3B_Neural        0.636089        0.705768       0.500000    1.000000            1.000000
+== CinC random subsets (Table 2d)
+[lists] acceptable 773, unacceptable 225
+[draws] 6 sets, 565 unique records to score
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:127: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  k_val = float(kurtosis(ecg, fisher=True)) if len(ecg) > 4 else 0.0
+/Volumes/KIOXIA/Projects/d13b-ecg-sqi/features/sqi_extractor.py:128: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  s_val = float(skew(ecg)) if len(ecg) > 4 else 0.0
+[extract] 565 of 565 records available
+[fit] cohort models trained (seed 42)
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  27%|██▋       | 190/707 [00:00<00:00, 1817.93it/s]Loading weights:  66%|██████▌   | 467/707 [00:00<00:00, 2363.94it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 2509.16it/s]
+[RealD1Neural] Successfully loaded weights in 14.49s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+            draw                    model  auroc    ap  brier  sens_at_0.5  fr_at_0.5
+first_N_original  Logistic_Regression_SQI  0.383 0.451  0.627        0.747      1.000
+first_N_original             LightGBM_SQI  0.731 0.792  0.320        0.093      0.013
+first_N_original      Independent_SQI_MLP  0.617 0.627  0.500        0.000      0.000
+first_N_original            1D_CNN_RawECG  0.726 0.683  0.266        0.613      0.147
+first_N_original             2D_CNN_Image  0.746 0.748  0.356        0.173      0.040
+first_N_original        Multimodal_Fusion  0.627 0.627  0.373        0.253      0.000
+first_N_original Rule_Based_SQI_Heuristic  0.700 0.759  0.239        0.960      0.840
+first_N_original    LiquidAI_d1_3B_Neural  0.636 0.706  0.388        1.000      1.000
+   random_seed42  Logistic_Regression_SQI  0.291 0.419  0.693        0.613      1.000
+   random_seed42             LightGBM_SQI  0.710 0.750  0.304        0.160      0.067
+   random_seed42      Independent_SQI_MLP  0.703 0.707  0.500        0.000      0.000
+   random_seed42            1D_CNN_RawECG  0.690 0.648  0.266        0.667      0.213
+   random_seed42             2D_CNN_Image  0.759 0.747  0.326        0.187      0.080
+   random_seed42        Multimodal_Fusion  0.700 0.700  0.300        0.400      0.000
+   random_seed42 Rule_Based_SQI_Heuristic  0.727 0.810  0.234        0.920      0.907
+   random_seed42    LiquidAI_d1_3B_Neural  0.723 0.794  0.382        1.000      1.000
+    random_seed1  Logistic_Regression_SQI  0.333 0.430  0.647        0.707      1.000
+    random_seed1             LightGBM_SQI  0.746 0.768  0.311        0.187      0.053
+    random_seed1      Independent_SQI_MLP  0.660 0.660  0.500        0.000      0.000
+    random_seed1            1D_CNN_RawECG  0.679 0.607  0.276        0.680      0.253
+    random_seed1             2D_CNN_Image  0.762 0.738  0.353        0.187      0.067
+    random_seed1        Multimodal_Fusion  0.640 0.634  0.360        0.293      0.013
+    random_seed1 Rule_Based_SQI_Heuristic  0.671 0.746  0.245        0.933      0.853
+    random_seed1    LiquidAI_d1_3B_Neural  0.597 0.690  0.405        1.000      1.000
+    random_seed2  Logistic_Regression_SQI  0.297 0.422  0.693        0.613      1.000
+    random_seed2             LightGBM_SQI  0.821 0.833  0.269        0.173      0.040
+    random_seed2      Independent_SQI_MLP  0.698 0.695  0.500        0.000      0.000
+    random_seed2            1D_CNN_RawECG  0.816 0.763  0.199        0.760      0.173
+    random_seed2             2D_CNN_Image  0.884 0.873  0.276        0.253      0.027
+    random_seed2        Multimodal_Fusion  0.707 0.707  0.300        0.400      0.000
+    random_seed2 Rule_Based_SQI_Heuristic  0.737 0.811  0.235        0.933      0.867
+    random_seed2    LiquidAI_d1_3B_Neural  0.659 0.761  0.400        0.987      1.000
+    random_seed3  Logistic_Regression_SQI  0.372 0.443  0.613        0.773      1.000
+    random_seed3             LightGBM_SQI  0.771 0.803  0.296        0.200      0.027
+    random_seed3      Independent_SQI_MLP  0.628 0.633  0.500        0.000      0.000
+    random_seed3            1D_CNN_RawECG  0.692 0.614  0.304        0.587      0.227
+    random_seed3             2D_CNN_Image  0.788 0.771  0.323        0.280      0.053
+    random_seed3        Multimodal_Fusion  0.620 0.620  0.380        0.240      0.000
+    random_seed3 Rule_Based_SQI_Heuristic  0.639 0.717  0.248        0.880      0.867
+    random_seed3    LiquidAI_d1_3B_Neural  0.583 0.704  0.402        1.000      1.000
+    random_seed4  Logistic_Regression_SQI  0.322 0.428  0.667        0.667      1.000
+    random_seed4             LightGBM_SQI  0.700 0.738  0.335        0.080      0.027
+    random_seed4      Independent_SQI_MLP  0.663 0.658  0.500        0.000      0.000
+    random_seed4            1D_CNN_RawECG  0.660 0.610  0.299        0.640      0.267
+    random_seed4             2D_CNN_Image  0.713 0.702  0.365        0.173      0.107
+    random_seed4        Multimodal_Fusion  0.673 0.673  0.333        0.333      0.000
+    random_seed4 Rule_Based_SQI_Heuristic  0.644 0.740  0.250        0.960      0.907
+    random_seed4    LiquidAI_d1_3B_Neural  0.688 0.763  0.395        1.000      1.000
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc_random_draws_summary.csv
+== CinC subsets x seeds (Table 6)
+[fit] cohort models trained (seed 42)
+[seed 42] done
+[fit] cohort models trained (seed 42)
+[seed 1] done
+[fit] cohort models trained (seed 42)
+[seed 2] done
+[fit] cohort models trained (seed 42)
+[seed 3] done
+[fit] cohort models trained (seed 42)
+[seed 4] done
+
+AUROC by model: mean SD across seeds (within a subset), and SD across subsets (within a seed):
+  Logistic_Regression_SQI    seed-SD 0.000 | subset-SD 0.032
+  LightGBM_SQI               seed-SD 0.000 | subset-SD 0.049
+  Independent_SQI_MLP        seed-SD 0.007 | subset-SD 0.033
+  1D_CNN_RawECG              seed-SD 0.009 | subset-SD 0.066
+  2D_CNN_Image               seed-SD 0.007 | subset-SD 0.064
+  Multimodal_Fusion          seed-SD 0.091 | subset-SD 0.015
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/cinc_draws_by_seed_summary.csv
+== Seed stability, CinC rows (Table 5)
+[seed 1] CinC transfer done
+[saved] seed 1 -> /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/seed_stability_2026-10-12.csv
+[seed 2] CinC transfer done
+[saved] seed 2 -> /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/seed_stability_2026-10-12.csv
+[seed 3] CinC transfer done
+[saved] seed 3 -> /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/seed_stability_2026-10-12.csv
+[seed 4] CinC transfer done
+[saved] seed 4 -> /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/seed_stability_2026-10-12.csv
+ seed           setting      model  auroc    ap  brier  sens_at_0.5  fr_at_0.5  bal_acc_at_0.5
+    1 BUT_QDB_CV_pooled     1D_CNN  0.971 0.944  0.073        0.737      0.013           0.862
+    1 BUT_QDB_CV_pooled     2D_CNN  0.984 0.964  0.052        0.828      0.020           0.904
+    1 BUT_QDB_CV_pooled Multimodal  0.967 0.927  0.079        0.660      0.023           0.819
+    1     CinC_transfer     1D_CNN  0.715 0.672  0.273        0.627      0.200           0.713
+    1     CinC_transfer     2D_CNN  0.763 0.761  0.318        0.413      0.040           0.687
+    1     CinC_transfer Multimodal  0.500 0.500  0.500        1.000      1.000           0.500
+    2 BUT_QDB_CV_pooled     1D_CNN  0.979 0.961  0.056        0.788      0.013           0.887
+    2 BUT_QDB_CV_pooled     2D_CNN  0.983 0.955  0.078        0.667      0.019           0.824
+    2 BUT_QDB_CV_pooled Multimodal  0.975 0.949  0.065        0.727      0.019           0.854
+    2     CinC_transfer     1D_CNN  0.713 0.668  0.278        0.613      0.200           0.707
+    2     CinC_transfer     2D_CNN  0.763 0.774  0.320        0.427      0.027           0.700
+    2     CinC_transfer Multimodal  0.500 0.500  0.500        1.000      1.000           0.500
+    3 BUT_QDB_CV_pooled     1D_CNN  0.979 0.957  0.056        0.795      0.013           0.891
+    3 BUT_QDB_CV_pooled     2D_CNN  0.984 0.961  0.053        0.825      0.017           0.904
+    3 BUT_QDB_CV_pooled Multimodal  0.967 0.933  0.078        0.646      0.024           0.811
+    3     CinC_transfer     1D_CNN  0.719 0.678  0.272        0.613      0.160           0.727
+    3     CinC_transfer     2D_CNN  0.767 0.771  0.320        0.200      0.027           0.587
+    3     CinC_transfer Multimodal  0.500 0.500  0.500        1.000      1.000           0.500
+    4 BUT_QDB_CV_pooled     1D_CNN  0.977 0.961  0.058        0.774      0.013           0.881
+    4 BUT_QDB_CV_pooled     2D_CNN  0.993 0.983  0.031        0.886      0.011           0.937
+    4 BUT_QDB_CV_pooled Multimodal  0.967 0.929  0.084        0.623      0.023           0.800
+    4     CinC_transfer     1D_CNN  0.710 0.660  0.278        0.627      0.213           0.707
+    4     CinC_transfer     2D_CNN  0.748 0.764  0.305        0.427      0.040           0.693
+    4     CinC_transfer Multimodal  0.627 0.627  0.373        0.253      0.000           0.627
+== NSTDB (Tables 3, 3b)
+================================================================================
+REVISED EXPERIMENT 4: CALIBRATED NOISE STRESS TEST (NSTDB 118 & 119)
+================================================================================
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  21%|██        | 149/707 [00:00<00:00, 1486.09it/s]Loading weights:  45%|████▌     | 321/707 [00:00<00:00, 1619.43it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 2397.47it/s]
+[RealD1Neural] Successfully loaded weights in 15.08s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+Loaded calibrated NSTDB dataset: 308 windows.
+
+[NSTDB Degradation Summary - Combined Active Noise (Records 118 & 119)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+12    24.0         44  0.899754  ...     0.574865         0.763629    0.758788
+13    18.0         44  0.811978  ...     0.366579         0.391012    0.739621
+14    12.0         44  0.500588  ...     0.083113         0.081571    0.704437
+15     6.0         44  0.176377  ...     0.019434         0.016644    0.685232
+16     0.0         44  0.037581  ...     0.016702         0.005573    0.684946
+17    -6.0         44  0.011085  ...     0.011725         0.006383    0.698747
+
+[6 rows x 8 columns]
+
+[NSTDB Clean Control Windows (Integrity Check)]
+    snr_db  n_windows   LR_mean  ...  2D_CNN_mean  Multimodal_mean  d1_3B_mean
+18     NaN         44  0.967239  ...      0.68498          0.85714     0.77678
+
+[1 rows x 8 columns]
+
+[Completed] Revised NSTDB analysis saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/exp4_revised_nstdb_summary.csv
+Chart saved to /Volumes/KIOXIA/Projects/d13b-ecg-sqi/figures/figure_revised_nstdb_degradation_curve.png
+== d1 prompt variants (Table 7)
+[RealD1Neural] Loading 3.12B weights from '/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B' onto mps (dtype=torch.bfloat16)...
+Loading weights:   0%|          | 0/707 [00:00<?, ?it/s]Loading weights:  18%|█▊        | 128/707 [00:00<00:00, 1265.59it/s]Loading weights:  36%|███▌      | 255/707 [00:00<00:00, 1140.15it/s]Loading weights:  64%|██████▍   | 453/707 [00:00<00:00, 1490.24it/s]Loading weights: 100%|██████████| 707/707 [00:00<00:00, 1768.62it/s]
+[RealD1Neural] Successfully loaded weights in 14.37s. Model type: <class 'transformers_modules.d1_hyphen_3B.d54b5b95345ee51e.modeling_d1.D1Model'>
+[validation] max |stored - recomputed| on 10 BUT windows = 0.0000
+[BUT_QDB] image_only done (1047 windows)
+[BUT_QDB] alt_wording done (1047 windows)
+[CinC_2011_SetA] image_only done (150 windows)
+[CinC_2011_SetA] alt_wording done (150 windows)
+[NSTDB_paired] image_only done (308 windows)
+[NSTDB_paired] alt_wording done (308 windows)
+       dataset     variant    n  n_unusable  auroc    ap  brier  sens_at_0.5  fr_at_0.5  snr_db  mean_p_usable       condition  paired_delta_usable
+       BUT_QDB alt_wording 1047       297.0  0.869 0.739  0.152        0.175      0.005     NaN            NaN             NaN                  NaN
+       BUT_QDB  image_only 1047       297.0  0.913 0.771  0.263        0.997      0.813     NaN            NaN             NaN                  NaN
+       BUT_QDB     primary 1047       297.0  0.852 0.740  0.154        0.532      0.040     NaN            NaN             NaN                  NaN
+CinC_2011_SetA alt_wording  150        75.0  0.627 0.702  0.360        1.000      0.987     NaN            NaN             NaN                  NaN
+CinC_2011_SetA  image_only  150        75.0  0.680 0.726  0.235        0.813      0.787     NaN            NaN             NaN                  NaN
+CinC_2011_SetA     primary  150        75.0  0.636 0.706  0.388        1.000      1.000     NaN            NaN             NaN                  NaN
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN     NaN          0.870 clean_reference                  NaN
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    -6.0          0.806           noisy               -0.064
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN     0.0          0.797           noisy               -0.073
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN     6.0          0.802           noisy               -0.069
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    12.0          0.825           noisy               -0.045
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    18.0          0.846           noisy               -0.024
+  NSTDB_paired alt_wording   44         NaN    NaN   NaN    NaN          NaN        NaN    24.0          0.853           noisy               -0.017
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN     NaN          0.459 clean_reference                  NaN
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    -6.0          0.428           noisy               -0.031
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN     0.0          0.420           noisy               -0.039
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN     6.0          0.391           noisy               -0.068
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    12.0          0.369           noisy               -0.090
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    18.0          0.396           noisy               -0.063
+  NSTDB_paired  image_only   44         NaN    NaN   NaN    NaN          NaN        NaN    24.0          0.422           noisy               -0.037
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN     NaN          0.777 clean_reference                  NaN
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    -6.0          0.699           noisy               -0.078
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN     0.0          0.685           noisy               -0.092
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN     6.0          0.685           noisy               -0.092
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    12.0          0.704           noisy               -0.072
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    18.0          0.740           noisy               -0.037
+  NSTDB_paired     primary   44         NaN    NaN   NaN    NaN          NaN        NaN    24.0          0.759           noisy               -0.018
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/d1_prompt_variants_predictions.csv
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/d1_prompt_variants_summary.csv
+rerun after render fix: done

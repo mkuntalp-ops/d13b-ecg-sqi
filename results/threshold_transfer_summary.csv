@@ -1,0 +1,257 @@
+model,rule,threshold,dataset,sens,fpr,tp,fp,n_pos,n_neg
+Logistic_Regression_SQI,target1_fpr5,0.5644411,BUT_QDB pooled OOF (selection set),0.7407407407407407,0.048,220,36,297,750
+Logistic_Regression_SQI,target1_fpr5,0.5644411,CinC2011 first-N (lead II),0.7466666666666667,1.0,56,75,75,75
+Logistic_Regression_SQI,target1_fpr5,0.5644411,CinC2011 random_seed1 (lead II),0.7066666666666667,1.0,53,75,75,75
+Logistic_Regression_SQI,target1_fpr5,0.5644411,CinC2011 random_seed2 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,target1_fpr5,0.5644411,CinC2011 random_seed3 (lead II),0.7733333333333333,1.0,58,75,75,75
+Logistic_Regression_SQI,target1_fpr5,0.5644411,CinC2011 random_seed4 (lead II),0.6666666666666666,1.0,50,75,75,75
+Logistic_Regression_SQI,target1_fpr5,0.5644411,CinC2011 random_seed42 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,target1_fpr5,0.5644411,CinC2017 all (record max),0.7446043165467626,0.15727471459800826,207,1295,278,8234
+Logistic_Regression_SQI,target2_sens80,0.3929168,BUT_QDB pooled OOF (selection set),0.8013468013468014,0.08266666666666667,238,62,297,750
+Logistic_Regression_SQI,target2_sens80,0.3929168,CinC2011 first-N (lead II),0.7466666666666667,1.0,56,75,75,75
+Logistic_Regression_SQI,target2_sens80,0.3929168,CinC2011 random_seed1 (lead II),0.7066666666666667,1.0,53,75,75,75
+Logistic_Regression_SQI,target2_sens80,0.3929168,CinC2011 random_seed2 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,target2_sens80,0.3929168,CinC2011 random_seed3 (lead II),0.7733333333333333,1.0,58,75,75,75
+Logistic_Regression_SQI,target2_sens80,0.3929168,CinC2011 random_seed4 (lead II),0.6666666666666666,1.0,50,75,75,75
+Logistic_Regression_SQI,target2_sens80,0.3929168,CinC2011 random_seed42 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,target2_sens80,0.3929168,CinC2017 all (record max),0.8345323741007195,0.25467573475831917,232,2097,278,8234
+Logistic_Regression_SQI,youden,0.34278235,BUT_QDB pooled OOF (selection set),0.8316498316498316,0.092,247,69,297,750
+Logistic_Regression_SQI,youden,0.34278235,CinC2011 first-N (lead II),0.7466666666666667,1.0,56,75,75,75
+Logistic_Regression_SQI,youden,0.34278235,CinC2011 random_seed1 (lead II),0.7066666666666667,1.0,53,75,75,75
+Logistic_Regression_SQI,youden,0.34278235,CinC2011 random_seed2 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,youden,0.34278235,CinC2011 random_seed3 (lead II),0.7733333333333333,1.0,58,75,75,75
+Logistic_Regression_SQI,youden,0.34278235,CinC2011 random_seed4 (lead II),0.6666666666666666,1.0,50,75,75,75
+Logistic_Regression_SQI,youden,0.34278235,CinC2011 random_seed42 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,youden,0.34278235,CinC2017 all (record max),0.8561151079136691,0.2998542628127277,238,2469,278,8234
+Logistic_Regression_SQI,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.7643097643097643,0.06266666666666666,227,47,297,750
+Logistic_Regression_SQI,fixed_0.5,0.5,CinC2011 first-N (lead II),0.7466666666666667,1.0,56,75,75,75
+Logistic_Regression_SQI,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),0.7066666666666667,1.0,53,75,75,75
+Logistic_Regression_SQI,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),0.7733333333333333,1.0,58,75,75,75
+Logistic_Regression_SQI,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),0.6666666666666666,1.0,50,75,75,75
+Logistic_Regression_SQI,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),0.6133333333333333,1.0,46,75,75,75
+Logistic_Regression_SQI,fixed_0.5,0.5,CinC2017 all (record max),0.802158273381295,0.18860820986154966,223,1553,278,8234
+LightGBM_SQI,target1_fpr5,0.36019394,BUT_QDB pooled OOF (selection set),0.8047138047138047,0.048,239,36,297,750
+LightGBM_SQI,target1_fpr5,0.36019394,CinC2011 first-N (lead II),0.41333333333333333,0.013333333333333334,31,1,75,75
+LightGBM_SQI,target1_fpr5,0.36019394,CinC2011 random_seed1 (lead II),0.48,0.05333333333333334,36,4,75,75
+LightGBM_SQI,target1_fpr5,0.36019394,CinC2011 random_seed2 (lead II),0.5866666666666667,0.06666666666666667,44,5,75,75
+LightGBM_SQI,target1_fpr5,0.36019394,CinC2011 random_seed3 (lead II),0.4533333333333333,0.04,34,3,75,75
+LightGBM_SQI,target1_fpr5,0.36019394,CinC2011 random_seed4 (lead II),0.4266666666666667,0.02666666666666667,32,2,75,75
+LightGBM_SQI,target1_fpr5,0.36019394,CinC2011 random_seed42 (lead II),0.5466666666666666,0.08,41,6,75,75
+LightGBM_SQI,target1_fpr5,0.36019394,CinC2017 all (record max),0.7949640287769785,0.1915229536069954,221,1577,278,8234
+LightGBM_SQI,target2_sens80,0.36019394,BUT_QDB pooled OOF (selection set),0.8047138047138047,0.048,239,36,297,750
+LightGBM_SQI,target2_sens80,0.36019394,CinC2011 first-N (lead II),0.41333333333333333,0.013333333333333334,31,1,75,75
+LightGBM_SQI,target2_sens80,0.36019394,CinC2011 random_seed1 (lead II),0.48,0.05333333333333334,36,4,75,75
+LightGBM_SQI,target2_sens80,0.36019394,CinC2011 random_seed2 (lead II),0.5866666666666667,0.06666666666666667,44,5,75,75
+LightGBM_SQI,target2_sens80,0.36019394,CinC2011 random_seed3 (lead II),0.4533333333333333,0.04,34,3,75,75
+LightGBM_SQI,target2_sens80,0.36019394,CinC2011 random_seed4 (lead II),0.4266666666666667,0.02666666666666667,32,2,75,75
+LightGBM_SQI,target2_sens80,0.36019394,CinC2011 random_seed42 (lead II),0.5466666666666666,0.08,41,6,75,75
+LightGBM_SQI,target2_sens80,0.36019394,CinC2017 all (record max),0.7949640287769785,0.1915229536069954,221,1577,278,8234
+LightGBM_SQI,youden,0.04691071,BUT_QDB pooled OOF (selection set),0.9595959595959596,0.14666666666666667,285,110,297,750
+LightGBM_SQI,youden,0.04691071,CinC2011 first-N (lead II),0.6933333333333334,0.4,52,30,75,75
+LightGBM_SQI,youden,0.04691071,CinC2011 random_seed1 (lead II),0.7066666666666667,0.36,53,27,75,75
+LightGBM_SQI,youden,0.04691071,CinC2011 random_seed2 (lead II),0.8666666666666667,0.4,65,30,75,75
+LightGBM_SQI,youden,0.04691071,CinC2011 random_seed3 (lead II),0.7733333333333333,0.3333333333333333,58,25,75,75
+LightGBM_SQI,youden,0.04691071,CinC2011 random_seed4 (lead II),0.6933333333333334,0.41333333333333333,52,31,75,75
+LightGBM_SQI,youden,0.04691071,CinC2011 random_seed42 (lead II),0.7333333333333333,0.4533333333333333,55,34,75,75
+LightGBM_SQI,youden,0.04691071,CinC2017 all (record max),0.960431654676259,0.3894826329851834,267,3207,278,8234
+LightGBM_SQI,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.734006734006734,0.04133333333333333,218,31,297,750
+LightGBM_SQI,fixed_0.5,0.5,CinC2011 first-N (lead II),0.09333333333333334,0.013333333333333334,7,1,75,75
+LightGBM_SQI,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),0.18666666666666668,0.05333333333333334,14,4,75,75
+LightGBM_SQI,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.17333333333333334,0.04,13,3,75,75
+LightGBM_SQI,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),0.2,0.02666666666666667,15,2,75,75
+LightGBM_SQI,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),0.08,0.02666666666666667,6,2,75,75
+LightGBM_SQI,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),0.16,0.06666666666666667,12,5,75,75
+LightGBM_SQI,fixed_0.5,0.5,CinC2017 all (record max),0.6762589928057554,0.14610153024046635,188,1203,278,8234
+Independent_SQI_MLP,target1_fpr5,0.7250346,BUT_QDB pooled OOF (selection set),0.7003367003367004,0.04933333333333333,208,37,297,750
+Independent_SQI_MLP,target1_fpr5,0.7250346,CinC2011 first-N (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target1_fpr5,0.7250346,CinC2011 random_seed1 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target1_fpr5,0.7250346,CinC2011 random_seed2 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target1_fpr5,0.7250346,CinC2011 random_seed3 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target1_fpr5,0.7250346,CinC2011 random_seed4 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target1_fpr5,0.7250346,CinC2011 random_seed42 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target1_fpr5,0.7250346,CinC2017 all (record max),0.7446043165467626,0.16516881224192373,207,1360,278,8234
+Independent_SQI_MLP,target2_sens80,0.43367964,BUT_QDB pooled OOF (selection set),0.8047138047138047,0.09333333333333334,239,70,297,750
+Independent_SQI_MLP,target2_sens80,0.43367964,CinC2011 first-N (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target2_sens80,0.43367964,CinC2011 random_seed1 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target2_sens80,0.43367964,CinC2011 random_seed2 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target2_sens80,0.43367964,CinC2011 random_seed3 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target2_sens80,0.43367964,CinC2011 random_seed4 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target2_sens80,0.43367964,CinC2011 random_seed42 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,target2_sens80,0.43367964,CinC2017 all (record max),0.8812949640287769,0.2624483847461744,245,2161,278,8234
+Independent_SQI_MLP,youden,0.24224475,BUT_QDB pooled OOF (selection set),0.8787878787878788,0.12533333333333332,261,94,297,750
+Independent_SQI_MLP,youden,0.24224475,CinC2011 first-N (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,youden,0.24224475,CinC2011 random_seed1 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,youden,0.24224475,CinC2011 random_seed2 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,youden,0.24224475,CinC2011 random_seed3 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,youden,0.24224475,CinC2011 random_seed4 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,youden,0.24224475,CinC2011 random_seed42 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,youden,0.24224475,CinC2017 all (record max),0.9244604316546763,0.34855477289288317,257,2870,278,8234
+Independent_SQI_MLP,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.7777777777777778,0.08666666666666667,231,65,297,750
+Independent_SQI_MLP,fixed_0.5,0.5,CinC2011 first-N (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),0.0,0.0,0,0,75,75
+Independent_SQI_MLP,fixed_0.5,0.5,CinC2017 all (record max),0.8633093525179856,0.2401020160310906,240,1977,278,8234
+1D_CNN_RawECG,target1_fpr5,0.007939003,BUT_QDB pooled OOF (selection set),0.9595959595959596,0.034666666666666665,285,26,297,750
+1D_CNN_RawECG,target1_fpr5,0.007939003,CinC2011 first-N (lead II),0.7066666666666667,0.28,53,21,75,75
+1D_CNN_RawECG,target1_fpr5,0.007939003,CinC2011 random_seed1 (lead II),0.76,0.3466666666666667,57,26,75,75
+1D_CNN_RawECG,target1_fpr5,0.007939003,CinC2011 random_seed2 (lead II),0.8666666666666667,0.26666666666666666,65,20,75,75
+1D_CNN_RawECG,target1_fpr5,0.007939003,CinC2011 random_seed3 (lead II),0.7066666666666667,0.29333333333333333,53,22,75,75
+1D_CNN_RawECG,target1_fpr5,0.007939003,CinC2011 random_seed4 (lead II),0.7333333333333333,0.36,55,27,75,75
+1D_CNN_RawECG,target1_fpr5,0.007939003,CinC2011 random_seed42 (lead II),0.7733333333333333,0.3466666666666667,58,26,75,75
+1D_CNN_RawECG,target1_fpr5,0.007939003,CinC2017 all (record max),0.9964028776978417,0.545421423366529,277,4491,278,8234
+1D_CNN_RawECG,target2_sens80,0.33178437,BUT_QDB pooled OOF (selection set),0.8013468013468014,0.013333333333333334,238,10,297,750
+1D_CNN_RawECG,target2_sens80,0.33178437,CinC2011 first-N (lead II),0.6266666666666667,0.16,47,12,75,75
+1D_CNN_RawECG,target2_sens80,0.33178437,CinC2011 random_seed1 (lead II),0.6933333333333334,0.25333333333333335,52,19,75,75
+1D_CNN_RawECG,target2_sens80,0.33178437,CinC2011 random_seed2 (lead II),0.7866666666666666,0.18666666666666668,59,14,75,75
+1D_CNN_RawECG,target2_sens80,0.33178437,CinC2011 random_seed3 (lead II),0.6266666666666667,0.22666666666666666,47,17,75,75
+1D_CNN_RawECG,target2_sens80,0.33178437,CinC2011 random_seed4 (lead II),0.6533333333333333,0.26666666666666666,49,20,75,75
+1D_CNN_RawECG,target2_sens80,0.33178437,CinC2011 random_seed42 (lead II),0.6933333333333334,0.22666666666666666,52,17,75,75
+1D_CNN_RawECG,target2_sens80,0.33178437,CinC2017 all (record max),0.935251798561151,0.3687150837988827,260,3036,278,8234
+1D_CNN_RawECG,youden,0.007939003,BUT_QDB pooled OOF (selection set),0.9595959595959596,0.034666666666666665,285,26,297,750
+1D_CNN_RawECG,youden,0.007939003,CinC2011 first-N (lead II),0.7066666666666667,0.28,53,21,75,75
+1D_CNN_RawECG,youden,0.007939003,CinC2011 random_seed1 (lead II),0.76,0.3466666666666667,57,26,75,75
+1D_CNN_RawECG,youden,0.007939003,CinC2011 random_seed2 (lead II),0.8666666666666667,0.26666666666666666,65,20,75,75
+1D_CNN_RawECG,youden,0.007939003,CinC2011 random_seed3 (lead II),0.7066666666666667,0.29333333333333333,53,22,75,75
+1D_CNN_RawECG,youden,0.007939003,CinC2011 random_seed4 (lead II),0.7333333333333333,0.36,55,27,75,75
+1D_CNN_RawECG,youden,0.007939003,CinC2011 random_seed42 (lead II),0.7733333333333333,0.3466666666666667,58,26,75,75
+1D_CNN_RawECG,youden,0.007939003,CinC2017 all (record max),0.9964028776978417,0.545421423366529,277,4491,278,8234
+1D_CNN_RawECG,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.7676767676767676,0.006666666666666667,228,5,297,750
+1D_CNN_RawECG,fixed_0.5,0.5,CinC2011 first-N (lead II),0.6133333333333333,0.14666666666666667,46,11,75,75
+1D_CNN_RawECG,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),0.68,0.25333333333333335,51,19,75,75
+1D_CNN_RawECG,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.76,0.17333333333333334,57,13,75,75
+1D_CNN_RawECG,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),0.5866666666666667,0.22666666666666666,44,17,75,75
+1D_CNN_RawECG,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),0.64,0.26666666666666666,48,20,75,75
+1D_CNN_RawECG,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),0.6666666666666666,0.21333333333333335,50,16,75,75
+1D_CNN_RawECG,fixed_0.5,0.5,CinC2017 all (record max),0.9244604316546763,0.34478989555501577,257,2839,278,8234
+2D_CNN_Image,target1_fpr5,0.0556894,BUT_QDB pooled OOF (selection set),0.9427609427609428,0.04666666666666667,280,35,297,750
+2D_CNN_Image,target1_fpr5,0.0556894,CinC2011 first-N (lead II),0.52,0.10666666666666667,39,8,75,75
+2D_CNN_Image,target1_fpr5,0.0556894,CinC2011 random_seed1 (lead II),0.5466666666666666,0.12,41,9,75,75
+2D_CNN_Image,target1_fpr5,0.0556894,CinC2011 random_seed2 (lead II),0.7066666666666667,0.06666666666666667,53,5,75,75
+2D_CNN_Image,target1_fpr5,0.0556894,CinC2011 random_seed3 (lead II),0.5733333333333334,0.08,43,6,75,75
+2D_CNN_Image,target1_fpr5,0.0556894,CinC2011 random_seed4 (lead II),0.56,0.16,42,12,75,75
+2D_CNN_Image,target1_fpr5,0.0556894,CinC2011 random_seed42 (lead II),0.6533333333333333,0.10666666666666667,49,8,75,75
+2D_CNN_Image,target1_fpr5,0.0556894,CinC2017 all (record max),0.9640287769784173,0.5037648773378673,268,4148,278,8234
+2D_CNN_Image,target2_sens80,0.48917615,BUT_QDB pooled OOF (selection set),0.8013468013468014,0.009333333333333334,238,7,297,750
+2D_CNN_Image,target2_sens80,0.48917615,CinC2011 first-N (lead II),0.17333333333333334,0.04,13,3,75,75
+2D_CNN_Image,target2_sens80,0.48917615,CinC2011 random_seed1 (lead II),0.18666666666666668,0.06666666666666667,14,5,75,75
+2D_CNN_Image,target2_sens80,0.48917615,CinC2011 random_seed2 (lead II),0.25333333333333335,0.02666666666666667,19,2,75,75
+2D_CNN_Image,target2_sens80,0.48917615,CinC2011 random_seed3 (lead II),0.28,0.05333333333333334,21,4,75,75
+2D_CNN_Image,target2_sens80,0.48917615,CinC2011 random_seed4 (lead II),0.17333333333333334,0.10666666666666667,13,8,75,75
+2D_CNN_Image,target2_sens80,0.48917615,CinC2011 random_seed42 (lead II),0.18666666666666668,0.08,14,6,75,75
+2D_CNN_Image,target2_sens80,0.48917615,CinC2017 all (record max),0.8992805755395683,0.34041777993684724,250,2803,278,8234
+2D_CNN_Image,youden,0.0556894,BUT_QDB pooled OOF (selection set),0.9427609427609428,0.04666666666666667,280,35,297,750
+2D_CNN_Image,youden,0.0556894,CinC2011 first-N (lead II),0.52,0.10666666666666667,39,8,75,75
+2D_CNN_Image,youden,0.0556894,CinC2011 random_seed1 (lead II),0.5466666666666666,0.12,41,9,75,75
+2D_CNN_Image,youden,0.0556894,CinC2011 random_seed2 (lead II),0.7066666666666667,0.06666666666666667,53,5,75,75
+2D_CNN_Image,youden,0.0556894,CinC2011 random_seed3 (lead II),0.5733333333333334,0.08,43,6,75,75
+2D_CNN_Image,youden,0.0556894,CinC2011 random_seed4 (lead II),0.56,0.16,42,12,75,75
+2D_CNN_Image,youden,0.0556894,CinC2011 random_seed42 (lead II),0.6533333333333333,0.10666666666666667,49,8,75,75
+2D_CNN_Image,youden,0.0556894,CinC2017 all (record max),0.9640287769784173,0.5037648773378673,268,4148,278,8234
+2D_CNN_Image,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.7878787878787878,0.009333333333333334,234,7,297,750
+2D_CNN_Image,fixed_0.5,0.5,CinC2011 first-N (lead II),0.17333333333333334,0.04,13,3,75,75
+2D_CNN_Image,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),0.18666666666666668,0.06666666666666667,14,5,75,75
+2D_CNN_Image,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.25333333333333335,0.02666666666666667,19,2,75,75
+2D_CNN_Image,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),0.28,0.05333333333333334,21,4,75,75
+2D_CNN_Image,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),0.17333333333333334,0.10666666666666667,13,8,75,75
+2D_CNN_Image,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),0.18666666666666668,0.08,14,6,75,75
+2D_CNN_Image,fixed_0.5,0.5,CinC2017 all (record max),0.8992805755395683,0.3381102744717027,250,2784,278,8234
+Multimodal_Fusion,target1_fpr5,0.17462106,BUT_QDB pooled OOF (selection set),0.6902356902356902,0.04666666666666667,205,35,297,750
+Multimodal_Fusion,target1_fpr5,0.17462106,CinC2011 first-N (lead II),0.25333333333333335,0.0,19,0,75,75
+Multimodal_Fusion,target1_fpr5,0.17462106,CinC2011 random_seed1 (lead II),0.29333333333333333,0.013333333333333334,22,1,75,75
+Multimodal_Fusion,target1_fpr5,0.17462106,CinC2011 random_seed2 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,target1_fpr5,0.17462106,CinC2011 random_seed3 (lead II),0.24,0.0,18,0,75,75
+Multimodal_Fusion,target1_fpr5,0.17462106,CinC2011 random_seed4 (lead II),0.3333333333333333,0.0,25,0,75,75
+Multimodal_Fusion,target1_fpr5,0.17462106,CinC2011 random_seed42 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,target1_fpr5,0.17462106,CinC2017 all (record max),0.9280575539568345,0.4307748360456643,258,3547,278,8234
+Multimodal_Fusion,target2_sens80,0.10540991,BUT_QDB pooled OOF (selection set),0.8013468013468014,0.06533333333333333,238,49,297,750
+Multimodal_Fusion,target2_sens80,0.10540991,CinC2011 first-N (lead II),0.25333333333333335,0.0,19,0,75,75
+Multimodal_Fusion,target2_sens80,0.10540991,CinC2011 random_seed1 (lead II),0.29333333333333333,0.013333333333333334,22,1,75,75
+Multimodal_Fusion,target2_sens80,0.10540991,CinC2011 random_seed2 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,target2_sens80,0.10540991,CinC2011 random_seed3 (lead II),0.24,0.0,18,0,75,75
+Multimodal_Fusion,target2_sens80,0.10540991,CinC2011 random_seed4 (lead II),0.3333333333333333,0.0,25,0,75,75
+Multimodal_Fusion,target2_sens80,0.10540991,CinC2011 random_seed42 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,target2_sens80,0.10540991,CinC2017 all (record max),0.9460431654676259,0.4623512266213262,263,3807,278,8234
+Multimodal_Fusion,youden,0.02040284,BUT_QDB pooled OOF (selection set),0.9696969696969697,0.11866666666666667,288,89,297,750
+Multimodal_Fusion,youden,0.02040284,CinC2011 first-N (lead II),0.25333333333333335,0.0,19,0,75,75
+Multimodal_Fusion,youden,0.02040284,CinC2011 random_seed1 (lead II),0.29333333333333333,0.013333333333333334,22,1,75,75
+Multimodal_Fusion,youden,0.02040284,CinC2011 random_seed2 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,youden,0.02040284,CinC2011 random_seed3 (lead II),0.24,0.0,18,0,75,75
+Multimodal_Fusion,youden,0.02040284,CinC2011 random_seed4 (lead II),0.3333333333333333,0.0,25,0,75,75
+Multimodal_Fusion,youden,0.02040284,CinC2011 random_seed42 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,youden,0.02040284,CinC2017 all (record max),0.9784172661870504,0.54590721399077,272,4495,278,8234
+Multimodal_Fusion,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.6363636363636364,0.018666666666666668,189,14,297,750
+Multimodal_Fusion,fixed_0.5,0.5,CinC2011 first-N (lead II),0.25333333333333335,0.0,19,0,75,75
+Multimodal_Fusion,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),0.29333333333333333,0.013333333333333334,22,1,75,75
+Multimodal_Fusion,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),0.24,0.0,18,0,75,75
+Multimodal_Fusion,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),0.3333333333333333,0.0,25,0,75,75
+Multimodal_Fusion,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),0.4,0.0,30,0,75,75
+Multimodal_Fusion,fixed_0.5,0.5,CinC2017 all (record max),0.8884892086330936,0.3566917658489191,247,2937,278,8234
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,BUT_QDB pooled OOF (selection set),0.8451178451178452,0.04933333333333333,251,37,297,750
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,CinC2011 random_seed2 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,target1_fpr5,0.3762244,CinC2017 all (record max),0.5287769784172662,0.06169540927860092,147,508,278,8234
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,BUT_QDB pooled OOF (selection set),0.8047138047138047,0.04133333333333333,239,31,297,750
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,CinC2011 first-N (lead II),0.9866666666666667,0.9866666666666667,74,74,75,75
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,CinC2011 random_seed1 (lead II),0.9866666666666667,0.9866666666666667,74,74,75,75
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,CinC2011 random_seed2 (lead II),0.9866666666666667,0.9733333333333334,74,73,75,75
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,CinC2011 random_seed3 (lead II),0.9733333333333334,0.9733333333333334,73,73,75,75
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,CinC2011 random_seed4 (lead II),0.9866666666666667,1.0,74,75,75,75
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,CinC2011 random_seed42 (lead II),0.9733333333333334,1.0,73,75,75,75
+Rule_Based_SQI_Heuristic,target2_sens80,0.40700996,CinC2017 all (record max),0.4352517985611511,0.051615253825601164,121,425,278,8234
+Rule_Based_SQI_Heuristic,youden,0.35029462,BUT_QDB pooled OOF (selection set),0.9057239057239057,0.06133333333333333,269,46,297,750
+Rule_Based_SQI_Heuristic,youden,0.35029462,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,youden,0.35029462,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,youden,0.35029462,CinC2011 random_seed2 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,youden,0.35029462,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,youden,0.35029462,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,youden,0.35029462,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
+Rule_Based_SQI_Heuristic,youden,0.35029462,CinC2017 all (record max),0.6294964028776978,0.07578333738158853,175,624,278,8234
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.6599326599326599,0.012,196,9,297,750
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,CinC2011 first-N (lead II),0.96,0.84,72,63,75,75
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),0.9333333333333333,0.8533333333333334,70,64,75,75
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.9333333333333333,0.8666666666666667,70,65,75,75
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),0.88,0.8666666666666667,66,65,75,75
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),0.96,0.9066666666666666,72,68,75,75
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),0.92,0.9066666666666666,69,68,75,75
+Rule_Based_SQI_Heuristic,fixed_0.5,0.5,CinC2017 all (record max),0.18345323741007194,0.024896769492348796,51,205,278,8234
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,BUT_QDB pooled OOF (selection set),0.531986531986532,0.04,158,30,297,750
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed2 (lead II),0.9866666666666667,1.0,74,75,75,75
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2017 balanced d1 subset (record max),0.19784172661870503,0.039568345323741004,55,11,278,278
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,BUT_QDB pooled OOF (selection set),0.8013468013468014,0.32666666666666666,238,245,297,750
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed2 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2017 balanced d1 subset (record max),0.4064748201438849,0.14388489208633093,113,40,278,278
+LiquidAI_d1_3B_Neural,youden,0.437823,BUT_QDB pooled OOF (selection set),0.6936026936026936,0.15333333333333332,206,115,297,750
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed2 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2017 balanced d1 subset (record max),0.3345323741007194,0.10431654676258993,93,29,278,278
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.531986531986532,0.04,158,30,297,750
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.9866666666666667,1.0,74,75,75,75
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2017 balanced d1 subset (record max),0.19784172661870503,0.039568345323741004,55,11,278,278

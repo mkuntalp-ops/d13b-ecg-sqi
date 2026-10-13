@@ -29,7 +29,7 @@ Rather than treating ECG quality control as a naive binary noise detector, this 
 ## 3. Multimodal Decision Design & Modality Ablations
 
 Every ECG segment (10-second window) is simultaneously evaluated across three distinct input modes:
-1. **Image Only**: Standardized clinical ECG strip (10 mm/mV, 25 mm/s, clinical grid).
+1. **Image Only**: 10-s ECG strip (513 x 257 px, clinical-style grid, vertical axis scaled per strip; not a fixed 10 mm/mV gain).
 2. **Numerical SQIs Only**: Structured domain-specific signal quality indicators:
    - $b\text{SQI}$: Inter-detector agreement between Pan-Tompkins and Difference filter R-peaks.
    - Baseline wander spectral power ratio ($< 0.5$ Hz vs $0.5 - 40$ Hz).
@@ -97,7 +97,17 @@ Additional analyses (run directly; see REVIEW_2026-10-12.md section 7):
 - `python experiments/cinc_draws_by_seed.py` and `python experiments/butqdb_class2_by_seed.py`: training-seed variation (Table 6 and Table 1d)
 - `python experiments/d1_prompt_variants.py`: d1-3B prompt sensitivity (image only; reworded question), checked against the stored primary run on 10 BUT QDB windows; Section 4.6
 - Latency repeats: three sequential runs of `python experiments/empirical_latency_benchmark.py`, each copied to `results/latency_repeats/` before the next run (Table 4 reports the median and range over the runs)
+- Second review (2026-10-13; see REVIEW_2026-10-13_reviewer2.md and manuscript/response_to_reviewer_2.md):
+  - `python experiments/rerender_images.py` then `bash experiments/rerun_after_render_fix.sh`: renderer fix and recomputation
+  - `python experiments/cinc2017_extraction.py`, `python experiments/cinc2011_twelve_lead_extraction.py`: external windows (local copies of the PhysioNet datasets under /Volumes/KIOXIA/Datasets)
+  - `python experiments/d1_linear_probe.py`: d1-3B probes and external d1 predictions (Table 7b)
+  - `python experiments/external_validation.py`: CinC 2017 and CinC 2011 12-lead (Tables 8, 8b, 2e)
+  - `python experiments/nested_thresholds.py`: nested and transferred thresholds (Tables 1c, 2f)
+  - `python experiments/prevalence_subjects_features.py`: natural prevalence, subject heterogeneity, feature shift (Tables 1e, 1f, 2g)
+  - `python experiments/latency_extended.py`: extended latency (Table 4b; run alone)
+  - `bash experiments/review2_queue.sh` runs the above in dependency order
+  - `python evaluation/build_manuscript_tables.py` then `python evaluation/sync_manuscript_tables.py`: regenerate all tables and copy them into the manuscript
 
 ## 6. Review Status
 
-See [REVIEW_2026-10-12.md](REVIEW_2026-10-12.md) for the audit findings, what was changed, and what was verified.
+See [REVIEW_2026-10-12.md](REVIEW_2026-10-12.md) for the first audit and [REVIEW_2026-10-13_reviewer2.md](REVIEW_2026-10-13_reviewer2.md) for the re-audit and the second review.
