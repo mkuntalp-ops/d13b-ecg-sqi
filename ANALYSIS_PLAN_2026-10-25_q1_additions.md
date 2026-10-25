@@ -124,3 +124,47 @@ The following are not changed:
 - the reporting of every earlier result.
 
 No further model families are added.
+
+## Amendments
+
+**2026-10-25, A4 (written while the authors'-preprocessing run was in progress, before any of its results were seen).** The authors' preprocessing comes from `hubert_ecg/utils.py` (`ecg_preprocessing`) and `hubert_ecg/dataset.py` in github.com/Edoar-do/HuBERT-ECG. It differs from ours in two ways:
+- the filter is an FIR band-pass (151 taps, forward-backward), not a Butterworth;
+- the scaling is per-lead min-max to [−1, 1] over the 10-s window, not max-abs per 5-s half.
+
+The authors do not specify how absent leads are handled. Their scaling is applied literally to the zero-filled 12-lead array, which maps absent leads to −1.
+
+Outputs of the first (our) preprocessing were renamed with the suffix `_ourpreproc`, not overwritten.
+
+**2026-10-25, F1.** Not feasible. The Smital et al. 2026 article text was not accessible here (abstract only), and PhysioNet hosts only BUT QDB 1.0.0, without the protocol code. F1 is not run and is reported as a limitation.
+
+While checking PhysioNet, we also found that the PhysioNet citation of BUT QDB 1.0.0 lists these authors: Nemcova, Smisek, Opravilová, Vitek, Smital and Maršánová. The bibliography entry was corrected in `main_q1_template.md` and `final_manuscript.md`.
+
+**2026-10-25, F2 (before the fine-tuning run).** Feasibility met. One epoch of fold 0 (833 windows) took 1.8 min on MPS, with two other jobs sharing the GPU, which projects to 18 min for 10 epochs.
+
+The run uses the plan's fixed configuration with the authors' preprocessing (the A4 primary). It is implemented in `experiments/hubert_ecg_finetune.py`, with the probe protocol (5 folds, then BUT-only transfer). LODO is not run for the fine-tuned model.
+
+**2026-10-26, F1 revised (before any F1 analysis was run).**
+
+*What changed.* The user supplied the article PDF. The official split and the evaluated intervals are defined in Smital et al. 2026 (Table 3) and in `choseDATA` of `TESTrun_v01.m` (github.com/BioSig-BUT/BUT-QDB-supplement):
+- Train records: 100001, 100002, 103001–103003, 104001, 111001, 113001, 114001, 115001, 126001.
+- Test records: 105001, 118001, 121001–125001.
+- Excluded: the first 46,800,000 samples of 105001, a 13-h stretch of missing signal.
+
+*Finding before analysis.* A descriptive count showed that 59 of our 297 unusable cohort windows lie in the excluded 105001 stretch. All 59 are unusable, and their median signal SD is 0.045 mV. No other cohort window lies outside the official intervals. No model result was looked at.
+
+*Analysis F1a (evaluation-only exclusion).*
+- *Data:* pooled out-of-fold AUROC on BUT QDB, recomputed without the 59 windows (988 windows, 238 unusable), from the stored predictions. No retraining.
+- *Models:* all 11 models.
+- *Tests:* paired comparisons with the best model (subject-level cluster bootstrap, Holm over the 55 pairs).
+- *Purpose:* shows how much of the in-domain result rests on these windows. Because the models were trained with them, it is not a retrained analysis.
+
+*Analysis F1b (official subject-independent split).*
+- *Data:* cohort windows inside the official intervals. Training on the windows of the official train records; testing on the windows of the official test records. These are window-level binary labels (Class 3 vs Classes 1–2), not the official sample-level three-class metric, which our window classifiers do not produce.
+- *Models, trained with the fixed hyperparameters of the main analysis (seed 42):* LR, LightGBM, MLP, 1D CNN, 2D CNN and multimodal net.
+- *Models, untrained:* the rule heuristic and zero-shot d1-3B (stored scores).
+- *Probes:* d1-3B image and HuBERT-ECG (authors' preprocessing), fitted on the train windows with the probe protocol.
+- *Not included:* TabPFN (separate environment).
+- *Metrics:* AUROC with a subject-level cluster-bootstrap CI; paired comparisons with the best model (cluster bootstrap, Holm).
+- *Reporting:* the result is reported whatever it shows. The test set has unusable windows in three subjects only (122, 124 and one window in 105), so wide intervals are expected.
+
+Both F1a and F1b are sensitivity analyses. The primary protocol is not changed.
