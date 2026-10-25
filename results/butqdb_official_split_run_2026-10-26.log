@@ -1,0 +1,29 @@
+[official] cohort windows outside the official intervals: 59 (unusable 59)
+[official] train 546 windows (146 unusable, 8 subjects); test 442 windows (92 unusable, 7 subjects)
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+                   model  n_windows  n_unusable  n_subjects  auroc  auroc_lo  auroc_hi  best  delta_vs_best  p_holm_vs_best
+ Logistic_Regression_SQI        988         238          15  0.923     0.798     0.991 False         -0.064           0.343
+            LightGBM_SQI        988         238          15  0.955     0.873     0.999 False         -0.032           1.000
+     Independent_SQI_MLP        988         238          15  0.924     0.805     0.985 False         -0.062           0.204
+           1D_CNN_RawECG        988         238          15  0.987     0.956     0.999  True            NaN             NaN
+            2D_CNN_Image        988         238          15  0.986     0.958     0.999 False         -0.001           1.000
+       Multimodal_Fusion        988         238          15  0.959     0.903     0.998 False         -0.028           1.000
+Rule_Based_SQI_Heuristic        988         238          15  0.971     0.908     1.000 False         -0.016           1.000
+   LiquidAI_d1_3B_Neural        988         238          15  0.828     0.685     0.939 False         -0.159           0.368
+          d1_image_probe        988         238          15  0.976     0.936     0.996 False         -0.011           1.000
+              TabPFN_SQI        988         238          15  0.953     0.885     0.996 False         -0.034           1.000
+        HuBERT_ECG_probe        988         238          15  0.965     0.887     0.998 False         -0.022           1.000
+ Logistic_Regression_SQI        442          92           7  0.980     0.957     1.000 False         -0.020           1.000
+            LightGBM_SQI        442          92           7  0.992     0.940     1.000 False         -0.008           1.000
+     Independent_SQI_MLP        442          92           7  0.981     0.960     1.000 False         -0.019           1.000
+           1D_CNN_RawECG        442          92           7  1.000     1.000     1.000  True            NaN             NaN
+            2D_CNN_Image        442          92           7  0.961     0.933     1.000 False         -0.039           1.000
+       Multimodal_Fusion        442          92           7  0.878     0.784     1.000 False         -0.122           1.000
+Rule_Based_SQI_Heuristic        442          92           7  0.993     0.971     1.000 False         -0.007           1.000
+   LiquidAI_d1_3B_Neural        442          92           7  0.723     0.576     1.000 False         -0.277           1.000
+          d1_image_probe        442          92           7  0.991     0.984     1.000 False         -0.009           1.000
+        HuBERT_ECG_probe        442          92           7  1.000     1.000     1.000 False         -0.000           1.000
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/butqdb_official_split_summary.csv

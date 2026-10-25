@@ -1,0 +1,16 @@
+/Volumes/KIOXIA/AI/tabpfn_env/lib/python3.12/site-packages/tabpfn/validation.py:234: UserWarning: Running on CPU with more than 1000 samples may be slow.
+Consider using a GPU or the tabpfn-client API: https://github.com/PriorLabs/tabpfn-client
+  _validate_num_samples_for_cpu(
+[latency_tabpfn] run 1 done (fit 490 ms)
+/Volumes/KIOXIA/AI/tabpfn_env/lib/python3.12/site-packages/tabpfn/validation.py:234: UserWarning: Running on CPU with more than 1000 samples may be slow.
+Consider using a GPU or the tabpfn-client API: https://github.com/PriorLabs/tabpfn-client
+  _validate_num_samples_for_cpu(
+[latency_tabpfn] run 2 done (fit 136 ms)
+/Volumes/KIOXIA/AI/tabpfn_env/lib/python3.12/site-packages/tabpfn/validation.py:234: UserWarning: Running on CPU with more than 1000 samples may be slow.
+Consider using a GPU or the tabpfn-client API: https://github.com/PriorLabs/tabpfn-client
+  _validate_num_samples_for_cpu(
+[latency_tabpfn] run 3 done (fit 187 ms)
+                       median_over_runs_ms  min_run_ms  max_run_ms  p95_median_over_runs_ms
+measurement                                                                                
+fit_ms                              186.73      135.93      490.23                   186.73
+tabpfn_predict_cpu_ms              2503.49     2364.70     2507.85                  2578.09

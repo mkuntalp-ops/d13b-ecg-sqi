@@ -4,7 +4,7 @@ five random subsets: 565 records). The reference label is a whole-record (12-lea
 while the main analysis scores lead II only. Scoring every lead and aggregating per record tests how much of
 the transfer gap is the single-lead vs 12-lead target mismatch.
 
-Signals: local copy of Set A (/Volumes/KIOXIA/Datasets/challenge-2011/set-a), 500 Hz, mV, 10 s; no resampling.
+Signals: local copy of Set A ($ECG_DATASETS_ROOT/challenge-2011/set-a), 500 Hz, mV, 10 s; no resampling.
 SQIs on mV; strips rendered with the corrected renderer.
 
 Output: cache/datasets/cinc2011/twelve_lead/cinc2011_twelve_lead_windows.csv (+ signals/ and images/)
@@ -21,11 +21,12 @@ import wfdb
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from config import LOCAL_DATASETS_DIR
 from data.ecg_rendering import render_ecg_image
 from data.units import to_millivolts
 from features.sqi_extractor import extract_sqi_features
 
-SRC = Path("/Volumes/KIOXIA/Datasets/challenge-2011/set-a")
+SRC = LOCAL_DATASETS_DIR / "challenge-2011" / "set-a"
 CINC_DIR = PROJECT_ROOT / "cache" / "datasets" / "cinc2011"
 OUT_DIR = CINC_DIR / "twelve_lead"
 SIG_DIR, IMG_DIR = OUT_DIR / "signals", OUT_DIR / "images"

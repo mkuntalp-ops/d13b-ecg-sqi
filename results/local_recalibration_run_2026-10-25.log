@@ -1,0 +1,46 @@
+[CinC2011] Logistic_Regression_SQI done
+[CinC2011] LightGBM_SQI done
+[CinC2011] Independent_SQI_MLP done
+[CinC2011] 1D_CNN_RawECG done
+[CinC2011] 2D_CNN_Image done
+[CinC2011] Multimodal_Fusion done
+[CinC2011] Rule_Based_SQI_Heuristic done
+[CinC2011] LiquidAI_d1_3B_Neural done
+[CinC2011] d1_image_probe done
+[CinC2011] TabPFN_SQI done
+[CinC2011] HuBERT_ECG_probe done
+[CinC2017] Logistic_Regression_SQI done
+[CinC2017] LightGBM_SQI done
+[CinC2017] Independent_SQI_MLP done
+[CinC2017] 1D_CNN_RawECG done
+[CinC2017] 2D_CNN_Image done
+[CinC2017] Multimodal_Fusion done
+[CinC2017] Rule_Based_SQI_Heuristic done
+[CinC2017] LiquidAI_d1_3B_Neural done
+[CinC2017] TabPFN_SQI done
+[CinC2017] HuBERT_ECG_probe done
+[CinC2017] d1_image_probe done
+ dataset                    model   n  fallback_draws  fpr_transferred_median  fpr_local_median  fpr_local_p97.5  sens_local_median  share_fpr_le_7.5_local  brier_raw_median  brier_platt_median
+CinC2011  Logistic_Regression_SQI 100               0                   1.000             0.000            0.000              0.000                   1.000             0.768               0.171
+CinC2011             LightGBM_SQI 100               0                   0.047             0.047            0.117              0.500                   0.818             0.219               0.180
+CinC2011      Independent_SQI_MLP 100               0                   0.000             0.010            0.010              0.362                   1.000             0.348               0.228
+CinC2011            1D_CNN_RawECG 100               0                   0.305             0.026            0.130              0.012                   0.814             0.243               0.202
+CinC2011             2D_CNN_Image 100               0                   0.107             0.046            0.113              0.183                   0.736             0.244               0.174
+CinC2011        Multimodal_Fusion 100               0                   0.003             0.003            0.003              0.342                   1.000             0.232               0.173
+CinC2011 Rule_Based_SQI_Heuristic 100               0                   1.000             0.037            0.125              0.403                   0.832             0.278               0.195
+CinC2011    LiquidAI_d1_3B_Neural 100               0                   1.000             0.027            0.079              0.385                   0.926             0.510               0.199
+CinC2011           d1_image_probe 100               0                   0.117             0.036            0.117              0.535                   0.852             0.161               0.142
+CinC2011               TabPFN_SQI 100               0                   0.243             0.037            0.111              0.444                   0.898             0.214               0.186
+CinC2011         HuBERT_ECG_probe 100               0                   0.400             0.036            0.132              0.049                   0.780             0.319               0.228
+CinC2017  Logistic_Regression_SQI 100              21                   0.157             0.025            0.157              0.156                   0.940             0.145               0.031
+CinC2017             LightGBM_SQI 100              21                   0.192             0.017            0.191              0.209                   0.932             0.105               0.029
+CinC2017      Independent_SQI_MLP 100              21                   0.165             0.018            0.165              0.073                   0.932             0.175               0.031
+CinC2017            1D_CNN_RawECG 100              21                   0.545             0.000            0.545              0.000                   0.956             0.308               0.032
+CinC2017             2D_CNN_Image 100              21                   0.504             0.004            0.503              0.033                   0.934             0.284               0.031
+CinC2017        Multimodal_Fusion 100              21                   0.431             0.000            0.430              0.000                   0.936             0.303               0.031
+CinC2017 Rule_Based_SQI_Heuristic 100              21                   0.062             0.022            0.075              0.135                   0.974             0.095               0.031
+CinC2017    LiquidAI_d1_3B_Neural 100              21                   0.031             0.005            0.070              0.055                   0.996             0.091               0.031
+CinC2017               TabPFN_SQI 100              21                   0.292             0.011            0.292              0.131                   0.938             0.109               0.030
+CinC2017         HuBERT_ECG_probe 100              21                   0.516             0.022            0.516              0.285                   0.946             0.175               0.028
+CinC2017           d1_image_probe 100              21                   0.511             0.017            0.511              0.253                   0.940             0.162               0.028
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/local_recalibration_summary.csv

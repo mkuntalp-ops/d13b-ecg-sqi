@@ -1,0 +1,21 @@
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 4594.53it/s]
+  0/1047
+[hubert] BUT_QDB: (1047, 768)
+  0/565
+[hubert] CinC2011: (565, 768)
+  0/23985
+  3200/23985
+  6400/23985
+  9600/23985
+  12800/23985
+  16000/23985
+  19200/23985
+  22400/23985
+[hubert] CinC2017: (23985, 768)
+           setting  dataset  n_units  auroc    ap
+ but_only_external CinC2011      565  0.562 0.424
+ but_only_external CinC2017     8512  0.907 0.262
+         butqdb_cv  BUT_QDB     1047  0.972 0.936
+ lodo_test_BUT_QDB  BUT_QDB     1047  0.982 0.947
+lodo_test_CinC2011 CinC2011      565  0.804 0.777
+lodo_test_CinC2017 CinC2017     8512  0.871 0.228

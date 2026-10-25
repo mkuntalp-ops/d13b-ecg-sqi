@@ -1,0 +1,75 @@
+[fold 0] train 833 windows
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 4099.55it/s]
+  epoch 1/10
+  epoch 2/10
+  epoch 3/10
+  epoch 4/10
+  epoch 5/10
+  epoch 6/10
+  epoch 7/10
+  epoch 8/10
+  epoch 9/10
+  epoch 10/10
+[fold 1] train 837 windows
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 2044.32it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 1941.82it/s]
+  epoch 1/10
+  epoch 2/10
+  epoch 3/10
+  epoch 4/10
+  epoch 5/10
+  epoch 6/10
+  epoch 7/10
+  epoch 8/10
+  epoch 9/10
+  epoch 10/10
+[fold 2] train 837 windows
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 2990.26it/s]
+  epoch 1/10
+  epoch 2/10
+  epoch 3/10
+  epoch 4/10
+  epoch 5/10
+  epoch 6/10
+  epoch 7/10
+  epoch 8/10
+  epoch 9/10
+  epoch 10/10
+[fold 3] train 837 windows
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 2897.87it/s]
+  epoch 1/10
+  epoch 2/10
+  epoch 3/10
+  epoch 4/10
+  epoch 5/10
+  epoch 6/10
+  epoch 7/10
+  epoch 8/10
+  epoch 9/10
+  epoch 10/10
+[fold 4] train 844 windows
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 3308.98it/s]
+  epoch 1/10
+  epoch 2/10
+  epoch 3/10
+  epoch 4/10
+  epoch 5/10
+  epoch 6/10
+  epoch 7/10
+  epoch 8/10
+  epoch 9/10
+  epoch 10/10
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 3088.89it/s]
+  epoch 1/10
+  epoch 2/10
+  epoch 3/10
+  epoch 4/10
+  epoch 5/10
+  epoch 6/10
+  epoch 7/10
+  epoch 8/10
+  epoch 9/10
+  epoch 10/10
+          setting  dataset  n_units  auroc    ap
+but_only_external CinC2011      565  0.706 0.519
+but_only_external CinC2017     8512  0.912 0.282
+        butqdb_cv  BUT_QDB     1047  0.969 0.921

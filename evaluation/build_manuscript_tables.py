@@ -420,6 +420,198 @@ def table_8b() -> str:
     return "\n".join(out)
 
 
+def table_9() -> str:
+    """Paired comparisons with the best model of each dataset (evaluation/paired_comparisons.py)."""
+    path = RESULTS / "paired_comparisons.csv"
+    if not path.exists():
+        return _missing(path)
+    c = pd.read_csv(path)
+    labels = {**MODEL_LABELS, "TabPFN_SQI": "TabPFN (SQI)", "HuBERT_ECG_probe": "HuBERT-ECG probe", "d1_image_probe": "d1-3B image-token probe"}
+    fams = list(dict.fromkeys(c.family))
+    auc = {}
+    for f in fams:
+        g = c[c.family == f]
+        s = pd.concat([g[["model_a", "auroc_a"]].set_axis(["m", "a"], axis=1), g[["model_b", "auroc_b"]].set_axis(["m", "a"], axis=1)])
+        auc[f] = s.drop_duplicates("m").set_index("m")["a"]
+    out = ["| Model | " + " | ".join(fams) + " |", "| :--- | " + " | ".join([":---:"] * len(fams)) + " |"]
+    for m in labels:
+        cells = []
+        for f in fams:
+            if m not in auc[f].index:
+                cells.append("—")
+                continue
+            best = auc[f].idxmax()
+            if m == best:
+                cells.append(f"**{auc[f][m]:.3f}** (best)")
+                continue
+            g = c[(c.family == f) & (((c.model_a == m) & (c.model_b == best)) | ((c.model_b == m) & (c.model_a == best)))].iloc[0]
+            cells.append(f"{auc[f][m]:.3f} (p = {g.p_holm:.3f})" if g.p_holm >= 0.001 else f"{auc[f][m]:.3f} (p < 0.001)")
+        out.append(f"| **{labels[m]}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_10() -> str:
+    """Leave-one-dataset-out multi-source training vs training on BUT QDB only (experiments/lodo_multisource.py)."""
+    path = RESULTS / "lodo_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from paired_comparisons import holm
+    s["p_holm"] = np.nan
+    for key, g in s[s.p_boot.notna()].groupby("test"):  # Holm within each held-out dataset
+        s.loc[g.index, "p_holm"] = holm(g.p_boot.values)
+    labels = {**MODEL_LABELS, "TabPFN_SQI": "TabPFN (SQI)", "HuBERT_ECG_probe": "HuBERT-ECG probe", "d1_image_probe": "d1-3B image-token probe"}
+    tests = [("BUT_QDB", "BUT QDB (train: CinC 2011 + CinC 2017)"), ("CinC2011", "CinC 2011 (train: BUT QDB + CinC 2017)"),
+             ("CinC2017", "CinC 2017 (train: BUT QDB + CinC 2011)")]
+    out = ["| Model | " + " | ".join(n for _, n in tests) + " |", "| :--- | " + " | ".join([":---:"] * len(tests)) + " |"]
+    for m, label in labels.items():
+        cells = []
+        for key, _ in tests:
+            r = s[(s.test == key) & (s.model == m)]
+            if r.empty:
+                cells.append("—")
+                continue
+            r = r.iloc[0]
+            if pd.isna(r.auroc_multi):
+                cells.append(f"{r.auroc_single:.3f} (fixed rule)")
+                continue
+            sign = "+" if r.delta >= 0 else "−"
+            p = "p_Holm < 0.001" if r.p_holm < 0.001 else f"p_Holm = {r.p_holm:.3f}"
+            sub = " †" if key == "CinC2017" and r.n_units < 1000 else ""  # CinC 2017 balanced subset
+            cells.append(f"{r.auroc_multi:.3f} [{r.auroc_multi_lo:.3f}–{r.auroc_multi_hi:.3f}]; Δ {sign}{abs(r.delta):.3f} ({p}){sub}")
+        out.append(f"| **{label}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+EXTRA_LABELS = {"TabPFN_SQI": "TabPFN (SQI)", "HuBERT_ECG_probe": "HuBERT-ECG probe", "d1_image_probe": "d1-3B image-token probe"}
+
+
+def table_10b() -> str:
+    """Seed repetition of the neural models' LODO effects (experiments/seed_repeats_transfer.py, plan A1)."""
+    path = RESULTS / "seed_repeats_consistency.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    s = s[s.seed_varied]
+    out = ["| Model | Held-out dataset | Seeds | LODO AUROC, median (range) | BUT-only AUROC, median (range) | Δ, median (range) | Consistent |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: |"]
+    full = pd.read_csv(RESULTS / "seed_repeats_summary.csv")
+    for r in s.itertuples():
+        lodo = f"{r.lodo_median:.3f} ({r.lodo_min:.3f}–{r.lodo_max:.3f})"
+        if r.test == "BUT_QDB":  # no seed-matched BUT-only reference for the in-domain test (plan A1)
+            out.append(f"| **{MODEL_LABELS[r.model]}** | {r.test} | {r.n_seeds} | {lodo} | — | — | — |")
+            continue
+        sg = full[(full.test == r.test) & (full.model == r.model)].auroc_single
+        out.append(f"| **{MODEL_LABELS[r.model]}** | {r.test} | {r.n_seeds} | {lodo} | "
+                   f"{r.single_median:.3f} ({sg.min():.3f}–{sg.max():.3f}) | "
+                   f"{r.delta_median:+.3f} ({r.delta_min:+.3f} to {r.delta_max:+.3f}) | {'yes' if r.consistent else 'no'} |")
+    return "\n".join(out)
+
+
+def _recal_table(n_values) -> str:
+    path = RESULTS / "local_recalibration_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    s = s[s.n.isin(n_values)]
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    out = ["| Dataset | Model | n | Transferred threshold: FPR / Sens. (median) | Local threshold: FPR median [95% range] | "
+           "Local threshold: Sens. median [95% range] | Draws with FPR ≤ 7.5% (local) | Fallback draws | Brier: raw → Platt (median) |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    for _, r in s.iterrows():
+        out.append(f"| {r['dataset']} | **{labels.get(r['model'], r['model'])}** | {r['n']} | "
+                   f"{100 * r['fpr_transferred_median']:.1f}% / {100 * r['sens_transferred_median']:.1f}% | "
+                   f"{100 * r['fpr_local_median']:.1f}% [{100 * r['fpr_local_p2.5']:.1f}–{100 * r['fpr_local_p97.5']:.1f}%] | "
+                   f"{100 * r['sens_local_median']:.1f}% [{100 * r['sens_local_p2.5']:.1f}–{100 * r['sens_local_p97.5']:.1f}%] | "
+                   f"{100 * r['share_fpr_le_7.5_local']:.0f}% | {r['fallback_draws']} | "
+                   f"{r['brier_raw_median']:.3f} → {r['brier_platt_median']:.3f} |")
+    return "\n".join(out)
+
+
+def table_11() -> str:
+    """Local recalibration with n = 100 labelled target recordings (experiments/local_recalibration.py, plan A3)."""
+    return _recal_table([100])
+
+
+def table_11b() -> str:
+    """Local recalibration, all sample sizes."""
+    return _recal_table([25, 50, 100, 200])
+
+
+def table_12() -> str:
+    """HuBERT-ECG: preprocessing sensitivity (plan A4) and partial fine-tuning (plan F2)."""
+    variants = [("Probe, authors' preprocessing (primary)", RESULTS / "hubert_probe_summary.csv"),
+                ("Probe, our first preprocessing (sensitivity)", RESULTS / "hubert_probe_summary_ourpreproc.csv"),
+                ("Fine-tuned (last 4 layers + head), authors' preprocessing", RESULTS / "hubert_finetune_summary.csv")]
+    cols = [("butqdb_cv", "BUT_QDB", "BUT QDB (5-fold subject CV)"), ("but_only_external", "CinC2011", "CinC 2011 (BUT-only)"),
+            ("but_only_external", "CinC2017", "CinC 2017 (BUT-only)"), ("lodo_test_BUT_QDB", "BUT_QDB", "LODO: BUT QDB"),
+            ("lodo_test_CinC2011", "CinC2011", "LODO: CinC 2011"), ("lodo_test_CinC2017", "CinC2017", "LODO: CinC 2017")]
+    out = ["| HuBERT-ECG variant | " + " | ".join(c[2] for c in cols) + " |", "| :--- | " + " | ".join([":---:"] * len(cols)) + " |"]
+    for name, path in variants:
+        if not path.exists():
+            out.append(f"| **{name}** | " + " | ".join(["not run"] * len(cols)) + " |")
+            continue
+        s = pd.read_csv(path)
+        cells = []
+        for setting, ds, _ in cols:
+            r = s[(s.setting == setting) & (s.dataset == ds)]
+            cells.append(f"{r.auroc.iloc[0]:.3f}" if len(r) else "—")
+        out.append(f"| **{name}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_13() -> str:
+    """Official BUT QDB protocol: sensitivity analyses F1a and F1b (experiments/butqdb_official_split.py)."""
+    path = RESULTS / "butqdb_official_split_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    a, b = [g.set_index("model") for _, g in s.groupby("analysis", sort=False)]
+    head = lambda g: f"{g.n_windows.iloc[0]:,} windows, {g.n_unusable.iloc[0]} unusable, {g.n_subjects.iloc[0]} subjects"
+    out = [f"| Model | F1a: 5-fold CV without the excluded 105001 stretch ({head(a)}) | "
+           f"F1b: official train/test split, test set ({head(b)}) |", "| :--- | :---: | :---: |"]
+
+    def cell(g, m):
+        if m not in g.index:
+            return "not run"
+        r = g.loc[m]
+        txt = f"{r.auroc:.3f} [{r.auroc_lo:.3f}–{r.auroc_hi:.3f}]"
+        if r.best:
+            return f"**{txt}** (best)"
+        return txt + (f"; p_Holm < 0.001" if r.p_holm_vs_best < 0.001 else f"; p_Holm = {r.p_holm_vs_best:.3f}")
+    for m in labels:
+        if m in a.index or m in b.index:
+            out.append(f"| **{labels[m]}** | {cell(a, m)} | {cell(b, m)} |")
+    return "\n".join(out)
+
+
+def table_4c() -> str:
+    """Latency of the foundation-model probes and TabPFN (experiments/latency_foundation_probes.py, latency_tabpfn.py)."""
+    rows = []
+    for path, names in [(RESULTS / "latency_probes_summary.csv",
+                         {"hubert_preproc_ms": "HuBERT-ECG: preprocessing (authors' pipeline)",
+                          "hubert_forward_cpu_ms": "HuBERT-ECG: forward pass, CPU",
+                          "hubert_forward_mps_ms": "HuBERT-ECG: forward pass, MPS",
+                          "hubert_linear_probe_ms": "HuBERT-ECG: linear probe",
+                          "hubert_total_cpu_ms": "HuBERT-ECG probe: total, CPU",
+                          "hubert_total_mps_ms": "HuBERT-ECG probe: total, MPS",
+                          "d1_linear_probe_ms": "d1-3B image probe: linear probe (added to the d1-3B forward pass of Table 4)"}),
+                        (RESULTS / "latency_tabpfn_summary.csv",
+                         {"fit_ms": "TabPFN: fit on 1,047 windows (once per model)",
+                          "tabpfn_predict_cpu_ms": "TabPFN: prediction of one window, CPU"})]:
+        if not path.exists():
+            return _missing(path)
+        s = pd.read_csv(path).set_index("measurement")
+        for k, lab in names.items():
+            r = s.loc[k]
+            rows.append(f"| {lab} | {r.median_over_runs_ms:.2f} ms | {r.min_run_ms:.2f}–{r.max_run_ms:.2f} ms | "
+                        f"{r.p95_median_over_runs_ms:.2f} ms |")
+    return "\n".join(["| Step | Median (three runs) | Range of run medians | p95 (median over runs) |",
+                      "| :--- | :---: | :---: | :---: |"] + rows)
+
+
 def table_7() -> str:
     """Prompt sensitivity of d1-3B (experiments/d1_prompt_variants.py). The AUROC CI on BUT QDB is the subject-level
     bootstrap used for Table 1 (seed 42); CinC has no subject identifiers and is reported as a point estimate."""
@@ -635,6 +827,14 @@ def main():
         ("Table 7b", table_7b()),
         ("Table 8", table_8()),
         ("Table 8b", table_8b()),
+        ("Table 9", table_9()),
+        ("Table 10", table_10()),
+        ("Table 10b", table_10b()),
+        ("Table 11", table_11()),
+        ("Table 11b", table_11b()),
+        ("Table 12", table_12()),
+        ("Table 13", table_13()),
+        ("Table 4c", table_4c()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("# Manuscript tables regenerated 2026-10-12\n\n")

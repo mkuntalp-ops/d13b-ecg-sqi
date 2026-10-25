@@ -9,7 +9,7 @@ Windows: non-overlapping 10-s windows from the start of each recording, at most 
 median recording length is 30 s). Each window is resampled 300 -> 500 Hz with scipy.signal.resample (as for
 BUT QDB), SQIs are computed on millivolts and the strip is rendered with the corrected renderer.
 
-Input:  /Volumes/KIOXIA/Datasets/cinc2017/training2017 (local copy of the PhysioNet training set) and REFERENCE.csv
+Input:  $ECG_DATASETS_ROOT/cinc2017/training2017 (local copy of the PhysioNet training set) and REFERENCE.csv
 Output: cache/datasets/cinc2017/cinc2017_windows.csv (+ signals/ and images/)
 """
 
@@ -26,11 +26,12 @@ from scipy import signal
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from config import LOCAL_DATASETS_DIR
 from data.ecg_rendering import render_ecg_image
 from data.units import to_millivolts
 from features.sqi_extractor import extract_sqi_features
 
-SRC = Path("/Volumes/KIOXIA/Datasets/cinc2017")
+SRC = LOCAL_DATASETS_DIR / "cinc2017"
 OUT_DIR = PROJECT_ROOT / "cache" / "datasets" / "cinc2017"
 SIG_DIR, IMG_DIR = OUT_DIR / "signals", OUT_DIR / "images"
 OUT = OUT_DIR / "cinc2017_windows.csv"

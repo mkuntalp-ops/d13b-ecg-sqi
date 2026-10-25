@@ -1,0 +1,99 @@
+[seed 1] BUT-only -> CinC 2011 + CinC 2017 (24550 windows)
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 1] LODO test=CinC2017: train 1612 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 1] LODO test=CinC2011: train 4484 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 1] LODO test=BUT_QDB: train 4002 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 2] BUT-only -> CinC 2011 + CinC 2017 (24550 windows)
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 2] LODO test=CinC2017: train 1612 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 2] LODO test=CinC2011: train 4484 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 2] LODO test=BUT_QDB: train 4002 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 3] BUT-only -> CinC 2011 + CinC 2017 (24550 windows)
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 3] LODO test=CinC2017: train 1612 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 3] LODO test=CinC2011: train 4484 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 3] LODO test=BUT_QDB: train 4002 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 4] BUT-only -> CinC 2011 + CinC 2017 (24550 windows)
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 4] LODO test=CinC2017: train 1612 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 4] LODO test=CinC2011: train 4484 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+[seed 4] LODO test=BUT_QDB: train 4002 windows
+  tabular done
+  1D CNN done
+  2D CNN done
+  multimodal done
+    test                   model  n_seeds  lodo_median  lodo_min  lodo_max  seed_varied  single_median  delta_median  delta_min  delta_max consistent
+CinC2011 Logistic_Regression_SQI        5        0.385     0.385     0.385        False          0.320         0.065      0.065      0.065       True
+CinC2011            LightGBM_SQI        5        0.679     0.679     0.679        False          0.754        -0.075     -0.075     -0.075       True
+CinC2011     Independent_SQI_MLP        5        0.326     0.315     0.328         True          0.673        -0.353     -0.358     -0.345       True
+CinC2011           1D_CNN_RawECG        5        0.780     0.777     0.785         True          0.713         0.066      0.060      0.076       True
+CinC2011            2D_CNN_Image        5        0.768     0.758     0.783         True          0.795        -0.023     -0.035     -0.015       True
+CinC2011       Multimodal_Fusion        5        0.518     0.503     0.769         True          0.500         0.003     -0.156      0.269      False
+CinC2017 Logistic_Regression_SQI        5        0.895     0.895     0.895        False          0.868         0.027      0.027      0.027       True
+CinC2017            LightGBM_SQI        5        0.896     0.896     0.896        False          0.880         0.016      0.016      0.016      False
+CinC2017     Independent_SQI_MLP        5        0.873     0.859     0.876         True          0.865         0.010     -0.006      0.016      False
+CinC2017           1D_CNN_RawECG        5        0.875     0.854     0.885         True          0.770         0.102      0.089      0.115       True
+CinC2017            2D_CNN_Image        5        0.776     0.768     0.802         True          0.848        -0.069     -0.082     -0.048       True
+CinC2017       Multimodal_Fusion        5        0.860     0.844     0.866         True          0.791         0.053      0.022      0.098       True
+ BUT_QDB Logistic_Regression_SQI        5        0.457     0.457     0.457        False            NaN           NaN        NaN        NaN        NaN
+ BUT_QDB            LightGBM_SQI        5        0.949     0.949     0.949        False            NaN           NaN        NaN        NaN        NaN
+ BUT_QDB     Independent_SQI_MLP        5        0.980     0.979     0.983         True            NaN           NaN        NaN        NaN        NaN
+ BUT_QDB           1D_CNN_RawECG        5        0.989     0.985     0.996         True            NaN           NaN        NaN        NaN        NaN
+ BUT_QDB            2D_CNN_Image        5        0.962     0.705     0.989         True            NaN           NaN        NaN        NaN        NaN
+ BUT_QDB       Multimodal_Fusion        5        0.813     0.741     0.992         True            NaN           NaN        NaN        NaN        NaN

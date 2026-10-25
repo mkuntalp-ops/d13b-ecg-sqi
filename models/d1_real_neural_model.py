@@ -37,7 +37,7 @@ D1_ECG_USABILITY_QUESTION = {
     }
 }
 
-DEFAULT_D1_PATH = "/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B"
+DEFAULT_D1_PATH = os.environ.get("D1_MODEL_PATH", "/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B")  # see config.D1_MODEL_PATH
 
 
 class RealD1DecisionModel:

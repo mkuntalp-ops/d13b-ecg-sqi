@@ -108,6 +108,23 @@ Additional analyses (run directly; see REVIEW_2026-10-12.md section 7):
   - `bash experiments/review2_queue.sh` runs the above in dependency order
   - `python evaluation/build_manuscript_tables.py` then `python evaluation/sync_manuscript_tables.py`: regenerate all tables and copy them into the manuscript
 
+- Q1 revision (2026-10-25; run after the analyses above):
+  - Environment: `pip install -r requirements.txt` (pinned direct dependencies); `requirements-lock.txt` lists every installed package. Machine paths are set by environment variables: `ECG_DATASETS_ROOT` (local PhysioNet copies), `D1_MODEL_PATH` (d1-3B weights), `HUBERT_ECG_PATH` (HuBERT-ECG base weights, CC BY-NC 4.0), `TABPFN_CKPT` (TabPFN v3 checkpoint)
+  - `python experiments/lodo_multisource.py`: leave-one-dataset-out training over BUT QDB, CinC 2011 and CinC 2017, including the d1-3B probe (Table 10); `--analysis-only` re-runs the summary from saved predictions
+  - `<tabpfn env>/bin/python experiments/tabpfn_runner.py`: TabPFN v3 on the 13 SQIs (CV, transfer, LODO); needs a separate environment with `tabpfn` 9.0.0
+  - `python experiments/hubert_ecg_probe.py`: HuBERT-ECG frozen-feature probe (CV, transfer, LODO)
+  - `python experiments/heuristic_refit.py`: rule heuristic with refitted coefficients (Table S22)
+  - `python evaluation/paired_comparisons.py`: all pairwise AUROC tests per dataset, Holm-adjusted (Table 9); `--check` compares DeLong with a bootstrap
+  - `python evaluation/build_manuscript_tables.py` then `python evaluation/assemble_q1_manuscript.py`: fills `manuscript/main_q1_template.md` and `manuscript/supplement_q1_template.md` with the generated tables, writing `manuscript/main_q1.md` and `manuscript/supplement_q1.md` (edit the templates, not the outputs)
+  - Pre-specified additions (see `ANALYSIS_PLAN_2026-10-25_q1_additions.md`, committed before they were run):
+    - `python experiments/seed_repeats_transfer.py`: seeds 1–4 of BUT-only and LODO training for the networks (Table 10b / S23)
+    - `python experiments/d1_cinc2017_full.py`: zero-shot d1-3B and its image-token features on all CinC 2017 windows (resumable; about 6 h on an M4), then `python experiments/lodo_multisource.py --probe-only`
+    - `python experiments/hubert_ecg_probe.py` uses the authors' preprocessing (primary); `--preproc=ours` reproduces the first version (outputs `*_ourpreproc.csv`)
+    - `python experiments/hubert_ecg_finetune.py [--time-fold0]`: HuBERT-ECG partial fine-tuning (Table 12 / S25)
+    - `python experiments/local_recalibration.py`: thresholds and Platt scaling re-set on small labelled target samples (Tables 11, 11b)
+    - Run `python evaluation/paired_comparisons.py` after these, then the table builder and the assembler
+  - `python -m unittest discover -s tests`: unit tests (metrics vs scikit-learn, DeLong and Holm, fold disjointness, feature definitions, renderer)
+
 ## 6. Review Status
 
 See [REVIEW_2026-10-12.md](REVIEW_2026-10-12.md) for the first audit and [REVIEW_2026-10-13_reviewer2.md](REVIEW_2026-10-13_reviewer2.md) for the re-audit and the second review.

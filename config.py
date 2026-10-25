@@ -20,6 +20,10 @@ CACHE_DIR = PROJECT_ROOT / "cache"
 RESULTS_DIR = PROJECT_ROOT / "results"
 FIGURES_DIR = PROJECT_ROOT / "figures"
 
+# Local copies of the PhysioNet datasets and the d1-3B weights (override with environment variables)
+LOCAL_DATASETS_DIR = Path(os.environ.get("ECG_DATASETS_ROOT", "/Volumes/KIOXIA/Datasets"))
+D1_MODEL_PATH = os.environ.get("D1_MODEL_PATH", "/Volumes/KIOXIA/AI Models/liquid-ai/d1-3B")
+
 for d in [DATA_DIR, CACHE_DIR, RESULTS_DIR, FIGURES_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 

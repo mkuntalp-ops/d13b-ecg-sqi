@@ -54,6 +54,7 @@ CINC17 = PROJECT_ROOT / "cache" / "datasets" / "cinc2017" / "cinc2017_windows.cs
 TWELVE = CINC11 / "twelve_lead" / "cinc2011_twelve_lead_windows.csv"
 PRED_OUT = RESULTS / "d1_external_predictions.csv"
 OOF_OUT = RESULTS / "d1_probe_oof_predictions.csv"
+TRANSFER_OUT = RESULTS / "d1_probe_transfer_predictions.csv"
 SUM_OUT = RESULTS / "d1_probe_summary.csv"
 C_GRID = {"logisticregression__C": [1e-3, 1e-2, 1e-1, 1.0]}
 
@@ -136,7 +137,7 @@ def analyse():
     d1_but = preds[preds.dataset == "BUT_QDB"].set_index("segment_id")["prob_unusable"]
     diff = float(np.abs(d1_but.loc[but.segment_id].values - stored.loc[but.segment_id, "prob_LiquidAI_d1_3B_Neural"].values).max())
     print(f"[check] max |d1 recomputed - stored| on BUT QDB = {diff:.4f}")
-    rows, oof_rows = [], []
+    rows, oof_rows, transfer_rows = [], [], []
     y = but["label"].values
     for feat in ["state", "image"]:
         X = np.load(FEAT_DIR / f"BUT_QDB_{feat}.npy")
@@ -154,6 +155,8 @@ def analyse():
         # CinC 2011 lead II: reported subset and the five random subsets
         c11 = sets["CinC2011_leadII"].reset_index(drop=True)
         p11 = pd.Series(full.predict_proba(np.load(FEAT_DIR / f"CinC2011_leadII_{feat}.npy"))[:, 1], index=c11.record_name.astype(int).values)
+        transfer_rows.append(pd.DataFrame({"features": feat, "dataset": "CinC2011", "record_name": p11.index.astype(str),
+                                           "label": c11.label.values, "prob_unusable": p11.values}))
         mem = pd.read_csv(CINC11 / "cinc2011_random_draws_manifest.csv")
         for draw, m in mem.groupby("draw"):
             rows.append({"features": feat, "dataset": f"CinC2011 {draw}", "n": len(m),
@@ -164,6 +167,8 @@ def analyse():
         p17 = pd.DataFrame({"record_name": c17.record_name, "label": c17.label,
                             "p": full.predict_proba(np.load(FEAT_DIR / f"CinC2017_subset_{feat}.npy"))[:, 1]})
         r17 = p17.groupby("record_name").agg(label=("label", "first"), p=("p", "max"))
+        transfer_rows.append(pd.DataFrame({"features": feat, "dataset": "CinC2017", "record_name": r17.index.astype(str),
+                                           "label": r17.label.values, "prob_unusable": r17.p.values}))
         rows.append({"features": feat, "dataset": "CinC2017 subset (record max)", "n": len(r17),
                      "auroc": roc_auc_score(r17.label, r17.p), "ap": average_precision_score(r17.label, r17.p)})
     # zero-shot d1 on the same sets, for comparison
@@ -185,6 +190,7 @@ def analyse():
     out = pd.DataFrame(rows)
     out.to_csv(SUM_OUT, index=False)
     pd.concat(oof_rows).to_csv(OOF_OUT, index=False)
+    pd.concat(transfer_rows).to_csv(TRANSFER_OUT, index=False)  # record-level transfer scores for paired tests
     print(out.round(3).to_string(index=False))
     print(f"[Saved] {SUM_OUT}")
 

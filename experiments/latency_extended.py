@@ -32,6 +32,7 @@ from scipy import signal
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from config import LOCAL_DATASETS_DIR
 from data.ecg_rendering import render_ecg_image
 from data.units import to_millivolts
 from features.sqi_extractor import SQI_FEATURE_NAMES, extract_sqi_features
@@ -39,7 +40,7 @@ from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
 from models.multimodal_fusion import SinglePassMultimodalClassifier
 
-BUT_SRC = Path("/Volumes/KIOXIA/Datasets/butqdb/brno-university-of-technology-ecg-quality-database-but-qdb-1.0.0")
+BUT_SRC = LOCAL_DATASETS_DIR / "butqdb" / "brno-university-of-technology-ecg-quality-database-but-qdb-1.0.0"
 RESULTS = PROJECT_ROOT / "results"
 N_WINDOWS, N_RUNS = 25, 3
 

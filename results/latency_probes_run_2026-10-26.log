@@ -1,0 +1,14 @@
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 5714.90it/s]
+Loading weights:   0%|          | 0/212 [00:00<?, ?it/s]Loading weights: 100%|██████████| 212/212 [00:00<00:00, 26535.93it/s]
+[latency_probes] run 1 done
+[latency_probes] run 2 done
+[latency_probes] run 3 done
+                        median_over_runs_ms  min_run_ms  max_run_ms  p95_median_over_runs_ms
+measurement                                                                                 
+hubert_preproc_ms                      4.42        4.37        4.43                     4.54
+hubert_forward_cpu_ms                 59.44       59.25       60.75                    64.32
+hubert_forward_mps_ms                 23.39       23.26       23.58                    24.09
+hubert_linear_probe_ms                 0.30        0.29        0.31                     0.35
+d1_linear_probe_ms                     0.13        0.12        0.13                     0.17
+hubert_total_cpu_ms                   64.10       63.92       65.74                    69.61
+hubert_total_mps_ms                   28.02       27.92       28.42                    28.97

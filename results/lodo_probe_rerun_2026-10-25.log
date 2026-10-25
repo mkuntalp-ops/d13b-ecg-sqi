@@ -1,0 +1,35 @@
+[probe] test=CinC2017: train 1612 windows, C={'logisticregression__C': 0.01}
+[probe] test=CinC2011: train 4484 windows, C={'logisticregression__C': 0.001}
+[probe] test=BUT_QDB: train 4002 windows, C={'logisticregression__C': 0.01}
+    test                    model  n_units  auroc_multi  auroc_multi_lo  auroc_multi_hi  auroc_single  delta  delta_lo  delta_hi  p_boot
+ BUT_QDB  Logistic_Regression_SQI     1047        0.457           0.141           0.939         0.938 -0.481    -0.845     0.082   0.067
+ BUT_QDB             LightGBM_SQI     1047        0.949           0.906           0.982         0.964 -0.015    -0.044     0.035   0.402
+ BUT_QDB      Independent_SQI_MLP     1047        0.980           0.922           0.999         0.939  0.041     0.006     0.107   0.012
+ BUT_QDB            1D_CNN_RawECG     1047        0.989           0.973           1.000         0.989  0.000    -0.018     0.026   0.968
+ BUT_QDB             2D_CNN_Image     1047        0.975           0.954           0.994         0.989 -0.014    -0.039     0.016   0.283
+ BUT_QDB        Multimodal_Fusion     1047        0.989           0.957           1.000         0.967  0.023    -0.005     0.069   0.210
+ BUT_QDB Rule_Based_SQI_Heuristic     1047          NaN             NaN             NaN         0.977    NaN       NaN       NaN     NaN
+CinC2011  Logistic_Regression_SQI      565        0.385           0.329           0.438         0.320  0.065     0.021     0.110   0.007
+CinC2011             LightGBM_SQI      565        0.679           0.632           0.725         0.754 -0.075    -0.106    -0.045   0.000
+CinC2011      Independent_SQI_MLP      565        0.325           0.290           0.357         0.672 -0.347    -0.417    -0.284   0.000
+CinC2011            1D_CNN_RawECG      565        0.785           0.743           0.826         0.719  0.066     0.034     0.098   0.000
+CinC2011             2D_CNN_Image      565        0.768           0.728           0.810         0.787 -0.019    -0.047     0.010   0.221
+CinC2011        Multimodal_Fusion      565        0.518           0.505           0.531         0.674 -0.156    -0.193    -0.120   0.000
+CinC2011 Rule_Based_SQI_Heuristic      565          NaN             NaN             NaN         0.685    NaN       NaN       NaN     NaN
+CinC2017  Logistic_Regression_SQI     8512        0.895           0.876           0.911         0.868  0.027     0.014     0.039   0.000
+CinC2017             LightGBM_SQI     8512        0.896           0.880           0.909         0.880  0.016     0.008     0.023   0.000
+CinC2017      Independent_SQI_MLP     8512        0.873           0.858           0.886         0.868  0.005    -0.006     0.015   0.432
+CinC2017            1D_CNN_RawECG     8512        0.875           0.859           0.891         0.773  0.102     0.090     0.114   0.000
+CinC2017             2D_CNN_Image     8512        0.768           0.744           0.793         0.850 -0.082    -0.098    -0.066   0.000
+CinC2017        Multimodal_Fusion     8512        0.857           0.839           0.874         0.835  0.022     0.010     0.034   0.000
+CinC2017 Rule_Based_SQI_Heuristic     8512          NaN             NaN             NaN         0.887    NaN       NaN       NaN     NaN
+ BUT_QDB               TabPFN_SQI     1047        0.880           0.806           0.957         0.962 -0.082    -0.149     0.010   0.075
+CinC2011               TabPFN_SQI      565        0.699           0.654           0.747         0.749 -0.050    -0.083    -0.017   0.002
+CinC2017               TabPFN_SQI     8512        0.842           0.818           0.866         0.858 -0.015    -0.025    -0.006   0.001
+ BUT_QDB         HuBERT_ECG_probe     1047        0.982           0.955           0.999         0.972  0.010    -0.020     0.070   0.620
+CinC2011         HuBERT_ECG_probe      565        0.804           0.764           0.846         0.562  0.242     0.195     0.293   0.000
+CinC2017         HuBERT_ECG_probe     8512        0.871           0.853           0.890         0.907 -0.036    -0.051    -0.022   0.000
+ BUT_QDB           d1_image_probe     1047        0.947           0.922           0.982         0.979 -0.032    -0.061     0.028   0.194
+CinC2011           d1_image_probe      565        0.818           0.781           0.857         0.833 -0.015    -0.026    -0.003   0.009
+CinC2017           d1_image_probe     8512        0.908           0.893           0.922         0.908  0.000    -0.008     0.009   0.974
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/lodo_summary.csv
