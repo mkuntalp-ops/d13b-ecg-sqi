@@ -69,7 +69,11 @@ p_vis = 1 / (1 + exp(−logit_vis))
 
 **Output.** The probability of "unusable" from a single forward pass with zero output tokens. Model revision: 051bcc464b01b9f92942b364d9586b0ef5912432.
 
-## Table S1. Patient-independent 5-fold cross-validation on BUT QDB (1,047 windows, 15 subjects), models of the main analysis. 95% CIs: subject-level cluster bootstrap.
+### S-M5. Latency measurement (`experiments/empirical_latency_benchmark.py`, `experiments/latency_extended.py`)
+
+Latency reflects one machine and Python implementations, and TabPFN was timed on the CPU only. Table 5 and Table S8 come from different scripts and runs: in Table 5 the models are timed one after another in one process, whereas the later script of Table S8 interleaves CPU and MPS passes per window and excludes the first window. Their MPS forward times of 1–6 ms differ by up to 2.3 ms in either direction (1D CNN 1.47 vs 2.80 ms; 2D CNN 5.12 vs 2.92 ms). Part of the image-model difference is explained by caching: the image models cache each decoded and resized strip after first use, so decoding and resizing fall inside the timed forward pass for 19 of 25 windows in Table 5, but only in the first of three runs in Table S8 (2D CNN on MPS: run median 3.75 ms, against 2.90 ms in the cached runs). The remaining differences, including the 1D CNN's, are unexplained, so MPS forward times at this scale are treated as harness-dependent; the conclusions rest only on differences of an order of magnitude, namely rendering of about 60 ms versus the forward pass, and 828 ms for d1-3B.
+
+## Table S1. Patient-independent 5-fold cross-validation on BUT QDB (1,047 windows, 15 subjects), eight approaches of the main analysis; discrimination estimates for all 11 approaches are in Table S30. 95% CIs: subject-level cluster bootstrap.
 
 <!-- source: Table 1 -->
 {{Table 1}}
@@ -104,17 +108,17 @@ p_vis = 1 / (1 + exp(−logit_vis))
 <!-- source: Table 3b -->
 {{Table 3b}}
 
-## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from main-text Table 5 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. Decoded image tensors are cached after first use, so image decoding and resizing are timed only in the first run; the reported median over runs reflects cached inputs. MPS forward times of a few milliseconds therefore differ from Table 5 (main text, Limitation 8).
+## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from main-text Table 5 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. Decoded image tensors are cached after first use, so image decoding and resizing are timed only in the first run; the reported median over runs reflects cached inputs. MPS forward times of a few milliseconds therefore differ from Table 5 (Supplementary Methods S-M5).
 
 <!-- source: Table 4b -->
 {{Table 4b}}
 
-## Table S9. Seed stability of the 1D CNN, 2D CNN and multimodal net.
+## Table S9. Seed stability of the 1D CNN, 2D CNN and multimodal net. CinC rows refer to the 150-record first-N subset of CinC 2011 Set A (Table S14), not to the 565-record evaluation of the main text.
 
 <!-- source: Table 5 -->
 {{Table 5}}
 
-## Table S10. Training-seed and CinC-subset variation of the supervised models.
+## Table S10. Training-seed and CinC-subset variation of the supervised models: CinC 2011 AUROC on the five random balanced subsets of Table S17 (the first-N subset of Table S14 is excluded), each scored with models retrained under training seeds 42 and 1–4. Logistic regression and LightGBM are not seed-varied.
 
 <!-- source: Table 6 -->
 {{Table 6}}
@@ -144,7 +148,7 @@ p_vis = 1 / (1 + exp(−logit_vis))
 <!-- source: Table 2b -->
 {{Table 2b}}
 
-## Table S16. Feature-set and scaler sensitivity of the tabular models under transfer.
+## Table S16. Feature-set and scaler sensitivity of the tabular models under transfer. CinC 2011 results refer to the 150-record first-N subset defined in Table S14.
 
 <!-- source: Table 2c -->
 {{Table 2c}}
@@ -202,7 +206,7 @@ p_vis = 1 / (1 + exp(−logit_vis))
 
 {{Table 2h}}
 
-## Table S29. CinC 2017 at natural prevalence with bootstrap confidence intervals, seven main models (recording maximum; mean in the last column).
+## Table S29. CinC 2017 at natural prevalence with bootstrap confidence intervals for AUROC and AP (decision-level metrics are point estimates), seven main models (recording maximum; mean in the last column).
 
 {{Table 8}}
 

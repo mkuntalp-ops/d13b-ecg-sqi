@@ -20,6 +20,7 @@ Output: PMEA_submission_v1/ (Word files, vector figures, Markdown sources, manif
 Usage: python evaluation/build_pmea_package.py
 """
 
+import copy
 import hashlib
 import json
 import re
@@ -81,6 +82,7 @@ REFS = {
     23: ("Pan and Tompkins 1985", 1985, "Pan J and Tompkins W J 1985 A real-time QRS detection algorithm *IEEE Transactions on Biomedical Engineering* BME-32 230–236 https://doi.org/10.1109/TBME.1985.325532"),
     24: ("DeLong et al 1988", 1988, "DeLong E R, DeLong D M and Clarke-Pearson D L 1988 Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach *Biometrics* 44 837–845 https://doi.org/10.2307/2531595"),
     25: ("Holm 1979", 1979, "Holm S 1979 A simple sequentially rejective multiple test procedure *Scandinavian Journal of Statistics* 6 65–70"),
+    27: ("Collins et al 2024", 2024, "Collins G S et al 2024 TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods *BMJ* 385 e078378 https://doi.org/10.1136/bmj-2023-078378"),
     26: ("Grinsztajn et al 2026", 2026, "Grinsztajn L et al 2026 TabPFN-3: technical report *arXiv* 2605.13986 https://arxiv.org/abs/2605.13986"),
 }
 
@@ -90,7 +92,7 @@ The author thanks the investigators and institutions that created and made avail
 
 ## AI disclosure statement
 
-Generative-AI tools were used in three distinct roles. Antigravity (Google) was used to write an initial version of the analysis code and of the manuscript draft. Claude Code (Anthropic) was used to audit and correct that code, including independent recomputation of the reported metrics and re-execution checks; to write the later analysis, table-generation, figure-generation and verification scripts; and to revise and edit the manuscript text. Perplexity was used as an LLM-as-a-judge: it reviewed successive versions of the manuscript, Supplementary Material and reporting checklist and commented on methodological, statistical and reporting problems, numerical consistency and reference accuracy. Each critique was checked against the stored study outputs before any change was accepted, and suggestions not supported by the data were not adopted. The author defined the research question, scientific objectives, datasets, evaluation protocol and interpretation framework; executed all code locally; reviewed the implementation, analytic outputs, reported results and references; and retains full responsibility for the study design, data handling, methods, analyses, results, interpretations, originality and integrity of this manuscript.
+Generative-AI tools were used in three distinct roles. Claude Code (Anthropic), with the Claude Opus 5.5 model, was used to write the analysis, table-generation, figure-generation and verification code and to write and revise the manuscript text. Antigravity (Google), with the Gemini 4 Argon model, was used to check the code. Perplexity, with the GPT-6.1 Sol model, was used as an LLM-as-a-judge: it reviewed successive versions of the manuscript, Supplementary Material and reporting checklist and commented on methodological, statistical and reporting problems, numerical consistency and reference accuracy. Each critique was checked against the stored study outputs before any change was accepted, and suggestions not supported by the data were not adopted. The author defined the research question, scientific objectives, datasets, evaluation protocol and interpretation framework; executed all code locally; reviewed the implementation, analytic outputs, reported results and references; and retains full responsibility for the study design, data handling, methods, analyses, results, interpretations, originality and integrity of this manuscript.
 
 ## Funding
 
@@ -144,7 +146,7 @@ def convert_main(text: str) -> str:
     body = body[:start] + DECLARATIONS + "\n"
     pat = re.compile(r"\[(\d{1,2}(?:\s*[–,]\s*\d{1,2})*)\]")
     found = [expand(m.group(1)) for m in pat.finditer(body)]
-    assert all(1 <= n <= 26 for f in found for n in f)
+    assert all(1 <= n <= len(REFS) for f in found for n in f)
     assert {n for f in found for n in f} == set(REFS), "every reference must be cited"
     body = pat.sub(lambda m: cite(expand(m.group(1))), body)
     refs = sorted(REFS.values(), key=lambda r: (r[2].split(" ")[0].lower(), r[1], r[2].lower()))  # first author, year
@@ -178,9 +180,26 @@ def _set_cell_borders(table):
     tbl.tblPr.append(borders)
 
 
-def postprocess(path: Path, base_pt=8.0, wide_pt=7.0):
+def _landscape_from(d, marker: str):
+    """Start a landscape A4 section at the first paragraph whose text starts with `marker`; earlier pages stay portrait."""
+    start = next((p for p in d.paragraphs if p.text.startswith(marker)), None)
+    if start is None:
+        raise ValueError(f"landscape marker not found: {marker!r}")
+    final = d.element.body.sectPr
+    brk = OxmlElement("w:p")
+    brk.append(OxmlElement("w:pPr"))
+    brk[0].append(copy.deepcopy(final))  # the section ending here keeps the portrait settings
+    start._p.addprevious(brk)
+    s = d.sections[-1]
+    s.orientation = WD_ORIENT.LANDSCAPE
+    s.page_width, s.page_height = Cm(29.7), Cm(21.0)
+
+
+def postprocess(path: Path, base_pt=8.0, wide_pt=7.0, landscape_from=None):
     d = Document(str(path))
     body = d.element.body
+    if landscape_from:
+        _landscape_from(d, landscape_from)
     for table in d.tables:
         ncol = len(table.columns)
         size = Pt(wide_pt if ncol >= 7 else base_pt)
@@ -289,7 +308,7 @@ def main():
     supp = supp.replace("# Supplementary Material 1", f"# Supplementary Material 1\n\n**{title}**\n\nMehmet Kuntalp", 1)
     (SRC / f"PMEA_Supplementary_Material_1_{V}.md").write_text(supp, encoding="utf-8")
     to_docx(SRC / f"PMEA_Supplementary_Material_1_{V}.md", OUT / f"PMEA_Supplementary_Material_1_{V}.docx", ref,
-            base_pt=7.5, wide_pt=6.5)
+            base_pt=8.0, wide_pt=7.5, landscape_from="Table S1.")  # tables S1-S33 on landscape pages
 
     shutil.copy(MS / "tripod_ai_checklist_q1.md", SRC / f"PMEA_TRIPOD_AI_Checklist_{V}.md")
     to_docx(SRC / f"PMEA_TRIPOD_AI_Checklist_{V}.md", OUT / f"PMEA_TRIPOD_AI_Checklist_{V}.docx", ref, base_pt=8, wide_pt=8)

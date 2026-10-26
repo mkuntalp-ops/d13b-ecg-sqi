@@ -14,7 +14,7 @@
 | Portal türü | Dosya |
 |---|---|
 | Ana metin (Word) | `PMEA_Manuscript_v1.docx` (tablolar ve şekiller metin içinde, tablo başlıkları üstte) |
-| Ek materyal | `PMEA_Supplementary_Material_1_v1.docx` (Ek Yöntemler S-M1–S-M4, Tablo S1–S33) |
+| Ek materyal | `PMEA_Supplementary_Material_1_v1.docx` (Ek Yöntemler S-M1–S-M5, Tablo S1–S33) |
 | Raporlama kontrol listesi (ek dosya) | `PMEA_TRIPOD_AI_Checklist_v1.docx` |
 | Kapak mektubu | `PMEA_Cover_Letter_v1.docx` |
 | Başlık sayfası | `PMEA_Title_Page_v1.docx` |
@@ -28,14 +28,15 @@
 - **Yazar bloğu:** başlığın altına, önceki PMEA-107866 başvurusuyla aynı biçimde eklendi.
 - **Özet:**
   - PMEA başlıkları kullanıldı: Objective / Approach / Main results / Significance.
-  - Düz paragraf halinde, 248 kelime.
+  - Düz paragraf halinde, 248 kelime (başlıklar dahil; PMEA araştırma makalesi sınırı 250).
   - Anahtar kelimeler ve kısaltmalar eklendi.
 - **Atıflar:** numaralı atıflar IOP Harvard (yazar–yıl) biçimine çevrildi.
-  - Kaynakça alfabetik sırada; 26 kaynağın hepsine atıf var.
+  - Kaynakça alfabetik sırada; 27 kaynağın hepsine atıf var.
   - Ek materyalde atıf yok; köşeli parantezli değer aralıkları değiştirilmedi.
 - **Beyan bölümleri:** PMEA düzenine göre: Acknowledgements, AI disclosure, Funding, Ethics, Conflicts of interest, Author contributions, Data availability.
 - **Sayfa düzeni:**
   - Dikey A4, 2.2 cm kenar boşluğu.
+  - Ek materyalde Tablo S1–S33 yatay A4 sayfalarda (8/7.5 punto); Ek Yöntemler dikey.
   - Tablolarda kenarlık, küçük yazı ve her sayfada tekrarlanan başlık satırı var. Tablo satırları bölünmüyor; başlıklar tablolarıyla aynı sayfada kalıyor.
 
 ## Göndermeden önce
