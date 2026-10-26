@@ -254,3 +254,9 @@ __marimo__/
 
 # Keep the regeneration run logs under results/ (the GitHub template ignores *.log)
 !results/*.log
+
+# PMEA submission package: binary deliverables are rebuilt by evaluation/build_pmea_package.py
+PMEA_submission_v*/*.docx
+PMEA_submission_v*/PDF_preview/
+PMEA_submission_v*/PMEA_Main_Figures/
+PMEA_submission_v*/markdown_sources/*.docx

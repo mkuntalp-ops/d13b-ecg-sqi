@@ -202,7 +202,7 @@ p_vis = 1 / (1 + exp(−logit_vis))
 | **0 dB (Equal Power)** | -0.930 ± 0.055 | -0.902 ± 0.087 | -0.683 ± 0.373 | -0.668 ± 0.365 | -0.852 ± 0.271 | -0.092 ± 0.119 |
 | **-6 dB (Severe Noise)** | -0.956 ± 0.032 | -0.893 ± 0.098 | -0.713 ± 0.356 | -0.673 ± 0.363 | -0.851 ± 0.273 | -0.078 ± 0.113 |
 
-## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from main-text Table 5 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. MPS forward times of a few milliseconds therefore differ from Table 5 (main text, Limitation 8).
+## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from main-text Table 5 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. Decoded image tensors are cached after first use, so image decoding and resizing are timed only in the first run; the reported median over runs reflects cached inputs. MPS forward times of a few milliseconds therefore differ from Table 5 (main text, Limitation 8).
 
 | Step | Median (three runs) | Range of run medians | p95 (median over runs) |
 | :--- | :---: | :---: | :---: |

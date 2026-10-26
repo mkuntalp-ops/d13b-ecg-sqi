@@ -5,20 +5,9 @@
 
 **Objective.** To measure how much in-domain performance of ECG usability models survives transfer to new devices and labels.
 
-**Methods.** Eleven models were developed on BUT QDB (1,047 single-lead 10-s windows, 15 subjects) with subject-grouped cross-validation and applied unchanged to CinC 2011 (565 records) and CinC 2017 (8,512 recordings, 3.3% noisy); seven were stress-tested on NSTDB:
-- SQI logistic regression, LightGBM, MLP and TabPFN;
-- raw-signal and image CNNs, and a multimodal network;
-- a rule-based heuristic;
-- zero-shot d1-3B, a 3.1-billion-parameter vision-language model;
-- linear probes on frozen d1-3B and HuBERT-ECG features.
+**Methods.** Eleven models (SQI logistic regression, LightGBM, MLP and TabPFN; raw-signal and image CNNs and a multimodal network; a rule-based heuristic; zero-shot d1-3B, a 3.1-billion-parameter vision-language model; and linear probes on frozen d1-3B and HuBERT-ECG features) were developed on BUT QDB (1,047 single-lead 10-s windows, 15 subjects) with subject-grouped cross-validation and applied unchanged to CinC 2011 (565 records) and CinC 2017 (8,512 recordings, 3.3% noisy); seven were also stress-tested on NSTDB. Leave-one-dataset-out training (five seeds) tested multi-source development; thresholds were re-set on small labelled target samples. Paired AUROC tests were Holm-adjusted.
 
-Leave-one-dataset-out training (five seeds) tested multi-source development; thresholds were re-set on small labelled target samples. Paired AUROC tests were Holm-adjusted.
-
-**Results.** In-domain, ten models reached AUROC 0.938–0.989, none significantly below the best; zero-shot d1-3B (0.852) was. Externally, rankings changed:
-- On CinC 2011, the d1-3B image-token probe was best (0.833 vs 0.787; adjusted p = 0.015).
-- On CinC 2017, the d1-3B probe (0.908), the HuBERT-ECG probe (0.907) and the heuristic (0.887) formed the top tier, and the 1D CNN fell to 0.773.
-
-Across five seeds, multi-source training improved the 1D CNN (median +0.066 and +0.102) and degraded the 2D CNN. Development-data thresholds did not transfer. At 3.3% prevalence, thresholds re-set on 100 labelled recordings controlled false rejections but kept median sensitivity below 30%.
+**Results.** In-domain, ten models reached AUROC 0.938–0.989, none significantly below the best; zero-shot d1-3B (0.852) was. Externally, rankings changed: on CinC 2011, the d1-3B image-token probe was best (0.833 vs 0.787; adjusted p = 0.015); on CinC 2017, the d1-3B probe (0.908), the HuBERT-ECG probe (0.907) and the heuristic (0.887) formed the top tier, and the 1D CNN fell to 0.773. Across five seeds, multi-source training improved the 1D CNN (median +0.066 and +0.102) and degraded the 2D CNN. Development-data thresholds did not transfer. At 3.3% prevalence, thresholds re-set on 100 labelled recordings controlled false rejections but kept median sensitivity below 30%.
 
 **Conclusions.** In-domain benchmarks did not identify the model that transferred best. A probe on frozen vision-language features was never significantly behind the best. Operating points need local calibration with sufficient positives.
 
@@ -124,7 +113,7 @@ Full SQI definitions, network architectures, the heuristic formula and the d1-3B
 - L2 logistic regression on standardised inputs.
 - LightGBM (100 trees, depth 4, learning rate 0.05).
 - A two-layer MLP: 64 and 32 units, each followed by batch normalisation and ReLU, dropout 0.2 after the first layer, 3,201 parameters.
-- TabPFN-3 [26], a pre-trained tabular foundation model building on [16], used without tuning.
+- TabPFN-3 [26], a pre-trained tabular foundation model building on earlier TabPFN versions [16], used without tuning.
   - *Package and checkpoint:* `tabpfn` package 9.0.0 with the checkpoint file `tabpfn-v3-classifier-v3_default.ckpt` (model name TabPFN-v3, architecture `tabpfn_v3`; SHA-256 prefix d0d865d5), loaded explicitly by path. No automatic model-version selection was used.
   - *Inference settings:* package defaults (number of estimators and softmax temperature `auto`, no probability balancing), random state 42, CPU.
 
@@ -552,7 +541,14 @@ For a deployment, the training sources and their label definitions matter as muc
 - *Table 5:* the models are timed one after another in one process.
 - *Table S8:* a later script interleaves CPU and MPS passes per window and excludes the first window.
 
-Their MPS forward times of 1–6 ms differ by up to 2.3 ms in either direction (1D CNN 1.47 vs 2.80 ms; 2D CNN 5.12 vs 2.92 ms). MPS forward times at this scale are therefore harness-dependent. The conclusions rest only on differences of an order of magnitude: rendering of about 60 ms versus the forward pass, and 828 ms for d1-3B.
+Their MPS forward times of 1–6 ms differ by up to 2.3 ms in either direction (1D CNN 1.47 vs 2.80 ms; 2D CNN 5.12 vs 2.92 ms).
+
+Part of the image-model difference is explained by caching:
+- the image models cache each decoded and resized strip after first use;
+- in Table 5, decoding and resizing therefore fall inside the timed forward pass for 19 of 25 windows;
+- in Table S8 they fall inside it only in the first of three runs (2D CNN on MPS: run median 3.75 ms, against 2.90 ms in the cached runs).
+
+The remaining differences, including the 1D CNN's, are unexplained, so MPS forward times at this scale are treated as harness-dependent. The conclusions rest only on differences of an order of magnitude: rendering of about 60 ms versus the forward pass, and 828 ms for d1-3B.
 
 **9. NSTDB.** The NSTDB SNR labels are nominal, and there is one noisy record per label and base record.
 

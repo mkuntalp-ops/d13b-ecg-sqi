@@ -1,0 +1,25 @@
+{
+  "built": "2026-10-26",
+  "builder": "evaluation/build_pmea_package.py",
+  "files": {
+    "PDF_preview/PMEA_Manuscript_v1_preview.pdf": "7e2b6679af846abb10c742c21b4cf3213ed971eaf66c97f84d5a57d040df95ee",
+    "PDF_preview/PMEA_Supplementary_Material_1_v1_preview.pdf": "38f471299b94ef0ddbd475817758bc66d601cfd1cd02ca99b95768fd30b2e9a7",
+    "PMEA_Author_Information_and_Declarations_v1.docx": "9219f318ee44ca2d86089bda4b00e6e8e24691cb14292500b9276d13ada25b1c",
+    "PMEA_Cover_Letter_v1.docx": "3a51bae556d77b862f2ceab332be3a96900774a45ac7fff81aa73c27be53f4d8",
+    "PMEA_Gonderim_Kontrol_Listesi_v1.md": "b0c71f29d5fa5d2b02004e5ab84989200ef87e4a609f6744dd890c7788d1cb00",
+    "PMEA_Main_Figures/Figure_1.pdf": "b31cf58aacf95fd27feff40263ce48204c0ad4ee23c67edd1be8d19666bef27a",
+    "PMEA_Main_Figures/Figure_2.pdf": "de2d2a1bcf9c74df0f41bca6788a17bac1dc50a2200144f59398dafea464b96c",
+    "PMEA_Main_Figures/Figure_3.pdf": "1285f69105e653de564479510915256d49d94c979eabdc873975ef11c9b87d17",
+    "PMEA_Manuscript_v1.docx": "6cdc4b317bcbe563bf8702b51d4d7fcd26fa140a603e703340fc3c75e9ed9ada",
+    "PMEA_Supplementary_Material_1_v1.docx": "e1ee5e0d5495f4f8ccd851670ee8caa0c27556e7adb8ed1201a2e2461be5bacc",
+    "PMEA_TRIPOD_AI_Checklist_v1.docx": "27a3d6ed27d25314e242320b4a3ba7f48081397c5d805c6cc91c31f9182b8402",
+    "PMEA_Title_Page_v1.docx": "46871970d00e771d699fd75c28f7f08682ca7af9fc7228006528b0ebfa5be3d6",
+    "markdown_sources/PMEA_Author_Information_and_Declarations_v1.md": "bbfe34e97d3d4ecb9571f9ac05f0549a244ccd38b83107b229ab41b0c2736b7e",
+    "markdown_sources/PMEA_Cover_Letter_v1.md": "d31904c4b56e4e0091202d4ef63ce0109ca1d71d16278ef361de07e51c3d2274",
+    "markdown_sources/PMEA_Manuscript_v1.md": "4255065a9a63014b7f399780e4431f008b741c4a962849aefd70cfba09754cbe",
+    "markdown_sources/PMEA_Supplementary_Material_1_v1.md": "00621654e65b60cc5643e97ece79ce1a25f49e0d847167a0da2265f75aa8538f",
+    "markdown_sources/PMEA_TRIPOD_AI_Checklist_v1.md": "f8498496eadfbc853d19daa3f117bb19ca2f981b9e17ae2f73b969e4962800b2",
+    "markdown_sources/PMEA_Title_Page_v1.md": "2a5ffd2e643eba8f948289ad7c37cf4ffa3a15b6f1ebf008ddca83b0cd1d1126",
+    "markdown_sources/reference_A4.docx": "5a71fe1e6373ff4466fb150364be626002d223bf9c588d57216faad920e22cb6"
+  }
+}

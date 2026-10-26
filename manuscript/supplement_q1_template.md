@@ -138,7 +138,7 @@ p_vis = 1 / (1 + exp(−logit_vis))
 <!-- source: Table 3b -->
 {{Table 3b}}
 
-## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from main-text Table 5 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. MPS forward times of a few milliseconds therefore differ from Table 5 (main text, Limitation 8).
+## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from main-text Table 5 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. Decoded image tensors are cached after first use, so image decoding and resizing are timed only in the first run; the reported median over runs reflects cached inputs. MPS forward times of a few milliseconds therefore differ from Table 5 (main text, Limitation 8).
 
 <!-- source: Table 4b -->
 {{Table 4b}}
