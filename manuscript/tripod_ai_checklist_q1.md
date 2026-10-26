@@ -4,14 +4,13 @@
 
 **Study type.** Development (D) and evaluation (E): model development with patient-independent internal validation, and external evaluation on three datasets.
 
-**Locations.** Section numbers refer to the accompanying main manuscript; Tables S1–S31 and Supplementary Methods S-M1 to S-M4 refer to the accompanying supplementary material.
+**Locations.** Section numbers refer to the accompanying main manuscript; Tables S1–S33 and Supplementary Methods S-M1 to S-M4 refer to the accompanying supplementary material.
 
 **Status codes.**
 - Reported: the item is fully addressed.
 - Partly: the item is addressed in part.
 - Not reported: the reason is given.
 - N/A: not applicable.
-- Authors: the authors must complete the item.
 
 | Item | Topic (paraphrase) | Status | Where / note |
 |---|---|---|---|
@@ -46,13 +45,13 @@
 | 14 | Fairness approaches | Not reported | Limitation 11 |
 | 15 | Model output and threshold selection | Reported | Section 2.4 (operating points: post hoc, nested, transferred, local); test-set isolation stated per analysis type (Section 2.3) |
 | 16 | Differences between development and evaluation data | Reported | Sections 2.1 and 3.2 (label definitions, feature shift; Table S6) |
-| 17 | Ethics approval and consent | Authors | Ethics section drafted (public de-identified data; BUT QDB IRB EC:EK:05b/2018). Authors to confirm. |
-| 18a | Funding | Authors | Placeholder in the manuscript |
-| 18b | Conflicts of interest | Authors | Placeholder in the manuscript |
+| 17 | Ethics approval and consent | Reported | Ethics approval and consent section: secondary analysis of public de-identified data; BUT QDB collected under IRB protocol EC:EK:05b/2018; ethical approval not required |
+| 18a | Funding | Reported | Funding section (no specific grant) |
+| 18b | Conflicts of interest | Reported | Conflicts of interest section (none declared) |
 | 18c | Protocol availability | Partly | The dated analysis plan for the revision analyses is in the repository (Section 2.5). There is no protocol for the original analyses (stated). |
 | 18d | Registration | Reported | Not registered (stated in Section 2.5) |
 | 18e | Data availability | Reported | Data and code availability (PhysioNet) |
-| 18f | Code availability | Partly | Repository URL given. Archive DOI to be added by the authors. |
+| 18f | Code availability | Reported | Public repository https://github.com/mkuntalp-ops/d13b-ecg-sqi (MIT licence) with code, saved predictions and table/figure scripts (Data availability statement) |
 | 19 | Patient and public involvement | Reported | None (Ethics section) |
 | 20a | Participant flow and outcome counts | Reported | Section 2.1 gives the numeric flow for each dataset: recordings, exclusions, windows, units and outcome counts. LODO training sets are in Section 2.4. No diagram (optional in the guideline). |
 | 20b | Participant characteristics | Partly | Dataset-level characteristics only; demographics not analysed (Limitation 11). |
@@ -67,11 +66,6 @@
 | 27a | Handling of poor or unavailable input at implementation | Partly | The model's task is to flag poor input. Section 4 recommends an explicit constant-signal check, because several models missed constant leads (Table S28). Recordings shorter than one window were excluded. |
 | 27b | User interaction and expertise | Not reported | Not specified for a deployment. |
 | 27c | Next steps for applicability | Reported | Sections 4 and 5 (local calibration with enough positives; multi-lead input) |
-
-**Items for the authors.**
-- 17: confirm the ethics statement.
-- 18a and 18b: funding and conflicts of interest.
-- 18f: archive DOI.
 
 **Items that could be strengthened if the target journal requires it.**
 - 3b: state the intended users.

@@ -67,10 +67,10 @@ This study provides that benchmark for single-lead usability screening. Its cont
 - *Candidate pool.* All non-overlapping 10-s windows inside the annotation intervals formed a candidate pool of 32,956 windows (16.0% Class 3).
 - *Sampling.* Per subject, up to 50 usable and up to 60 unusable windows were sampled evenly in time. This gave 1,047 windows (297 unusable) from 17 records and 15 subjects. Class 3 occurred in 7 subjects.
 - *Resampling.* Windows were resampled to 500 Hz (Fourier method).
-- *Relation to the official protocol.* The recently published data descriptor defines a subject-independent train/test split (11 records from 8 subjects versus 7 records from 7 subjects) and a sample-level three-class evaluation [20]. It also excludes a 13-h stretch of missing signal at the start of record 105001, which is included in our 99.39 h. Our cohort and folds were defined without reference to that protocol and do not follow it. According to the repository history, the cohort was created in October 2026, after the descriptor was published. 59 of our 297 unusable windows lie in the excluded stretch. Two sensitivity analyses address this (Section 2.4). They were specified after this count was known, but before their results were computed.
+- *Relation to the official protocol.* The recently published data descriptor defines a subject-independent train/test split (11 records from 8 subjects versus 7 records from 7 subjects) and a sample-level three-class evaluation [20]. It also excludes a 13-h stretch of missing signal at the start of record 105001, which is included in our 99.39 h. Our cohort and folds were defined without reference to that protocol and do not follow it. The cohort was created in October 2026, after the descriptor was published, without using its split or evaluated intervals. 59 of our 297 unusable windows lie in the excluded stretch. Two sensitivity analyses address this (Section 2.4). They were specified after this count was known, but before their results were computed.
 
 **CinC 2011 Set A (external, 12-lead label).** These are 10-s 12-lead recordings at 500 Hz, labelled acceptable or unacceptable for 12-lead interpretation [11, 12].
-- The external set is the union of six balanced subsets drawn for the transfer analyses: 565 records (197 unacceptable, 368 acceptable).
+- The external set is the union of six balanced subsets drawn for the transfer analyses: 565 records (197 unacceptable, 368 acceptable). These are the records on which every model, including d1-3B, was run during the study; the remaining Set A records were not scored.
 - Five of the six subsets are random; one consists of the first 75 records of each sorted list.
 - Lead II was scored in the primary analysis; all 12 leads were scored in a sensitivity analysis.
 
@@ -85,7 +85,7 @@ This study provides that benchmark for single-lead usability screening. Its cont
 
 ### 2.2 Inputs
 
-**Tabular inputs.** Thirteen tabular inputs were computed per window: 11 SQIs [2–4] and two constants (window duration and sampling rate). The 11 SQIs are:
+**Tabular inputs.** Thirteen tabular inputs were computed per window: 11 SQIs [2–4] and two constants, window duration and sampling rate. After windowing and resampling, these two are 10 s and 500 Hz in every dataset. They carry no information and cannot identify the dataset of origin; they were kept from the original feature set so that all tabular models share one input vector. The 11 SQIs are:
 - bSQI, the agreement of the Pan–Tompkins [23] and a difference-based QRS detector, with a 50-ms tolerance;
 - spectral baseline-wander, high-frequency, QRS-band and powerline ratios;
 - saturation and flatline fractions;
@@ -123,7 +123,7 @@ Full SQI definitions, network architectures, the heuristic formula and the d1-3B
 
 **Multimodal.** A gated fusion of a three-block image encoder and an SQI branch (131,969 parameters).
 
-**Rule heuristic.** A fixed logistic combination of five SQIs and two strip features with hand-set coefficients (no trainable parameters; formula in the Supplementary Methods).
+**Rule heuristic.** A fixed logistic combination of five SQIs and two strip features with hand-set coefficients (no trainable parameters; formula in the Supplementary Methods). The coefficients were set during the initial prototyping of the analysis code, and their independence from BUT QDB cannot be guaranteed. The heuristic's BUT QDB results are therefore reported for reference only; its evaluation rests on the external datasets.
 
 **Zero-shot vision-language model.** LiquidAI d1-3B (3.12 × 10^9 parameters) [9].
 - *Input:* the strip, a text summary of 10 of the 13 tabular inputs, and a usability question.
@@ -153,7 +153,7 @@ Full SQI definitions, network architectures, the heuristic formula and the d1-3B
 
 ### 2.4 Evaluation protocols
 
-**Patient-independent cross-validation.** We used five subject-grouped folds on BUT QDB (three subjects per fold). Scalers, probes and thresholds were fitted on training folds only. No subject appears in more than one fold, and windows do not overlap.
+**Patient-independent cross-validation.** We used five subject-grouped folds on BUT QDB (three subjects per fold). Each fold's unusable windows came from only one or two subjects, so fold-level AUROCs would mostly reflect single subjects. In-domain performance is therefore reported as the AUROC of the pooled out-of-fold predictions, with subject-level cluster-bootstrap intervals. Scalers, probes and thresholds were fitted on training folds only. No subject appears in more than one fold, and windows do not overlap.
 
 **Official BUT QDB protocol (sensitivity analyses).**
 - *F1a:* the pooled out-of-fold AUROC was recomputed without the 59 windows from the excluded 105001 stretch (988 windows, 238 unusable). This is evaluation-only; the models had been trained with these windows.
@@ -207,7 +207,7 @@ In (d), Platt scaling fitted on the same draws was compared with the uncalibrate
 - on BUT QDB, with a subject-level cluster bootstrap of the AUROC difference (2,000 resamples);
 - on the external datasets, where recordings are independent, with DeLong's test [24].
 
-**Multiplicity.** Within each evaluation set, all pairwise comparisons formed one family and were Holm-adjusted [25]. The families were BUT QDB, CinC 2011, CinC 2017 and the balanced 556-recording CinC 2017 subset, each with 11 models (55 comparisons). LODO effects (multi-source versus BUT-only) were Holm-adjusted within each held-out dataset.
+**Multiplicity.** Within each evaluation set, all pairwise comparisons formed one family and were Holm-adjusted [25]. The families were BUT QDB, CinC 2011, CinC 2017 and the balanced 556-recording CinC 2017 subset, each with 11 models (55 comparisons). LODO effects (multi-source versus BUT-only) were Holm-adjusted within each held-out dataset. As a sensitivity analysis, the ten comparisons with the best model of each set were also adjusted as a separate family (Table S33); this family is defined after seeing the point estimates.
 
 **Secondary tests.**
 - *Official-protocol analyses:* each was Holm-adjusted over its own pairwise comparisons.
@@ -230,6 +230,8 @@ In (d), Platt scaling fitted on the same draws was compared with the uncalibrate
 - resampling from the native 1,000-Hz signal;
 - forward passes on CPU and GPU.
 
+Table 5 times each model from the stored 500-Hz window: resampling was done offline, so its preprocessing time for the 1D CNN is near zero, and per-window z-scoring is part of the forward pass. Times from the native 1,000-Hz signal, and CPU times, are in Table S8. The foundation-model probes and TabPFN were timed with the harness of Table S8 and are reported in Table S27 rather than in Table 5.
+
 **Reproducibility.**
 - Code, fixed seeds, pinned dependency versions, saved predictions and the scripts that generate every table are available.
 - Every table is produced from saved outputs by script.
@@ -237,7 +239,7 @@ In (d), Platt scaling fitted on the same draws was compared with the uncalibrate
 
 ## 3. Results
 
-### 3.1 In-domain performance does not separate the leading models
+### 3.1 In-domain AUROCs clustered above 0.93 and did not identify the best-transferring model
 
 On BUT QDB, ten models reached pooled out-of-fold AUROC 0.938–0.989 (Table 1; per-model details in Table S1; 95% CIs for all 11 models in every evaluation set in Table S30):
 - 1D and 2D CNN: 0.989;
@@ -250,7 +252,9 @@ On BUT QDB, ten models reached pooled out-of-fold AUROC 0.938–0.989 (Table 1; 
 - MLP: 0.939;
 - logistic regression: 0.938.
 
-**No differences from the best.** None of these ten differed significantly from the best model after Holm adjustment (all p_Holm ≥ 0.29).
+**No significant differences from the best.** None of these ten differed significantly from the best model after Holm adjustment (all p_Holm ≥ 0.29).
+
+This reflects limited power as much as similarity. Without multiplicity adjustment, the MLP, logistic regression and TabPFN were below the 1D CNN (p = 0.006, 0.010 and 0.027). With Holm adjustment restricted to the ten comparisons with the best model (a sensitivity analysis), none of them was significant (smallest adjusted p = 0.054; Table S33).
 
 **Zero-shot d1-3B.** Zero-shot d1-3B (0.852) was significantly worse than the best model, the 2D CNN, the multimodal net and the d1-3B probe (all p_Holm < 0.001). The linear probe on the same model's frozen image tokens reached 0.979, an AUROC gain of 0.127 (95% CI 0.041–0.242). This shows that the representation contains useful task-relevant information that the zero-shot decision configuration does not exploit effectively.
 
@@ -330,14 +334,20 @@ The 1D CNN had been jointly best in-domain.
 - powerline ratio: 0.773 versus 0.312;
 - zero-crossing rate: 0.727 versus 0.248.
 
-bSQI is informative again in CinC 2017 (0.124, i.e., low agreement marks noise). The flatline fraction in CinC 2011 largely counts repeats caused by 5-µV amplitude quantization: acceptable records already have a median of 0.28. In BUT QDB, which is resampled from 1,000 Hz and takes continuous values, the flatline fraction is near zero.
+bSQI is informative again in CinC 2017 (0.124, i.e., low agreement marks noise).
+
+Two mechanisms contribute to the reversals; the second is post hoc and descriptive (Table S32).
+- *Asymmetric preprocessing.* BUT QDB windows are Fourier-resampled from 1,000 Hz, which removes amplitude quantization, so their flatline fraction is near zero. CinC 2011 lead II is used at its native 500 Hz with 5-µV steps, so its flatline fraction largely counts quantization repeats: acceptable records already have a median of 0.28.
+- *Constant leads.* The 65 constant-lead CinC 2011 records have high-frequency, powerline and zero-crossing values of 0, which look like a clean signal under the BUT QDB associations. Without these records, the univariate AUROCs were 0.459, 0.465 and 0.371 for high-frequency ratio, powerline ratio and zero-crossing rate. The strong reversals largely disappear, but the features do not regain their BUT QDB direction; in the remaining records they are only weakly informative.
+
+The SQI logistic regression rose from 0.320 to 0.478 without the constant-lead records (Table S28).
 
 **The hand-set heuristic outperformed its logistic-regression replacement.** The replacement, which used the same seven inputs (Table S22), had a lower AUROC in every evaluation:
 - BUT QDB: 0.925 versus 0.977 (cluster-bootstrap p = 0.001);
 - CinC 2011: 0.325 versus 0.685 (DeLong p < 0.001);
 - CinC 2017: 0.864 versus 0.887 (DeLong p < 0.001).
 
-Whether the hand-set coefficients were chosen after inspecting BUT QDB outcomes is not documented (Section 4).
+Because the heuristic's coefficients may not be independent of BUT QDB (Section 2.3), only the two external comparisons are informative.
 
 **Noise stress.** Under paired electrode-motion stress (Table S7), every trained model lowered its usable probability as noise increased. At 0 dB, the mean paired change was −0.93 for logistic regression, −0.90 for LightGBM, −0.85 for the multimodal net, −0.68 for the 1D CNN and −0.67 for the 2D CNN. Zero-shot d1-3B changed by at most 0.09 and did not track the noise.
 
@@ -460,7 +470,7 @@ On CinC 2011, the same thresholds gave sensitivities between 0% (MLP) and 100% a
 
 **Image pipelines.** For the image pipelines, rendering dominated: about 60 ms (92% of the total) against 5 ms for the forward pass. This cost belongs to the plotting library rather than to rasterization as such: a direct raster renderer took 0.63 ms (Table S8). The image models, however, were not evaluated on those strips.
 
-**1D CNN.** The 1D CNN took 1.41 ms on the CPU from the native 1,000-Hz window, with no rendering step.
+**1D CNN.** The 1D CNN took 1.47 ms on the GPU from the stored 500-Hz window (Table 5), and 1.41 ms on the CPU from the native 1,000-Hz window including resampling (Table S8), with no rendering step.
 
 **d1-3B.** d1-3B took 891 ms per window, dominated by its 828-ms forward pass.
 
@@ -483,9 +493,9 @@ On CinC 2011, the same thresholds gave sensitivities between 0% (MLP) and 100% a
 
 Two caveats limit this interpretation:
 - *Functional form:* the replacement also changes the functional form, so the performance difference cannot be attributed solely to the hand-set coefficients.
-- *Development history:* the rule's development history is undocumented, which prevents a definitive assessment of whether BUT QDB influenced it.
+- *Development data:* the coefficients were set during initial prototyping, and their independence from BUT QDB cannot be guaranteed. The in-domain comparison is therefore not informative, and the interpretation rests on CinC 2011 and CinC 2017.
 
-**The quantization artefact.** The quantization artefact in the flatline fraction is a concrete example of a feature whose meaning depends on the acquisition chain. It should be redefined (for example, on a minimum duration of constant signal at a quantization-aware tolerance) before it is used across devices.
+**The quantization artefact.** The quantization artefact in the flatline fraction is a concrete example of a feature whose meaning depends on the acquisition chain, here including our own preprocessing: resampling removed quantization from BUT QDB but not from CinC 2011. It should be redefined (for example, on a minimum duration of constant signal at a quantization-aware tolerance) before it is used across devices.
 
 **Foundation models: information present but not exploited.** The zero-shot vision-language model was among the weakest models in-domain and did not track controlled noise. Yet a linear probe on the image tokens of the same forward pass was never significantly behind the best model. It was best on CinC 2011 and on the full CinC 2017 set. Its representation therefore contains task-relevant information that the zero-shot decision configuration does not exploit effectively. The probe shows that useful information is present; it does not identify every reason for the zero-shot failure.
 
@@ -499,7 +509,8 @@ Both observations are plausible for a model pre-trained on 12-lead recordings an
 
 **Multi-source training is not a general remedy.** Multi-source development is often recommended for robustness [15]. Here it helped the raw-signal CNN substantially and consistently across seeds, but it harmed the 2D CNN on both external targets and the MLP on CinC 2011. Two features of the design contribute:
 - the training sources carry different labels (single-lead classifiability, 12-lead acceptability, expert three-class quality);
-- the training sources have very different sizes.
+- the training sources have very different sizes;
+- the source labels are transferred to single-lead 10-s windows. CinC 2017 recording labels are copied to every window, and CinC 2011 12-lead labels are assigned to lead II, which may be clean when another lead is not. This weak and partly noisy supervision may contribute to the losses of the 2D CNN and the HuBERT-ECG probe.
 
 For a deployment, the training sources and their label definitions matter as much as their number.
 
@@ -511,7 +522,7 @@ For a deployment, the training sources and their label definitions matter as muc
 
 ### 4.1 Limitations
 
-**1. Development cohort size.** The development cohort has 15 subjects, and unusable windows occur in only 7. Subject-grouped folds prevent identity leakage, but they cannot add diversity. In-domain non-significance therefore partly reflects limited power: confidence intervals of the AUROC differences are wide.
+**1. Development cohort size.** The development cohort has 15 subjects, and unusable windows occur in only 7. Subject-grouped folds prevent identity leakage, but they cannot add diversity. In-domain non-significance therefore partly reflects limited power. With unusable windows in only 7 subject clusters, the cluster-bootstrap intervals of the AUROC differences are wide: in sensitivity analysis F1a, even a 0.159 difference was not significant after adjustment.
 
 **2. Sampling and protocol.** Windows were sampled by quota (28.4% unusable), so precision is reported re-weighted. The primary analysis does not follow the official BUT QDB protocol [20]. It includes 59 unusable windows from a stretch of missing signal that the protocol excludes; these windows slightly inflate in-domain AUROC (Table S26). Our models output window-level binary scores, so the official sample-level three-class metrics were not computed.
 
@@ -578,21 +589,26 @@ Whether performance differs by sex, age or device population is therefore unknow
 
 ## Ethics, funding and competing interests
 
-**Ethics.** [AUTHORS TO CONFIRM] This study used only public, de-identified PhysioNet datasets [11, 19, 21, 22], which were collected under the approvals stated by their providers (for BUT QDB, IRB Protocol EC:EK:05b/2018 of Brno University of Technology [19, 20]). No new data were collected.
+**Ethics.** This study is a secondary analysis of public, de-identified PhysioNet datasets [11, 19, 21, 22], collected under the approvals stated by their providers (for BUT QDB, IRB Protocol EC:EK:05b/2018 of Brno University of Technology [19, 20]). No new data were collected from human participants, and ethical approval was not required for this secondary analysis.
 
-**Funding.** [AUTHORS TO COMPLETE]
+**Funding.** This research received no specific grant from any funding agency in the public, commercial or not-for-profit sectors.
 
-**Competing interests.** [AUTHORS TO COMPLETE]
+**Competing interests.** The author declares no competing interests.
 
 **Patient and public involvement.** None.
 
-**Use of AI tools.** [AUTHORS TO CONFIRM] An AI coding assistant (Claude, Anthropic) was used for code development, analysis scripts and drafting of the manuscript text under the authors' direction. All analyses, results and text were checked by the authors, who take responsibility for the content.
+**Use of AI tools.** Generative-AI tools were used in three distinct roles.
+- *Antigravity (Google):* an initial version of the analysis code and of the manuscript draft.
+- *Claude Code (Anthropic):* auditing and correcting that code, including independent recomputation of the reported metrics; the later analysis, table, figure and verification scripts; and revision of the manuscript text.
+- *Perplexity:* an LLM-as-a-judge review of successive manuscript versions.
+
+Each critique was checked against the stored outputs before any change was accepted. The author takes full responsibility for the content.
 
 ## Data and code availability
 
 **Data.** All datasets are public on PhysioNet [11, 19, 21, 22].
 
-**Code and outputs.** Code, saved predictions, pinned dependency versions, the dated analysis plan and the scripts that generate every table and figure are available at https://github.com/mkuntalp-ops/d13b-ecg-sqi [archive DOI: AUTHORS TO ADD after archiving a release]. The d1-3B (Liquid AI), HuBERT-ECG and TabPFN weights are obtained from their providers under their own licences.
+**Code and outputs.** Code, saved predictions, pinned dependency versions, the dated analysis plan and the scripts that generate every table and figure are available at https://github.com/mkuntalp-ops/d13b-ecg-sqi. The d1-3B (Liquid AI), HuBERT-ECG and TabPFN weights are obtained from their providers under their own licences.
 
 ## References
 

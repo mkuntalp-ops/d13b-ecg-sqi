@@ -2,7 +2,7 @@
 
 Physiological Measurement — Research paper
 
-**Author:** Mehmet Kuntalp (sole author) [AUTHOR TO CONFIRM]
+**Author:** Mehmet Kuntalp (sole author)
 
 **Affiliation:** Department of Electrical and Electronics Engineering, Dokuz Eylül University, İzmir, Turkey
 

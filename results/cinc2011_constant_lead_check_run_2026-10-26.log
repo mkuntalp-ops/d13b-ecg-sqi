@@ -1,0 +1,24 @@
+                   model  n_constant  constant_flagged_at_0.5  auroc_all  auroc_without_constant
+ Logistic_Regression_SQI          65                        0      0.320                   0.478
+            LightGBM_SQI          65                        0      0.754                   0.655
+     Independent_SQI_MLP          65                        0      0.672                   0.515
+           1D_CNN_RawECG          65                       64      0.719                   0.681
+            2D_CNN_Image          65                        1      0.787                   0.716
+       Multimodal_Fusion          65                       65      0.674                   0.514
+Rule_Based_SQI_Heuristic          65                       65      0.685                   0.530
+   LiquidAI_d1_3B_Neural          65                       65      0.650                   0.477
+          d1_image_probe          65                       65      0.833                   0.751
+              TabPFN_SQI          65                        0      0.749                   0.640
+        HuBERT_ECG_probe          65                        0      0.562                   0.692
+                   feature  but_qdb  cinc2011_all  cinc2011_without_constant
+   bsqi_detector_agreement    0.030         0.308                      0.458
+     baseline_wander_ratio    0.421         0.437                      0.653
+high_frequency_noise_ratio    0.777         0.307                      0.459
+       saturation_fraction    0.501         0.634                      0.453
+         flatline_fraction    0.419         0.645                      0.470
+          qrs_energy_ratio    0.132         0.226                      0.338
+             kurtosis_ksqi    0.164         0.269                      0.399
+             skewness_ssqi    0.093         0.338                      0.402
+        zero_crossing_rate    0.727         0.248                      0.371
+     powerline_noise_ratio    0.773         0.312                      0.465
+                signal_std    0.385         0.402                      0.600

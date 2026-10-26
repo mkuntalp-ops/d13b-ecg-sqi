@@ -38,21 +38,16 @@
   - Dikey A4, 2.2 cm kenar boşluğu.
   - Tablolarda kenarlık, küçük yazı ve her sayfada tekrarlanan başlık satırı var. Tablo satırları bölünmüyor; başlıklar tablolarıyla aynı sayfada kalıyor.
 
-## Göndermeden önce SİZİN yapmanız gerekenler
+## Göndermeden önce
 
-1. **`[AUTHOR TO CONFIRM]` işaretli beyanlar:** ana metin, başlık sayfası ve beyan formunda.
-   - **AI disclosure:** taslakta üç rol var:
-     - Antigravity: ilk kod ve ilk taslak (eski betiklerdeki `.gemini/antigravity` yollarına dayanarak);
-     - Claude Code: denetim, düzeltme, sonraki analizler ve metin;
-     - Perplexity: LLM-as-a-judge.
+**26 Ekim 2026'da tamamlananlar:**
+- Beyanlar yazar tarafından onaylandı ve yer tutucular kaldırıldı: AI disclosure (üç rol), Funding, Ethics, Conflicts of interest, Author contributions.
+- Arşiv DOI'si eklenmedi; Data availability bölümü herkese açık GitHub deposuna atıf yapıyor.
+- GitHub deposu herkese açık (yazar onayı).
 
-     Rolleri doğrulayın veya düzeltin.
-   - **Funding, Ethics, Conflicts of interest, Author contributions:** önceki makalenizdeki ifadeler bu çalışmanın veri kümelerine uyarlandı; doğru olduklarını onaylayın.
-2. **Arşiv DOI'si (`[AUTHOR TO ADD …]`):** bir sürüm arşivlemeyecekseniz bu cümleyi silin.
-3. **GitHub deposu:** `mkuntalp-ops/d13b-ecg-sqi` herkese açık olmalı. Kapak mektubu ve Data availability bölümü bu depoya atıf yapıyor; önceki hakem depoyu açamadığını yazmıştı.
-4. **İnceleme PDF'i:** ScholarOne için PDF'leri Word'den dışa aktarın (önceki başvuruda olduğu gibi). Tablo ve şekil yerleşimini Word'de gözle kontrol edin. Bu ortamda Word baskı provası yapılmadı.
-5. **Yeniden yazılan metni okuyup onaylayın** (yapay zekâ beyanı bunu kapsıyor).
-6. **Kör değerlendirme:** PMEA'nın güncel yazar kılavuzunda tek-kör/çift-kör ayarına bakın. Önceki başvuruda yazar bilgisi ana metindeydi; bu paket de aynı.
+**Sizin yapmanız gerekenler:**
+1. **İnceleme PDF'i:** ScholarOne için PDF'leri Word'den dışa aktarın; tablo ve şekil yerleşimini Word'de gözle kontrol edin.
+2. **Kör değerlendirme:** PMEA'nın güncel yazar kılavuzunda tek-kör/çift-kör ayarına bakın (yazar bilgisi ana metinde).
 
 ## Açık erişim (TÜBİTAK–IOP "Oku & Yayımla", 2026–2028)
 

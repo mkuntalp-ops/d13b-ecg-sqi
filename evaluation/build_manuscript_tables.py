@@ -705,6 +705,35 @@ def table_2i() -> str:
     return "\n".join(out)
 
 
+def table_2j() -> str:
+    """Univariate SQI AUROC with and without the CinC 2011 constant-lead records (cinc2011_constant_lead_check.py)."""
+    path = RESULTS / "cinc2011_constant_lead_univariate.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    out = ["| SQI feature | BUT QDB (1,047 windows) | CinC 2011 lead II, all 565 records | CinC 2011 lead II, without the 65 constant-lead records (500) |",
+           "| :--- | :---: | :---: | :---: |"]
+    for r in s.itertuples():
+        out.append(f"| `{r.feature}` | {r.but_qdb:.3f} | {r.cinc2011_all:.3f} | {r.cinc2011_without_constant:.3f} |")
+    return "\n".join(out)
+
+
+def table_9b() -> str:
+    """Holm over the ten comparisons with the best model of each set (evaluation/paired_vs_best.py)."""
+    path = RESULTS / "paired_vs_best.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    fmt = lambda p: "< 0.001" if p < 0.001 else f"{p:.3f}"
+    out = ["| Evaluation set | Best model | Model | AUROC (best) | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |",
+           "| :--- | :--- | :--- | :---: | :---: | :---: | :---: |"]
+    for r in s.itertuples():
+        out.append(f"| {r.family} | {labels.get(r.best, r.best)} | **{labels.get(r.model, r.model)}** | {r.auroc:.3f} ({r.auroc_best:.3f}) | "
+                   f"{fmt(r.p_unadjusted)} | {fmt(r.p_holm_all_pairs)} | {fmt(r.p_holm_vs_best)} |")
+    return "\n".join(out)
+
+
 def table_7() -> str:
     """Prompt sensitivity of d1-3B (experiments/d1_prompt_variants.py). The AUROC CI on BUT QDB is the subject-level
     bootstrap used for Table 1 (seed 42); CinC has no subject identifiers and is reported as a point estimate."""
@@ -932,6 +961,8 @@ def main():
         ("Table 2h", table_2h()),
         ("Table 1g", table_1g()),
         ("Table 2i", table_2i()),
+        ("Table 2j", table_2j()),
+        ("Table 9b", table_9b()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("# Manuscript tables regenerated 2026-10-12\n\n")

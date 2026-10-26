@@ -1,0 +1,41 @@
+                                   family             best                    model  auroc  auroc_best  p_unadjusted  p_holm_all_pairs  p_holm_vs_best
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG  Logistic_Regression_SQI  0.938       0.989         0.010             0.450           0.080
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG             LightGBM_SQI  0.964       0.989         0.177             1.000           0.750
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG      Independent_SQI_MLP  0.939       0.989         0.006             0.288           0.054
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG             2D_CNN_Image  0.989       0.989         0.936             1.000           0.936
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG        Multimodal_Fusion  0.967       0.989         0.257             1.000           0.771
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG Rule_Based_SQI_Heuristic  0.977       0.989         0.357             1.000           0.771
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG    LiquidAI_d1_3B_Neural  0.852       0.989         0.000             0.000           0.000
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG           d1_image_probe  0.979       0.989         0.066             1.000           0.396
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG               TabPFN_SQI  0.962       0.989         0.027             1.000           0.189
+              BUT_QDB (5-fold subject CV)    1D_CNN_RawECG         HuBERT_ECG_probe  0.972       0.989         0.150             1.000           0.750
+           CinC2011 lead II (565 records)   d1_image_probe  Logistic_Regression_SQI  0.320       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe             LightGBM_SQI  0.754       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe      Independent_SQI_MLP  0.672       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe            1D_CNN_RawECG  0.719       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe             2D_CNN_Image  0.787       0.833         0.001             0.015           0.001
+           CinC2011 lead II (565 records)   d1_image_probe        Multimodal_Fusion  0.674       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe Rule_Based_SQI_Heuristic  0.685       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe    LiquidAI_d1_3B_Neural  0.650       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe               TabPFN_SQI  0.749       0.833         0.000             0.000           0.000
+           CinC2011 lead II (565 records)   d1_image_probe         HuBERT_ECG_probe  0.562       0.833         0.000             0.000           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe  Logistic_Regression_SQI  0.868       0.908         0.000             0.001           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe             LightGBM_SQI  0.880       0.908         0.002             0.043           0.006
+              CinC2017 (8,512 recordings)   d1_image_probe      Independent_SQI_MLP  0.868       0.908         0.000             0.001           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe            1D_CNN_RawECG  0.773       0.908         0.000             0.000           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe             2D_CNN_Image  0.850       0.908         0.000             0.000           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe        Multimodal_Fusion  0.835       0.908         0.000             0.000           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe Rule_Based_SQI_Heuristic  0.887       0.908         0.036             0.481           0.072
+              CinC2017 (8,512 recordings)   d1_image_probe    LiquidAI_d1_3B_Neural  0.757       0.908         0.000             0.000           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe               TabPFN_SQI  0.858       0.908         0.000             0.000           0.000
+              CinC2017 (8,512 recordings)   d1_image_probe         HuBERT_ECG_probe  0.907       0.908         0.927             1.000           0.927
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe  Logistic_Regression_SQI  0.860       0.916         0.000             0.005           0.001
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe             LightGBM_SQI  0.880       0.916         0.010             0.261           0.020
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe      Independent_SQI_MLP  0.866       0.916         0.001             0.028           0.004
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe            1D_CNN_RawECG  0.767       0.916         0.000             0.000           0.000
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe             2D_CNN_Image  0.859       0.916         0.000             0.005           0.001
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe        Multimodal_Fusion  0.848       0.916         0.000             0.001           0.000
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe Rule_Based_SQI_Heuristic  0.876       0.916         0.006             0.174           0.019
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe    LiquidAI_d1_3B_Neural  0.739       0.916         0.000             0.000           0.000
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe               TabPFN_SQI  0.861       0.916         0.000             0.010           0.002
+CinC2017 balanced subset (556 recordings) HuBERT_ECG_probe           d1_image_probe  0.910       0.916         0.612             1.000           0.612

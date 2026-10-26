@@ -11,8 +11,8 @@ Transformations for the main text (no numbers are changed):
   integer-only brackets in the main text are converted (all were checked to be citations); the reference list is
   rewritten in IOP Harvard style, sorted alphabetically;
 - the declaration sections are replaced by the PMEA set (Acknowledgements, AI disclosure statement, Funding, Ethics
-  approval and consent, Conflicts of interest, Author contributions, Data availability statement). Statements that
-  the author must confirm are marked [AUTHOR TO CONFIRM].
+  approval and consent, Conflicts of interest, Author contributions, Data availability statement), as confirmed by
+  the author on 2026-10-26.
 Word files are produced with pandoc (A4 portrait reference document) and post-processed with python-docx: table
 borders, small table fonts, repeated header rows, rows that do not split, captions kept with their tables.
 
@@ -90,7 +90,7 @@ The author thanks the investigators and institutions that created and made avail
 
 ## AI disclosure statement
 
-[AUTHOR TO CONFIRM] Generative-AI tools were used in three distinct roles.
+Generative-AI tools were used in three distinct roles.
 
 - *Antigravity (Google):* used to write an initial version of the analysis code and of the manuscript draft.
 - *Claude Code (Anthropic):* used to audit and correct that code, including independent recomputation of the reported metrics and re-execution checks; to write the later analysis, table-generation, figure-generation and verification scripts; and to revise and edit the manuscript text.
@@ -102,19 +102,19 @@ The author defined the research question, scientific objectives, datasets, evalu
 
 ## Funding
 
-[AUTHOR TO CONFIRM] This research received no specific grant from any funding agency in the public, commercial or not-for-profit sectors.
+This research received no specific grant from any funding agency in the public, commercial or not-for-profit sectors.
 
 ## Ethics approval and consent
 
-[AUTHOR TO CONFIRM] This study is a secondary analysis of publicly available, de-identified ECG datasets, used under the terms of their public releases: BUT QDB (collected under IRB protocol EC:EK:05b/2018 of Brno University of Technology), the PhysioNet/Computing in Cardiology Challenge 2011 and 2017 datasets, and the MIT-BIH Noise Stress Test Database. No new data were collected from human participants, and the author had no access to identifiable information. Ethical approval was not required for this secondary analysis of public de-identified data.
+This study is a secondary analysis of publicly available, de-identified ECG datasets, used under the terms of their public releases: BUT QDB (collected under IRB protocol EC:EK:05b/2018 of Brno University of Technology), the PhysioNet/Computing in Cardiology Challenge 2011 and 2017 datasets, and the MIT-BIH Noise Stress Test Database. No new data were collected from human participants, and the author had no access to identifiable information. Ethical approval was not required for this secondary analysis of public de-identified data.
 
 ## Conflicts of interest
 
-[AUTHOR TO CONFIRM] The author declares no competing interests.
+The author declares no competing interests.
 
 ## Author contributions
 
-[AUTHOR TO CONFIRM] Mehmet Kuntalp (sole author): Conceptualization, Methodology, Software, Validation, Formal analysis, Investigation, Data curation, Visualization, Writing – original draft, Writing – review & editing.
+Mehmet Kuntalp (sole author): Conceptualization, Methodology, Software, Validation, Formal analysis, Investigation, Data curation, Visualization, Writing – original draft, Writing – review & editing.
 
 ## Data availability statement
 
@@ -130,8 +130,6 @@ The repository at https://github.com/mkuntalp-ops/d13b-ecg-sqi (MIT licence) con
 The following are not redistributed:
 - raw ECG waveforms;
 - the weights of LiquidAI/d1-3B, HuBERT-ECG and TabPFN, which are available from their providers under their own licences (HuBERT-ECG: CC BY-NC 4.0).
-
-[AUTHOR TO ADD: archive DOI of the release, if archived.]
 """
 
 
@@ -248,7 +246,7 @@ def title_page(title: str) -> str:
 
 Physiological Measurement — Research paper
 
-**Author:** Mehmet Kuntalp (sole author) [AUTHOR TO CONFIRM]
+**Author:** Mehmet Kuntalp (sole author)
 
 **Affiliation:** Department of Electrical and Electronics Engineering, Dokuz Eylül University, İzmir, Turkey
 
@@ -260,7 +258,7 @@ Physiological Measurement — Research paper
 
 def declarations_form(main_md: str) -> str:
     sec = lambda name: main_md.split(f"## {name}\n", 1)[1].split("\n## ", 1)[0].strip()
-    items = [("Author", "Mehmet Kuntalp (sole author) [AUTHOR TO CONFIRM]. Affiliation: Department of Electrical and Electronics Engineering, Dokuz Eylül University, İzmir, Turkey. Corresponding author: Mehmet Kuntalp. Email: mehmet.kuntalp@deu.edu.tr. Postal address: Tınaztepe Campus, Buca, 35160 İzmir, Turkey. ORCID: 0000-0002-3381-9026."),
+    items = [("Author", "Mehmet Kuntalp (sole author). Affiliation: Department of Electrical and Electronics Engineering, Dokuz Eylül University, İzmir, Turkey. Corresponding author: Mehmet Kuntalp. Email: mehmet.kuntalp@deu.edu.tr. Postal address: Tınaztepe Campus, Buca, 35160 İzmir, Turkey. ORCID: 0000-0002-3381-9026."),
              ("Funding and sponsor roles", sec("Funding")), ("Financial/non-financial conflicts", sec("Conflicts of interest")),
              ("Ethics and consent", sec("Ethics approval and consent")),
              ("Author contributions", sec("Author contributions") + " Acknowledgements: " + sec("Acknowledgements")),

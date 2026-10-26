@@ -572,3 +572,64 @@ NSTDB windows: clean control = 44, active noise = 264
 | `powerline_noise_ratio` | 0.000968 [0.000607–0.002] | 0.04 [0.00119–0.373] | 0.00149 [0.000669–0.00371] | 0.000558 [0–0.00186] | 3.37e-05 [1.87e-05–5.83e-05] | 2.92e-05 [9.01e-06–0.000123] |
 | `signal_std` | 0.312 [0.253–0.412] | 0.177 [0.0443–0.646] | 0.124 [0.0929–0.164] | 0.0955 [0–0.204] | 0.163 [0.123–0.22] | 0.334 [0.186–0.54] |
 
+## Table 2j
+
+| SQI feature | BUT QDB (1,047 windows) | CinC 2011 lead II, all 565 records | CinC 2011 lead II, without the 65 constant-lead records (500) |
+| :--- | :---: | :---: | :---: |
+| `bsqi_detector_agreement` | 0.030 | 0.308 | 0.458 |
+| `baseline_wander_ratio` | 0.421 | 0.437 | 0.653 |
+| `high_frequency_noise_ratio` | 0.777 | 0.307 | 0.459 |
+| `saturation_fraction` | 0.501 | 0.634 | 0.453 |
+| `flatline_fraction` | 0.419 | 0.645 | 0.470 |
+| `qrs_energy_ratio` | 0.132 | 0.226 | 0.338 |
+| `kurtosis_ksqi` | 0.164 | 0.269 | 0.399 |
+| `skewness_ssqi` | 0.093 | 0.338 | 0.402 |
+| `zero_crossing_rate` | 0.727 | 0.248 | 0.371 |
+| `powerline_noise_ratio` | 0.773 | 0.312 | 0.465 |
+| `signal_std` | 0.385 | 0.402 | 0.600 |
+
+## Table 9b
+
+| Evaluation set | Best model | Model | AUROC (best) | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |
+| :--- | :--- | :--- | :---: | :---: | :---: | :---: |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **Logistic Regression (SQI)** | 0.938 (0.989) | 0.010 | 0.450 | 0.080 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **LightGBM (SQI)** | 0.964 (0.989) | 0.177 | 1.000 | 0.750 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **Independent SQI MLP** | 0.939 (0.989) | 0.006 | 0.288 | 0.054 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **2D CNN (Rendered Image)** | 0.989 (0.989) | 0.936 | 1.000 | 0.936 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **SinglePass Multimodal Net** | 0.967 (0.989) | 0.257 | 1.000 | 0.771 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **Rule-Based SQI Heuristic** | 0.977 (0.989) | 0.357 | 1.000 | 0.771 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **LiquidAI d1-3B (Zero-Shot)** | 0.852 (0.989) | < 0.001 | < 0.001 | < 0.001 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **d1-3B image-token probe** | 0.979 (0.989) | 0.066 | 1.000 | 0.396 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **TabPFN (SQI)** | 0.962 (0.989) | 0.027 | 1.000 | 0.189 |
+| BUT_QDB (5-fold subject CV) | 1D CNN (Raw Signal) | **HuBERT-ECG probe** | 0.972 (0.989) | 0.150 | 1.000 | 0.750 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **Logistic Regression (SQI)** | 0.320 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **LightGBM (SQI)** | 0.754 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **Independent SQI MLP** | 0.672 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **1D CNN (Raw Signal)** | 0.719 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **2D CNN (Rendered Image)** | 0.787 (0.833) | < 0.001 | 0.015 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **SinglePass Multimodal Net** | 0.674 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **Rule-Based SQI Heuristic** | 0.685 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **LiquidAI d1-3B (Zero-Shot)** | 0.650 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **TabPFN (SQI)** | 0.749 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2011 lead II (565 records) | d1-3B image-token probe | **HuBERT-ECG probe** | 0.562 (0.833) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **Logistic Regression (SQI)** | 0.868 (0.908) | < 0.001 | 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **LightGBM (SQI)** | 0.880 (0.908) | 0.002 | 0.043 | 0.006 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **Independent SQI MLP** | 0.868 (0.908) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **1D CNN (Raw Signal)** | 0.773 (0.908) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **2D CNN (Rendered Image)** | 0.850 (0.908) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **SinglePass Multimodal Net** | 0.835 (0.908) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **Rule-Based SQI Heuristic** | 0.887 (0.908) | 0.036 | 0.481 | 0.072 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **LiquidAI d1-3B (Zero-Shot)** | 0.757 (0.908) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **TabPFN (SQI)** | 0.858 (0.908) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 (8,512 recordings) | d1-3B image-token probe | **HuBERT-ECG probe** | 0.907 (0.908) | 0.927 | 1.000 | 0.927 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **Logistic Regression (SQI)** | 0.860 (0.916) | < 0.001 | 0.005 | 0.001 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **LightGBM (SQI)** | 0.880 (0.916) | 0.010 | 0.261 | 0.020 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **Independent SQI MLP** | 0.866 (0.916) | < 0.001 | 0.028 | 0.004 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **1D CNN (Raw Signal)** | 0.767 (0.916) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **2D CNN (Rendered Image)** | 0.859 (0.916) | < 0.001 | 0.005 | 0.001 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **SinglePass Multimodal Net** | 0.848 (0.916) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **Rule-Based SQI Heuristic** | 0.876 (0.916) | 0.006 | 0.174 | 0.019 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **LiquidAI d1-3B (Zero-Shot)** | 0.739 (0.916) | < 0.001 | < 0.001 | < 0.001 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **TabPFN (SQI)** | 0.861 (0.916) | < 0.001 | 0.010 | 0.002 |
+| CinC2017 balanced subset (556 recordings) | HuBERT-ECG probe | **d1-3B image-token probe** | 0.910 (0.916) | 0.612 | 1.000 | 0.612 |
+

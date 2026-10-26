@@ -86,7 +86,7 @@ logit_vis = 4.0·(ink − 0.08) − 2.0·(spread − 0.02)
 
 p_vis = 1 / (1 + exp(−logit_vis))
 
-**Output.** The score is p = 0.6·p_SQI + 0.4·p_vis, clipped to [0.01, 0.99]. All coefficients are hand-set; their development history is not documented.
+**Output.** The score is p = 0.6·p_SQI + 0.4·p_vis, clipped to [0.01, 0.99]. All coefficients are hand-set. They were set during the initial prototyping of the analysis code, and their independence from BUT QDB cannot be guaranteed; the heuristic's BUT QDB results are therefore for reference only.
 
 ### S-M4. Zero-shot d1-3B input (`models/d1_real_neural_model.py`)
 
@@ -247,3 +247,11 @@ p_vis = 1 / (1 + exp(−logit_vis))
 ## Table S31. Distribution of each SQI by dataset and class: median [interquartile range] per window. CinC 2017 windows carry the label of their recording.
 
 {{Table 2i}}
+
+## Table S32. Univariate AUROC of each SQI on BUT QDB and on CinC 2011 lead II with and without the 65 records whose lead II is constant (post hoc, descriptive). Values below 0.5: higher feature value associated with usable.
+
+{{Table 2j}}
+
+## Table S33. Sensitivity of the multiplicity family: comparisons with the best model of each evaluation set, unadjusted and Holm-adjusted over all 55 pairs (primary) or over the 10 comparisons with the best model. The best model was identified from the point estimates, so the second family is a sensitivity analysis only.
+
+{{Table 9b}}
