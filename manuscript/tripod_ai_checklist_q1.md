@@ -1,10 +1,10 @@
-# TRIPOD+AI checklist: Q1 manuscript (draft, 2026-10-26)
+# TRIPOD+AI checklist (draft, 2026-10-26)
 
 **Checklist source.** Collins GS et al., TRIPOD+AI statement, BMJ 2024;385:e078378 (doi:10.1136/bmj-2023-078378), Table 2: 27 items with sub-items. The item topics below are short paraphrases; consult the published checklist for the full wording.
 
 **Study type.** Development (D) and evaluation (E): model development with patient-independent internal validation, and external evaluation on three datasets.
 
-**Locations.** Sections refer to `manuscript/main_q1.md`; Tables S1–S31 to `manuscript/supplement_q1.md`.
+**Locations.** Section numbers refer to the accompanying main manuscript; Tables S1–S31 and Supplementary Methods S-M1 to S-M4 refer to the accompanying supplementary material.
 
 **Status codes.**
 - Reported: the item is fully addressed.
@@ -59,7 +59,7 @@
 | 20c | Evaluation vs development distributions | Reported | Outcome prevalences (Section 2.1); predictor distributions by dataset and class, median [IQR] (Table S31); univariate predictor–outcome associations by dataset (Table S6) |
 | 21 | Participants and outcome events in each analysis | Reported | Development and external sets: Section 2.1 and Tables S30 and S31 (units and positives per set). LODO training sets: Section 2.4. Official-protocol analyses: Table S26. Local recalibration: n per draw with fallback counts (Tables 4 and S24). |
 | 22 | Full model details for third-party use | Partly | Code, hyperparameters, seeds, architectures and the heuristic formula are given (Supplementary Methods). Trained model weights are not released; the foundation-model weights come from their providers under their licences. |
-| 23a | Performance with confidence intervals | Reported | AUROC and AP with 95% CIs for all 11 models in every primary evaluation set (Table S30); LODO (Table 2); official protocol (Table S26). Table 1 adds paired tests. Decision-level metrics at τ = 0.5 on CinC 2017 (Table 3) are point estimates; CIs are given for the seven main models (Table S29). |
+| 23a | Performance with confidence intervals | Partly | AUROC and AP with 95% confidence intervals are reported for all 11 models in every primary evaluation set (Table S30). LODO and official-protocol AUROC confidence intervals are in Table 2 and Table S26. Table S29 also gives AUROC and AP confidence intervals for seven models on CinC 2017. Decision-level metrics at τ = 0.5 (sensitivity, false reject rate, PPV, NPV) are reported as point estimates only; no confidence intervals were reported for them. |
 | 23b | Heterogeneity across clusters | Reported | Table S13 (subject level); Tables S17 and S10 (subset and seed variation) |
 | 24 | Results of model updating | Reported | Table 4, Table S24; LODO (Table 2, Table S23) |
 | 25 | Overall interpretation | Partly | Section 4. Fairness is not discussed beyond Limitation 11. |
@@ -75,5 +75,5 @@
 
 **Items that could be strengthened if the target journal requires it.**
 - 3b: state the intended users.
-- 20a: add a flow diagram.
+- 20a: an optional flow diagram could improve readability; the numeric flow is already reported.
 - 27b: describe user interaction.
