@@ -1,6 +1,6 @@
 # Physiological Measurement — v1 Gönderim Kontrol Listesi
 
-**Makale:** "In-domain rankings did not identify the best-transferring model in ECG usability screening: a patient-independent, multi-dataset benchmark of task-specific, tabular and foundation models" (Research paper).
+**Makale:** "Evaluating LiquidAI d1-3B for ECG usability screening: a patient-independent, multi-dataset benchmark" (Research paper).
 
 **Nasıl üretildi:**
 - Paket `evaluation/build_pmea_package.py` ile, `manuscript/main_q1.md` ve `supplement_q1.md` dosyalarından üretildi.
@@ -14,7 +14,7 @@
 | Portal türü | Dosya |
 |---|---|
 | Ana metin (Word) | `PMEA_Manuscript_v1.docx` (tablolar ve şekiller metin içinde, tablo başlıkları üstte) |
-| Ek materyal | `PMEA_Supplementary_Material_1_v1.docx` (Ek Yöntemler S-M1–S-M4, Tablo S1–S31) |
+| Ek materyal | `PMEA_Supplementary_Material_1_v1.docx` (Ek Yöntemler S-M1–S-M4, Tablo S1–S33) |
 | Raporlama kontrol listesi (ek dosya) | `PMEA_TRIPOD_AI_Checklist_v1.docx` |
 | Kapak mektubu | `PMEA_Cover_Letter_v1.docx` |
 | Başlık sayfası | `PMEA_Title_Page_v1.docx` |
@@ -28,7 +28,7 @@
 - **Yazar bloğu:** başlığın altına, önceki PMEA-107866 başvurusuyla aynı biçimde eklendi.
 - **Özet:**
   - PMEA başlıkları kullanıldı: Objective / Approach / Main results / Significance.
-  - Düz paragraf halinde, 242 kelime.
+  - Düz paragraf halinde, 248 kelime.
   - Anahtar kelimeler ve kısaltmalar eklendi.
 - **Atıflar:** numaralı atıflar IOP Harvard (yazar–yıl) biçimine çevrildi.
   - Kaynakça alfabetik sırada; 26 kaynağın hepsine atıf var.

@@ -1,4 +1,4 @@
-# In-domain rankings did not identify the best-transferring model in ECG usability screening: a patient-independent, multi-dataset benchmark of task-specific, tabular and foundation models
+# Evaluating LiquidAI d1-3B for ECG usability screening: a patient-independent, multi-dataset benchmark
 
 Physiological Measurement — Research paper
 

@@ -13,11 +13,7 @@ All definitions below were checked against the code in the repository (`features
 Each 10-s window is at 500 Hz, in mV, with n = 5,000 samples. Spectral quantities use Welch's method with 2-s segments.
 
 **The 13 tabular inputs.**
-1. **bSQI.** F1 agreement between two QRS detectors:
-   - an implementation following Pan and Tompkins;
-   - a second-difference detector (0.5-Hz high-pass, |x[n+2] − 2x[n] + x[n−2]|, 80-ms moving average);
-   - beats are matched one to one within 50 ms;
-   - bSQI is 0 if either detector finds no beat.
+1. **bSQI.** F1 agreement between two QRS detectors, an implementation following Pan and Tompkins and a second-difference detector (0.5-Hz high-pass, |x[n+2] − 2x[n] + x[n−2]|, 80-ms moving average). Beats are matched one to one within 50 ms, and bSQI is 0 if either detector finds no beat.
 2. **Baseline-wander ratio.** Power below 0.5 Hz divided by power in 0.5–40 Hz; clipped to [0, 100].
 3. **High-frequency ratio.** Power above 40 Hz, up to min(0.49·fs, 100 Hz), divided by power in 0.5–40 Hz; clipped to [0, 100].
 4. **Saturation fraction.** Share of samples within 10^-5 of the window minimum or maximum. Its floor is 2/5,000 = 4 × 10^-4.
@@ -31,43 +27,19 @@ Each 10-s window is at 500 Hz, in mV, with n = 5,000 samples. Spectral quantitie
 12. **Window duration.** In s.
 13. **Sampling rate.** In Hz.
 
-**Special values.**
-- A window whose range is below 10^-6 receives flatline and saturation fractions of 1.
-- Non-finite values are set to 0.
+A window whose range is below 10^-6 receives flatline and saturation fractions of 1, and non-finite values are set to 0.
 
 ### S-M2. Network architectures
 
-**Common training settings.**
-- AdamW (learning rate 10^-3, weight decay 10^-3).
-- Binary cross-entropy with the positive class weighted by the usable/unusable ratio of the training data.
-- No early stopping; seed 42 for the reported run.
+All networks were trained with AdamW (learning rate 10^-3, weight decay 10^-3) on binary cross-entropy with the positive class weighted by the usable/unusable ratio of the training data, without early stopping, and with seed 42 for the reported run.
 
-**SQI MLP (3,201 parameters).**
-- Layers: Linear(13→64), BatchNorm, ReLU, Dropout 0.2, Linear(64→32), BatchNorm, ReLU, Linear(32→1).
-- Inputs standardised with training-set mean and SD.
-- 35 epochs, batch size 64.
+The SQI MLP (3,201 parameters) has the layers Linear(13→64), BatchNorm, ReLU, Dropout 0.2, Linear(64→32), BatchNorm, ReLU and Linear(32→1). Its inputs are standardised with the training-set mean and SD, and it was trained for 35 epochs with batch size 64.
 
-**1D CNN (167,489 parameters).**
-- Four blocks of Conv1d, BatchNorm, LeakyReLU (slope 0.1), MaxPool (×4) and Dropout 0.15.
-  - Channels 32, 64, 128, 128.
-  - Kernel sizes 15, 11, 7, 5.
-- Global average pooling, then Linear(128→32), ReLU, Dropout 0.25, Linear(32→1).
-- Input: the 5,000-sample window, z-scored per window (SD below 10^-6 replaced by 1).
-- 25 epochs, batch size 32, cosine learning-rate schedule.
+The 1D CNN (167,489 parameters) has four blocks of Conv1d, BatchNorm, LeakyReLU (slope 0.1), MaxPool (×4) and Dropout 0.15, with 32, 64, 128 and 128 channels and kernel sizes 15, 11, 7 and 5. Global average pooling is followed by Linear(128→32), ReLU, Dropout 0.25 and Linear(32→1). Its input is the 5,000-sample window, z-scored per window (an SD below 10^-6 is replaced by 1). It was trained for 25 epochs with batch size 32 and a cosine learning-rate schedule.
 
-**2D CNN (245,697 parameters).**
-- Input: the rendered strip resized to 3 × 128 × 256 and normalised with mean 0.95 and SD 0.15 per channel.
-- Four blocks of 3 × 3 Conv2d, BatchNorm and ReLU, with 2 × 2 max-pooling after the first three.
-  - Channels 32, 64, 128, 128.
-- Global average pooling, then Linear(128→32), ReLU, Dropout 0.3, Linear(32→1).
-- 25 epochs, batch size 32, cosine schedule.
+The 2D CNN (245,697 parameters) receives the rendered strip resized to 3 × 128 × 256 and normalised with mean 0.95 and SD 0.15 per channel. It has four blocks of 3 × 3 Conv2d, BatchNorm and ReLU, with 2 × 2 max-pooling after the first three and 32, 64, 128 and 128 channels, followed by global average pooling, Linear(128→32), ReLU, Dropout 0.3 and Linear(32→1). It was trained for 25 epochs with batch size 32 and a cosine schedule.
 
-**Multimodal net (131,969 parameters).**
-- *Image encoder:* three blocks of Conv2d, BatchNorm and ReLU (channels 32, 64, 128), global average pooling, Linear(128→64), ReLU.
-- *SQI encoder:* Linear(13→64), BatchNorm, ReLU, Dropout 0.2, Linear(64→64), ReLU.
-- *Gated fusion:* the concatenated 128-d vector is multiplied element-wise by a sigmoid gate, Linear(128→128).
-- *Head:* Linear(128→64), ReLU, Dropout 0.3, Linear(64→1).
-- 25 epochs, batch size 32, cosine schedule.
+The multimodal net (131,969 parameters) combines an image encoder and an SQI encoder. The image encoder has three blocks of Conv2d, BatchNorm and ReLU (32, 64 and 128 channels), global average pooling, Linear(128→64) and ReLU; the SQI encoder has Linear(13→64), BatchNorm, ReLU, Dropout 0.2, Linear(64→64) and ReLU. The concatenated 128-d vector is multiplied element-wise by a sigmoid gate, Linear(128→128), and passed to a head with Linear(128→64), ReLU, Dropout 0.3 and Linear(64→1). It was trained for 25 epochs with batch size 32 and a cosine schedule.
 
 ### S-M3. Rule heuristic (`models/rule_heuristic_baseline.py`)
 
@@ -77,10 +49,7 @@ logit_SQI = −3.0·(bSQI − 0.5) + 1.2·min(baseline-wander ratio, 3) + 1.5·m
 
 p_SQI = 1 / (1 + exp(−logit_SQI))
 
-**Image component.**
-- The rendered strip is converted to 8-bit grey scale.
-- *ink* is the share of pixels with value below 200.
-- *spread* is the SD over image columns of the per-column ink share.
+**Image component.** The rendered strip is converted to 8-bit grey scale; *ink* is the share of pixels with value below 200, and *spread* is the SD over image columns of the per-column ink share:
 
 logit_vis = 4.0·(ink − 0.08) − 2.0·(spread − 0.02)
 
@@ -96,10 +65,7 @@ p_vis = 1 / (1 + exp(−logit_vis))
 
 "ECG Signal Quality Indicators (SQIs): QRS Detector Agreement (bSQI): x (1.0 = perfect consensus, 0.0 = total disagreement); Baseline Wander Ratio; High-Frequency Noise Ratio; Saturation Fraction (%); Flatline Fraction (%); QRS Band Energy Ratio; Kurtosis and Skewness; Window Duration and Sampling Rate."
 
-**Question.** A choice question with:
-- *Instructions:* "Determine whether this electrocardiogram (ECG) recording segment is usable for reliable QRS-based rhythm analysis, or unusable due to severe artifacts, baseline wander, high-frequency noise, or saturation/flatline."
-- *Criterion for "usable":* "QRS complexes are distinguishable and suitable for rhythm analysis. Artifacts are manageable."
-- *Criterion for "unusable":* "ECG is severely corrupted by noise, baseline drift, saturation, or absent complexes; requires human review or re-recording."
+**Question.** A choice question whose instructions read: "Determine whether this electrocardiogram (ECG) recording segment is usable for reliable QRS-based rhythm analysis, or unusable due to severe artifacts, baseline wander, high-frequency noise, or saturation/flatline." The criterion for "usable" is "QRS complexes are distinguishable and suitable for rhythm analysis. Artifacts are manageable.", and the criterion for "unusable" is "ECG is severely corrupted by noise, baseline drift, saturation, or absent complexes; requires human review or re-recording."
 
 **Output.** The probability of "unusable" from a single forward pass with zero output tokens. Model revision: 051bcc464b01b9f92942b364d9586b0ef5912432.
 
