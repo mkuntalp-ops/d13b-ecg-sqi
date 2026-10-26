@@ -144,7 +144,11 @@ def transfer():
     win = pd.read_csv(RESULTS / "external_window_predictions.csv")
     d1 = pd.read_csv(RESULTS / "d1_external_predictions.csv")
     c17 = win[win.dataset == "CinC2017"].copy()
-    c17["LiquidAI_d1_3B_Neural"] = c17["segment_id"].map(d1[d1.dataset == "CinC2017_subset"].set_index("segment_id")["prob_unusable"])
+    full17 = RESULTS / "d1_cinc2017_full_predictions.csv"  # d1-3B on all CinC 2017 windows (analysis plan A2)
+    if full17.exists():
+        c17["LiquidAI_d1_3B_Neural"] = c17["segment_id"].map(pd.read_csv(full17).set_index("segment_id")["prob_unusable"])
+    else:
+        c17["LiquidAI_d1_3B_Neural"] = c17["segment_id"].map(d1[d1.dataset == "CinC2017_subset"].set_index("segment_id")["prob_unusable"])
     rows = []
     for m in TRAINED + UNTRAINED:
         for rule in ["target1_fpr5", "target2_sens80", "youden", "fixed_0.5"]:
@@ -158,7 +162,8 @@ def transfer():
                 rows.append({"model": m, "rule": rule, "threshold": t, "dataset": f"CinC2011 {draw} (lead II)",
                              **realised(mm.label.values, p, t)})
             rec = c17.groupby("record_name").agg(label=("label", "first"), p=(m, "max")).dropna()
-            name = "CinC2017 balanced d1 subset (record max)" if m == "LiquidAI_d1_3B_Neural" else "CinC2017 all (record max)"
+            name = ("CinC2017 balanced d1 subset (record max)" if m == "LiquidAI_d1_3B_Neural" and not full17.exists()
+                    else "CinC2017 all (record max)")
             rows.append({"model": m, "rule": rule, "threshold": t, "dataset": name,
                          **realised(rec.label.values, rec.p.values, t)})
     out = pd.DataFrame(rows)

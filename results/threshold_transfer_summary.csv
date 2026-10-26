@@ -230,7 +230,7 @@ LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed2 (lead II),0.9866666
 LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
-LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2017 balanced d1 subset (record max),0.19784172661870503,0.039568345323741004,55,11,278,278
+LiquidAI_d1_3B_Neural,target1_fpr5,0.5,CinC2017 all (record max),0.19784172661870503,0.03109059995142094,55,256,278,8234
 LiquidAI_d1_3B_Neural,target2_sens80,0.377541,BUT_QDB pooled OOF (selection set),0.8013468013468014,0.32666666666666666,238,245,297,750
 LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
@@ -238,7 +238,7 @@ LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed2 (lead II),1.
 LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
-LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2017 balanced d1 subset (record max),0.4064748201438849,0.14388489208633093,113,40,278,278
+LiquidAI_d1_3B_Neural,target2_sens80,0.377541,CinC2017 all (record max),0.4064748201438849,0.10335195530726257,113,851,278,8234
 LiquidAI_d1_3B_Neural,youden,0.437823,BUT_QDB pooled OOF (selection set),0.6936026936026936,0.15333333333333332,206,115,297,750
 LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
@@ -246,7 +246,7 @@ LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed2 (lead II),1.0,1.0,75
 LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,youden,0.437823,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
-LiquidAI_d1_3B_Neural,youden,0.437823,CinC2017 balanced d1 subset (record max),0.3345323741007194,0.10431654676258993,93,29,278,278
+LiquidAI_d1_3B_Neural,youden,0.437823,CinC2017 all (record max),0.3345323741007194,0.06946805926645616,93,572,278,8234
 LiquidAI_d1_3B_Neural,fixed_0.5,0.5,BUT_QDB pooled OOF (selection set),0.531986531986532,0.04,158,30,297,750
 LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 first-N (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed1 (lead II),1.0,1.0,75,75,75,75
@@ -254,4 +254,4 @@ LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed2 (lead II),0.9866666666
 LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed3 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed4 (lead II),1.0,1.0,75,75,75,75
 LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2011 random_seed42 (lead II),1.0,1.0,75,75,75,75
-LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2017 balanced d1 subset (record max),0.19784172661870503,0.039568345323741004,55,11,278,278
+LiquidAI_d1_3B_Neural,fixed_0.5,0.5,CinC2017 all (record max),0.19784172661870503,0.03109059995142094,55,256,278,8234

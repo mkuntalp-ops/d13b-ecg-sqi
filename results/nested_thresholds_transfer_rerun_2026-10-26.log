@@ -1,0 +1,50 @@
+                   model           rule                            dataset  threshold  sens   fpr
+ Logistic_Regression_SQI   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.564 0.741 0.048
+ Logistic_Regression_SQI   target1_fpr5         CinC2011 first-N (lead II)      0.564 0.747 1.000
+ Logistic_Regression_SQI   target1_fpr5          CinC2017 all (record max)      0.564 0.745 0.157
+ Logistic_Regression_SQI target2_sens80 BUT_QDB pooled OOF (selection set)      0.393 0.801 0.083
+ Logistic_Regression_SQI target2_sens80         CinC2011 first-N (lead II)      0.393 0.747 1.000
+ Logistic_Regression_SQI target2_sens80          CinC2017 all (record max)      0.393 0.835 0.255
+            LightGBM_SQI   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.360 0.805 0.048
+            LightGBM_SQI   target1_fpr5         CinC2011 first-N (lead II)      0.360 0.413 0.013
+            LightGBM_SQI   target1_fpr5          CinC2017 all (record max)      0.360 0.795 0.192
+            LightGBM_SQI target2_sens80 BUT_QDB pooled OOF (selection set)      0.360 0.805 0.048
+            LightGBM_SQI target2_sens80         CinC2011 first-N (lead II)      0.360 0.413 0.013
+            LightGBM_SQI target2_sens80          CinC2017 all (record max)      0.360 0.795 0.192
+     Independent_SQI_MLP   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.725 0.700 0.049
+     Independent_SQI_MLP   target1_fpr5         CinC2011 first-N (lead II)      0.725 0.000 0.000
+     Independent_SQI_MLP   target1_fpr5          CinC2017 all (record max)      0.725 0.745 0.165
+     Independent_SQI_MLP target2_sens80 BUT_QDB pooled OOF (selection set)      0.434 0.805 0.093
+     Independent_SQI_MLP target2_sens80         CinC2011 first-N (lead II)      0.434 0.000 0.000
+     Independent_SQI_MLP target2_sens80          CinC2017 all (record max)      0.434 0.881 0.262
+           1D_CNN_RawECG   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.008 0.960 0.035
+           1D_CNN_RawECG   target1_fpr5         CinC2011 first-N (lead II)      0.008 0.707 0.280
+           1D_CNN_RawECG   target1_fpr5          CinC2017 all (record max)      0.008 0.996 0.545
+           1D_CNN_RawECG target2_sens80 BUT_QDB pooled OOF (selection set)      0.332 0.801 0.013
+           1D_CNN_RawECG target2_sens80         CinC2011 first-N (lead II)      0.332 0.627 0.160
+           1D_CNN_RawECG target2_sens80          CinC2017 all (record max)      0.332 0.935 0.369
+            2D_CNN_Image   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.056 0.943 0.047
+            2D_CNN_Image   target1_fpr5         CinC2011 first-N (lead II)      0.056 0.520 0.107
+            2D_CNN_Image   target1_fpr5          CinC2017 all (record max)      0.056 0.964 0.504
+            2D_CNN_Image target2_sens80 BUT_QDB pooled OOF (selection set)      0.489 0.801 0.009
+            2D_CNN_Image target2_sens80         CinC2011 first-N (lead II)      0.489 0.173 0.040
+            2D_CNN_Image target2_sens80          CinC2017 all (record max)      0.489 0.899 0.340
+       Multimodal_Fusion   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.175 0.690 0.047
+       Multimodal_Fusion   target1_fpr5         CinC2011 first-N (lead II)      0.175 0.253 0.000
+       Multimodal_Fusion   target1_fpr5          CinC2017 all (record max)      0.175 0.928 0.431
+       Multimodal_Fusion target2_sens80 BUT_QDB pooled OOF (selection set)      0.105 0.801 0.065
+       Multimodal_Fusion target2_sens80         CinC2011 first-N (lead II)      0.105 0.253 0.000
+       Multimodal_Fusion target2_sens80          CinC2017 all (record max)      0.105 0.946 0.462
+Rule_Based_SQI_Heuristic   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.376 0.845 0.049
+Rule_Based_SQI_Heuristic   target1_fpr5         CinC2011 first-N (lead II)      0.376 1.000 1.000
+Rule_Based_SQI_Heuristic   target1_fpr5          CinC2017 all (record max)      0.376 0.529 0.062
+Rule_Based_SQI_Heuristic target2_sens80 BUT_QDB pooled OOF (selection set)      0.407 0.805 0.041
+Rule_Based_SQI_Heuristic target2_sens80         CinC2011 first-N (lead II)      0.407 0.987 0.987
+Rule_Based_SQI_Heuristic target2_sens80          CinC2017 all (record max)      0.407 0.435 0.052
+   LiquidAI_d1_3B_Neural   target1_fpr5 BUT_QDB pooled OOF (selection set)      0.500 0.532 0.040
+   LiquidAI_d1_3B_Neural   target1_fpr5         CinC2011 first-N (lead II)      0.500 1.000 1.000
+   LiquidAI_d1_3B_Neural   target1_fpr5          CinC2017 all (record max)      0.500 0.198 0.031
+   LiquidAI_d1_3B_Neural target2_sens80 BUT_QDB pooled OOF (selection set)      0.378 0.801 0.327
+   LiquidAI_d1_3B_Neural target2_sens80         CinC2011 first-N (lead II)      0.378 1.000 1.000
+   LiquidAI_d1_3B_Neural target2_sens80          CinC2017 all (record max)      0.378 0.406 0.103
+[Saved] /Volumes/KIOXIA/Projects/d13b-ecg-sqi/results/threshold_transfer_summary.csv

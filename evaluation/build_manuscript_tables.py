@@ -517,15 +517,16 @@ def _recal_table(n_values) -> str:
     s = s[s.n.isin(n_values)]
     labels = {**MODEL_LABELS, **EXTRA_LABELS}
     out = ["| Dataset | Model | n | Transferred threshold: FPR / Sens. (median) | Local threshold: FPR median [95% range] | "
-           "Local threshold: Sens. median [95% range] | Draws with FPR ≤ 7.5% (local) | Fallback draws | Brier: raw → Platt (median) |",
+           "Local threshold: Sens. median [95% range] | Draws with FPR ≤ 5% / ≤ 7.5% (local) | Fallback draws | "
+           "Brier: raw → Platt (median; Platt skipped) |",
            "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
     for _, r in s.iterrows():
         out.append(f"| {r['dataset']} | **{labels.get(r['model'], r['model'])}** | {r['n']} | "
                    f"{100 * r['fpr_transferred_median']:.1f}% / {100 * r['sens_transferred_median']:.1f}% | "
                    f"{100 * r['fpr_local_median']:.1f}% [{100 * r['fpr_local_p2.5']:.1f}–{100 * r['fpr_local_p97.5']:.1f}%] | "
                    f"{100 * r['sens_local_median']:.1f}% [{100 * r['sens_local_p2.5']:.1f}–{100 * r['sens_local_p97.5']:.1f}%] | "
-                   f"{100 * r['share_fpr_le_7.5_local']:.0f}% | {r['fallback_draws']} | "
-                   f"{r['brier_raw_median']:.3f} → {r['brier_platt_median']:.3f} |")
+                   f"{100 * r['share_fpr_le_5_local']:.0f}% / {100 * r['share_fpr_le_7.5_local']:.0f}% | {r['fallback_draws']} | "
+                   f"{r['brier_raw_median']:.3f} → {r['brier_platt_median']:.3f} ({r['platt_skipped']}) |")
     return "\n".join(out)
 
 
@@ -597,7 +598,7 @@ def table_4c() -> str:
                           "hubert_linear_probe_ms": "HuBERT-ECG: linear probe",
                           "hubert_total_cpu_ms": "HuBERT-ECG probe: total, CPU",
                           "hubert_total_mps_ms": "HuBERT-ECG probe: total, MPS",
-                          "d1_linear_probe_ms": "d1-3B image probe: linear probe (added to the d1-3B forward pass of Table 4)"}),
+                          "d1_linear_probe_ms": "d1-3B image probe: linear probe (added to the d1-3B forward pass of main-text Table 5)"}),
                         (RESULTS / "latency_tabpfn_summary.csv",
                          {"fit_ms": "TabPFN: fit on 1,047 windows (once per model)",
                           "tabpfn_predict_cpu_ms": "TabPFN: prediction of one window, CPU"})]:
@@ -610,6 +611,98 @@ def table_4c() -> str:
                         f"{r.p95_median_over_runs_ms:.2f} ms |")
     return "\n".join(["| Step | Median (three runs) | Range of run medians | p95 (median over runs) |",
                       "| :--- | :---: | :---: | :---: |"] + rows)
+
+
+def table_8c() -> str:
+    """CinC 2017 (8,512 recordings, natural prevalence) for all 11 models trained on BUT QDB only: AUROC and AP with the
+    pre-specified recording maximum, decisions at tau = 0.5, and AUROC with the post hoc recording mean. Window scores:
+    results/external_window_predictions.csv (main models), tabpfn_predictions.csv, hubert_probe_predictions.csv
+    (primary preprocessing) and d1_cinc2017_full_predictions.csv (zero-shot d1-3B and the d1-3B probe)."""
+    from sklearn.metrics import average_precision_score, roc_auc_score
+    w = pd.read_csv(RESULTS / "external_window_predictions.csv", low_memory=False)
+    w = w[w.dataset == "CinC2017"].copy()
+    extra = {"TabPFN_SQI": ("tabpfn_predictions.csv", "prob_unusable"), "HuBERT_ECG_probe": ("hubert_probe_predictions.csv", "prob_unusable")}
+    for m, (f, col) in extra.items():
+        e = pd.read_csv(RESULTS / f, low_memory=False)
+        e = e[(e.setting == "but_only_external") & (e.dataset == "CinC2017")].set_index("segment_id")[col]
+        w[m] = e.loc[w.segment_id].values
+    d1 = pd.read_csv(RESULTS / "d1_cinc2017_full_predictions.csv").set_index("segment_id")
+    w["LiquidAI_d1_3B_Neural"] = d1.loc[w.segment_id, "prob_unusable"].values
+    w["d1_image_probe"] = d1.loc[w.segment_id, "prob_image_probe"].values
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    out = ["| Model | AUROC, recording max (pre-specified) | AP, recording max | Sens. / FR at τ = 0.50 | PPV / NPV at τ = 0.50 | "
+           "AUROC, recording mean (post hoc) |", "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    for m in labels:
+        g = w.groupby("record_name").agg(y=("label", "first"), mx=(m, "max"), mn=(m, "mean"))
+        y, mx = g.y.values.astype(int), g.mx.values
+        pred = mx >= 0.5
+        tp, fp = int((pred & (y == 1)).sum()), int((pred & (y == 0)).sum())
+        fn, tn = int((~pred & (y == 1)).sum()), int((~pred & (y == 0)).sum())
+        ppv = tp / (tp + fp) if tp + fp else float("nan")
+        npv = tn / (tn + fn) if tn + fn else float("nan")
+        out.append(f"| **{labels[m]}** | {roc_auc_score(y, mx):.3f} | {average_precision_score(y, mx):.3f} | "
+                   f"{100 * tp / (tp + fn):.1f}% / {100 * fp / (fp + tn):.1f}% | {ppv:.3f} / {npv:.3f} | "
+                   f"{roc_auc_score(y, g.mn.values):.3f} |")
+    return "\n".join(out)
+
+
+def table_2h() -> str:
+    """CinC 2011 records with a constant lead II (experiments/cinc2011_constant_lead_check.py; post hoc, descriptive)."""
+    path = RESULTS / "cinc2011_constant_lead_check.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path).set_index("model")
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    out = ["| Model | Constant-lead records flagged at τ = 0.50 | AUROC, all 565 records | AUROC without the 65 constant-lead records |",
+           "| :--- | :---: | :---: | :---: |"]
+    for m in labels:
+        if m in s.index:
+            r = s.loc[m]
+            out.append(f"| **{labels[m]}** | {int(r['constant_flagged_at_0.5'])} / {int(r.n_constant)} | {r.auroc_all:.3f} | "
+                       f"{r.auroc_without_constant:.3f} |")
+    return "\n".join(out)
+
+
+def table_1g() -> str:
+    """AUROC and AP with 95% bootstrap CIs for all models in each primary evaluation set (evaluation/model_cis.py)."""
+    path = RESULTS / "model_cis.csv"
+    if not path.exists():
+        return _missing(path)
+    c = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    fams = list(dict.fromkeys(c.family))
+    out = ["| Model | " + " | ".join(fams) + " |", "| :--- | " + " | ".join([":---:"] * len(fams)) + " |"]
+    for m in labels:
+        cells = []
+        for f in fams:
+            r = c[(c.family == f) & (c.model == m)]
+            if r.empty:
+                cells.append("—")
+                continue
+            r = r.iloc[0]
+            cells.append(f"AUROC {r.auroc:.3f} [{r.auroc_lo:.3f}–{r.auroc_hi:.3f}]; AP {r.ap:.3f} [{r.ap_lo:.3f}–{r.ap_hi:.3f}]")
+        out.append(f"| **{labels[m]}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_2i() -> str:
+    """SQI distributions by dataset and class: median [IQR] per window (TRIPOD+AI item 20c)."""
+    sys.path.insert(0, str(PROJECT_ROOT / "experiments"))
+    from lodo_multisource import load_sources
+    from features.sqi_extractor import SQI_FEATURE_NAMES
+    src = load_sources()
+    groups = [("BUT_QDB", 0, "BUT QDB usable"), ("BUT_QDB", 1, "BUT QDB unusable"), ("CinC2011", 0, "CinC 2011 acceptable"),
+              ("CinC2011", 1, "CinC 2011 unacceptable"), ("CinC2017", 0, "CinC 2017 not noisy"), ("CinC2017", 1, "CinC 2017 noisy")]
+    head = [f"{lab} (n = {int((src[d].label == y).sum()):,})" for d, y, lab in groups]
+    out = ["| SQI | " + " | ".join(head) + " |", "| :--- | " + " | ".join([":---:"] * len(groups)) + " |"]
+    for f in SQI_FEATURE_NAMES[:11]:
+        cells = []
+        for d, y, _ in groups:
+            v = src[d].loc[src[d].label == y, f]
+            q1, q2, q3 = v.quantile([0.25, 0.5, 0.75])
+            cells.append(f"{q2:.3g} [{q1:.3g}–{q3:.3g}]")
+        out.append(f"| `{f}` | " + " | ".join(cells) + " |")
+    return "\n".join(out)
 
 
 def table_7() -> str:
@@ -835,6 +928,10 @@ def main():
         ("Table 12", table_12()),
         ("Table 13", table_13()),
         ("Table 4c", table_4c()),
+        ("Table 8c", table_8c()),
+        ("Table 2h", table_2h()),
+        ("Table 1g", table_1g()),
+        ("Table 2i", table_2i()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("# Manuscript tables regenerated 2026-10-12\n\n")

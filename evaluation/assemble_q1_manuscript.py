@@ -22,7 +22,7 @@ PAIRS = [("main_q1_template.md", "main_q1.md"), ("supplement_q1_template.md", "s
 
 def heuristic_refit_table() -> str:
     s = pd.read_csv(ROOT / "results" / "heuristic_refit_summary.csv")
-    rows = ["| Evaluation set | Hand-set AUROC | Refitted AUROC | Δ (refit − hand-set) [95% CI] | p | Test |",
+    rows = ["| Evaluation set | Hand-set heuristic AUROC | LR replacement AUROC | Δ (replacement − hand-set) [95% CI] | p | Test |",
             "| :--- | :---: | :---: | :---: | :---: | :--- |"]
     for r in s.itertuples():
         p = "< 0.001" if r.p < 0.001 else f"{r.p:.3f}"

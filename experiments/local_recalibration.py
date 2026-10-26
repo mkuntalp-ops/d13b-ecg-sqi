@@ -11,7 +11,10 @@ Threshold methods (Target 1: maximum sensitivity at FPR <= 5%, experiments/neste
 - local: chosen on the n drawn records; if the draw lacks a class, the transferred threshold is used (counted).
 Calibration: Platt scaling (logistic regression on the logit of the score) fitted on the drawn records versus the
 uncalibrated BUT-only score (Brier score on the held-out records); single-class draws are skipped (counted).
-Descriptive only: no hypothesis tests, no model or n selected on the result.
+Descriptive only: no hypothesis tests, no model or n selected on the result. The achieved false reject rate is
+summarised as the share of draws at or below the 5% target and at or below 7.5% (pre-specified tolerance for the
+sampling error of a threshold chosen on n recordings). Brier medians are over the draws in which Platt scaling could be
+fitted (both classes present); the number of skipped draws is reported.
 
 Outputs: results/local_recalibration_draws.csv (one row per model, n and repetition),
          results/local_recalibration_summary.csv
@@ -97,6 +100,7 @@ def main():
                 x = g[f"{k}_{meth}"].values
                 rec.update({f"{k}_{meth}_median": float(np.median(x)), f"{k}_{meth}_p2.5": q(x, 2.5),
                             f"{k}_{meth}_p97.5": q(x, 97.5)})
+            rec[f"share_fpr_le_5_{meth}"] = float((g[f"fpr_{meth}"] <= FPR_TARGET).mean())
             rec[f"share_fpr_le_7.5_{meth}"] = float((g[f"fpr_{meth}"] <= FPR_TOLERANCE).mean())
         rec.update(brier_raw_median=float(g.brier_raw.median()), brier_platt_median=float(g.brier_platt.median()))
         summ.append(rec)

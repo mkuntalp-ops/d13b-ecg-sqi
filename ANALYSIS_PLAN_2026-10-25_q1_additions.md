@@ -168,3 +168,11 @@ The run uses the plan's fixed configuration with the authors' preprocessing (the
 - *Reporting:* the result is reported whatever it shows. The test set has unusable windows in three subjects only (122, 124 and one window in 105), so wide intervals are expected.
 
 Both F1a and F1b are sensitivity analyses. The primary protocol is not changed.
+
+**2026-10-26, post hoc descriptive check (third review, edge cases).** While documenting the SQI edge cases for the third review, we found that 65 of the 197 unacceptable CinC 2011 records have a constant lead II (signal SD 0). The SQI extractor gives these records bSQI 0 and flatline and saturation fractions of 1.
+
+Reported descriptively, without tests:
+- for each model (BUT-only training), the number of these 65 records scored ≥ 0.5;
+- the CinC 2011 AUROC without them.
+
+This check is post hoc and does not change any primary analysis.

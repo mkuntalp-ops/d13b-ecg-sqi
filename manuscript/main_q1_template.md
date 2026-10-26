@@ -1,13 +1,13 @@
-# In-domain accuracy does not predict transfer in ECG usability screening: a patient-independent, multi-dataset benchmark of task-specific, tabular and foundation models
+# In-domain rankings did not identify the best-transferring model in ECG usability screening: a patient-independent, multi-dataset benchmark of task-specific, tabular and foundation models
 
 <!-- Template. Table blocks {{Table X}} are filled from results/manuscript_tables_2026-10-12.md by
      evaluation/assemble_q1_manuscript.py, which writes manuscript/main_q1.md. Edit this file, not main_q1.md. -->
 
 ## Abstract
 
-**Objective.** To measure how much in-domain performance of ECG usability models survives transfer to other devices and labels.
+**Objective.** To measure how much in-domain performance of ECG usability models survives transfer to new devices and labels.
 
-**Methods.** Eleven models were developed on BUT QDB (1,047 single-lead 10-s windows, 15 subjects) with subject-grouped cross-validation and applied unchanged to CinC 2011 (565 records), CinC 2017 (8,512 recordings, 3.3% noisy) and NSTDB:
+**Methods.** Eleven models were developed on BUT QDB (1,047 single-lead 10-s windows, 15 subjects) with subject-grouped cross-validation and applied unchanged to CinC 2011 (565 records) and CinC 2017 (8,512 recordings, 3.3% noisy); seven were stress-tested on NSTDB:
 - SQI logistic regression, LightGBM, MLP and TabPFN;
 - raw-signal and image CNNs, and a multimodal network;
 - a rule-based heuristic;
@@ -17,12 +17,12 @@
 Leave-one-dataset-out training (five seeds) tested multi-source development; thresholds were re-set on small labelled target samples. Paired AUROC tests were Holm-adjusted.
 
 **Results.** In-domain, ten models reached AUROC 0.938–0.989, none significantly below the best; zero-shot d1-3B (0.852) was. Externally, rankings changed:
-- On CinC 2011, the d1-3B image-token probe was best (0.833 vs 0.787 for the next model; adjusted p = 0.015).
+- On CinC 2011, the d1-3B image-token probe was best (0.833 vs 0.787; adjusted p = 0.015).
 - On CinC 2017, the d1-3B probe (0.908), the HuBERT-ECG probe (0.907) and the heuristic (0.887) formed the top tier, and the 1D CNN fell to 0.773.
 
-Multi-source training consistently improved the 1D CNN (+0.066 and +0.102) but degraded the 2D CNN. Thresholds chosen on development data did not transfer. At 3.3% prevalence, thresholds re-set on 100 labelled recordings controlled false rejections but kept median sensitivity below 30%.
+Across five seeds, multi-source training improved the 1D CNN (median +0.066 and +0.102) and degraded the 2D CNN. Development-data thresholds did not transfer. At 3.3% prevalence, thresholds re-set on 100 labelled recordings controlled false rejections but kept median sensitivity below 30%.
 
-**Conclusions.** In-domain benchmarks did not identify the model that transferred best. A probe on frozen vision-language features was never significantly behind the best. Operating points need local calibration with enough target positives.
+**Conclusions.** In-domain benchmarks did not identify the model that transferred best. A probe on frozen vision-language features was never significantly behind the best. Operating points need local calibration with sufficient positives.
 
 **Keywords:** electrocardiogram; signal quality; external validation; dataset shift; foundation models; benchmark
 
@@ -40,7 +40,11 @@ Published results are hard to compare, and they rarely tell a practitioner what 
 - whether windows from the same subject appear in both training and test data;
 - whether models are tested on any data other than their own.
 
-When models are moved to new data, ranking, calibration and operating points can all change [13–15]. The benchmark that would show this has not been done: many model families evaluated under the same patient-independent protocol on several external datasets with different labels. Two recent developments make this benchmark timely. Tabular foundation models such as TabPFN [16] remove most of the tuning burden from SQI classifiers. ECG foundation models such as HuBERT-ECG [17] and ECG-FM [18] offer frozen representations that can be read out with a linear probe.
+When models are moved to new data, ranking, calibration and operating points can all change [13–15]. Cross-dataset evaluation of ECG quality models, including multi-source training, has been reported [15]. What is less often available is a comparison that combines these elements:
+- many model families, including foundation-model probes, under one patient-independent protocol;
+- formal paired tests;
+- external datasets whose reference labels differ;
+- an examination of whether operating points transfer. Two recent developments make this benchmark timely. Tabular foundation models such as TabPFN [16] remove most of the tuning burden from SQI classifiers. ECG foundation models such as HuBERT-ECG [17] and ECG-FM [18] offer frozen representations that can be read out with a linear probe.
 
 This study provides that benchmark for single-lead usability screening. Its contributions are:
 1. **Model comparison.** A patient-independent comparison of eleven models from six families, with formal paired tests and multiplicity control:
@@ -59,7 +63,7 @@ This study provides that benchmark for single-lead usability screening. Its cont
    - Whether the rule heuristic's coefficients act as transferable priors.
    - The effect of prevalence.
    - Whether operating points chosen on the development data transfer.
-4. **Capacity versus adaptation.** An analysis of whether the zero-shot model fails for lack of capacity or lack of adaptation.
+4. **Information in the zero-shot model.** An analysis of whether the zero-shot model's frozen representation contains task-relevant information that its zero-shot decision configuration does not exploit.
 5. **Cost profile.** A cost profile that separates model inference from preprocessing and rendering.
 
 ## 2. Methods
@@ -76,7 +80,7 @@ This study provides that benchmark for single-lead usability screening. Its cont
 - *Candidate pool.* All non-overlapping 10-s windows inside the annotation intervals formed a candidate pool of 32,956 windows (16.0% Class 3).
 - *Sampling.* Per subject, up to 50 usable and up to 60 unusable windows were sampled evenly in time. This gave 1,047 windows (297 unusable) from 17 records and 15 subjects. Class 3 occurred in 7 subjects.
 - *Resampling.* Windows were resampled to 500 Hz (Fourier method).
-- *Relation to the official protocol.* The recently published data descriptor defines a subject-independent train/test split (11 records from 8 subjects versus 7 records from 7 subjects) and a sample-level three-class evaluation [20]. It also excludes a 13-h stretch of missing signal at the start of record 105001, which is included in our 99.39 h. Our cohort and folds were fixed before that protocol was available and do not follow it. 59 of our 297 unusable windows lie in the excluded stretch. Two sensitivity analyses, specified after this count was known but before any model result was computed, address this (Section 2.4).
+- *Relation to the official protocol.* The recently published data descriptor defines a subject-independent train/test split (11 records from 8 subjects versus 7 records from 7 subjects) and a sample-level three-class evaluation [20]. It also excludes a 13-h stretch of missing signal at the start of record 105001, which is included in our 99.39 h. Our cohort and folds were defined without reference to that protocol and do not follow it. According to the repository history, the cohort was created in October 2026, after the descriptor was published. 59 of our 297 unusable windows lie in the excluded stretch. Two sensitivity analyses address this (Section 2.4). They were specified after this count was known, but before their results were computed.
 
 **CinC 2011 Set A (external, 12-lead label).** These are 10-s 12-lead recordings at 500 Hz, labelled acceptable or unacceptable for 12-lead interpretation [11, 12].
 - The external set is the union of six balanced subsets drawn for the transfer analyses: 565 records (197 unacceptable, 368 acceptable).
@@ -89,7 +93,7 @@ This study provides that benchmark for single-lead usability screening. Its cont
 - The recording score is the maximum window score (pre-specified).
 
 **MIT-BIH NSTDB (controlled stress).** Electrode-motion noise was added to MIT-BIH records 118 and 119 at nominal SNRs of +24 to −6 dB [22].
-- Noise segments (300–420 s and 540–660 s, verified against the signals) provided 264 noisy windows.
+- Noise segments (300–420 s and 540–660 s, verified against the signals) provided 264 noisy windows: 2 records × 6 SNR labels × 2 segments × 11 windows (10 s, starting 5 s into each segment).
 - Each noisy window was paired with the clean base-record window at the same start time.
 
 ### 2.2 Inputs
@@ -102,7 +106,15 @@ This study provides that benchmark for single-lead usability screening. Its cont
 - zero-crossing rate;
 - amplitude standard deviation.
 
-Amplitudes were harmonised to mV before feature extraction. No SQI value was missing or non-finite in any dataset. Recordings shorter than one window were excluded (Section 2.1).
+Amplitudes were harmonised to mV before feature extraction.
+
+**Edge cases.**
+- *Undefined values:* the extractor sets undefined (non-finite) values to 0 and clips the spectral ratios and moments to fixed ranges (Supplementary Methods). Clipping affected 3 (BUT QDB), 6 (CinC 2011) and 122 (CinC 2017) kurtosis or skewness values.
+- *Constant windows:* a constant window receives flatline and saturation fractions of 1 and bSQI 0. This occurred in 65 CinC 2011 lead-II records, all unacceptable, and in no other dataset.
+- *Short recordings:* recordings shorter than one window were excluded (Section 2.1).
+- *Raw-signal input:* per-window z-scoring divides by 1 when the SD is below 10^-6.
+
+Full SQI definitions, network architectures, the heuristic formula and the d1-3B prompt are given in the Supplementary Methods.
 
 **Image inputs.** Image inputs are rendered 10-s strips (513 × 257 px) with a light grid and a per-strip vertical scale (1st–99th percentile, at least 1 mV).
 
@@ -113,16 +125,18 @@ Amplitudes were harmonised to mV before feature extraction. No SQI value was mis
 **Tabular.**
 - L2 logistic regression on standardised inputs.
 - LightGBM (100 trees, depth 4, learning rate 0.05).
-- A two-layer MLP (64 and 32 units).
-- TabPFN v3 [16] (package 9.0.0, default classifier checkpoint, seed 42), a pre-trained tabular foundation model used without tuning.
+- A two-layer MLP: 64 and 32 units, each followed by batch normalisation and ReLU, dropout 0.2 after the first layer, 3,201 parameters.
+- TabPFN-3 [26], a pre-trained tabular foundation model building on [16], used without tuning.
+  - *Package and checkpoint:* `tabpfn` package 9.0.0 with the checkpoint file `tabpfn-v3-classifier-v3_default.ckpt` (model name TabPFN-v3, architecture `tabpfn_v3`; SHA-256 prefix d0d865d5), loaded explicitly by path. No automatic model-version selection was used.
+  - *Inference settings:* package defaults (number of estimators and softmax temperature `auto`, no probability balancing), random state 42, CPU.
 
 **Raw signal.** A four-block 1D CNN (167,489 parameters).
 
 **Image.** A four-block 2D CNN (245,697 parameters).
 
-**Multimodal.** A gated fusion of the image backbone and an SQI branch (131,969 parameters).
+**Multimodal.** A gated fusion of a three-block image encoder and an SQI branch (131,969 parameters).
 
-**Rule heuristic.** A fixed logistic combination of five SQIs and two strip features with hand-set coefficients (no trainable parameters).
+**Rule heuristic.** A fixed logistic combination of five SQIs and two strip features with hand-set coefficients (no trainable parameters; formula in the Supplementary Methods).
 
 **Zero-shot vision-language model.** LiquidAI d1-3B (3.12 × 10^9 parameters) [9].
 - *Input:* the strip, a text summary of 10 of the 13 tabular inputs, and a usability question.
@@ -146,7 +160,9 @@ Amplitudes were harmonised to mV before feature extraction. No SQI value was mis
 - *Neural networks:* all trained networks used AdamW (learning rate and weight decay 10^-3), class-weighted binary cross-entropy, 25 epochs (MLP: 35), no early stopping and seed 42.
 - *Logistic regression and LightGBM:* balanced class weights.
 - *Hyperparameter choice:* hyperparameters of the task-specific models were fixed before any evaluation and were not tuned. TabPFN was added as a tuning-free reference for the tabular models (Section 4).
-- *Test-set isolation:* no test data influenced model selection. The test sets, and the data of the held-out dataset in LODO, were never used to choose hyperparameters, features or thresholds.
+- *Test-set isolation:* for the primary unchanged-transfer analyses, target evaluation data were not used for model fitting, hyperparameters, features or threshold selection. In LODO, the held-out dataset was used only for testing.
+  - *Local adaptation:* in the local-adaptation experiments, labelled target recordings were split into calibration and evaluation sets within each draw.
+  - *Post-hoc operating points:* these are reported only as descriptive reference values.
 
 ### 2.4 Evaluation protocols
 
@@ -162,8 +178,13 @@ Both analyses used paired comparisons with the best model (subject-level cluster
 
 **Leave-one-dataset-out (LODO).** Models were trained on two of BUT QDB, CinC 2011 and CinC 2017 and tested on the third, with the same fixed hyperparameters.
 - When CinC 2017 was a training source, we used all noisy recordings and 1,000 random non-noisy recordings (seed 42), and copied the recording label to its windows.
+- *Training-set sizes:* the CinC 2017 training subset comprised 1,278 recordings (3,437 windows, 589 unusable). The three training sets were:
+  - BUT QDB held out: 4,002 windows, 786 unusable;
+  - CinC 2011 held out: 4,484 windows, 886 unusable;
+  - CinC 2017 held out: 1,612 windows, 494 unusable.
 - The rule heuristic is not trained and is reported unchanged.
 - The d1-3B probe was run in the same splits, with d1-3B features extracted for all 23,985 CinC 2017 windows.
+- *Probe tuning in LODO:* the inner cross-validation that chose the probes' penalty grouped training windows by subject (BUT QDB) or recording (CinC).
 - *Seeds:* the seed-dependent networks (MLP, both CNNs, multimodal net) were repeated with training seeds 1–4 in addition to 42, both for BUT-only training and for LODO. A LODO effect was called consistent if its sign agreed in all five seeds and its median magnitude was at least 0.02 (pre-specified). Logistic regression and LightGBM use a fixed random state; the probes are deterministic given their features.
 
 **Noise stress.** We computed the usable probability per SNR label and its paired change relative to the clean partner window.
@@ -184,14 +205,14 @@ In (d), Platt scaling fitted on the same draws was compared with the uncalibrate
 - BUT QDB precision metrics were re-weighted from the sampled prevalence (28.4%) to the natural prevalence of the candidate pool (16.0%). They were also re-weighted to 2.8%, the prevalence without the one record that contributes 90% of Class 3 windows.
 - CinC 2017 was evaluated at its natural prevalence of 3.3%.
 
-**Heuristic coefficients.** To test whether the hand-set heuristic coefficients act as transferable priors rather than as a fit to BUT QDB, its seven inputs were also refitted by logistic regression inside the same folds, then transferred like the other models.
+**Heuristic versus a logistic-regression replacement.** The hand-set heuristic was compared with a logistic-regression replacement using the same seven input features. The replacement was a standardised L2 logistic regression fitted inside the same folds and transferred like the other models. The replacement changes the functional form as well as the coefficients: the heuristic mixes two separate sigmoid outputs and caps two inputs (Supplementary Methods S-M3). The comparison therefore does not isolate the effect of the hand-set coefficients.
 
 ### 2.5 Statistical analysis
 
 **Metrics.** The positive class was unusable.
-- Discrimination: AUROC and average precision.
+- Discrimination: area under the receiver operating characteristic curve (AUROC) and average precision (AP).
 - Calibration: Brier score.
-- Decisions: sensitivity and false reject rate.
+- Decisions: sensitivity and false reject rate (FR, the proportion of usable recordings flagged as unusable). With unusable as the positive class, FR equals the false-positive rate (FPR).
 
 **Confidence intervals.** We used a subject-level cluster bootstrap on BUT QDB, where windows of a subject are correlated, and a recording-level bootstrap externally (1,000–2,000 resamples).
 
@@ -201,7 +222,14 @@ In (d), Platt scaling fitted on the same draws was compared with the uncalibrate
 
 **Multiplicity.** Within each evaluation set, all pairwise comparisons formed one family and were Holm-adjusted [25]. The families were BUT QDB, CinC 2011, CinC 2017 and the balanced 556-recording CinC 2017 subset, each with 11 models (55 comparisons). LODO effects (multi-source versus BUT-only) were Holm-adjusted within each held-out dataset.
 
-**Reporting rule.** Rankings are reported only where the adjusted comparison supports them.
+**Secondary tests.**
+- *Official-protocol analyses:* each was Holm-adjusted over its own pairwise comparisons.
+- *Heuristic versus its logistic-regression replacement:* the three comparisons (one per dataset) are reported unadjusted.
+- *Descriptive analyses:* the recording-mean aggregation, local recalibration, fine-tuning and the constant-lead check were not tested.
+
+**Reporting rule.** Rankings are reported only where the adjusted comparison supports them. External rankings refer to the pre-specified recording-maximum aggregation; the recording mean is a post hoc sensitivity analysis.
+
+**Reporting guideline.** The study is reported following TRIPOD+AI; the completed checklist is provided as a supplementary file.
 
 **Implementation check.** On one pair, the DeLong implementation was checked against a recording bootstrap; the two 95% intervals for the AUROC difference were 0.015–0.060 and 0.014–0.059.
 
@@ -224,7 +252,7 @@ In (d), Platt scaling fitted on the same draws was compared with the uncalibrate
 
 ### 3.1 In-domain performance does not separate the leading models
 
-On BUT QDB, ten models reached pooled out-of-fold AUROC 0.938–0.989 (Table 1; per-model details in Supplementary Table S1):
+On BUT QDB, ten models reached pooled out-of-fold AUROC 0.938–0.989 (Table 1; per-model details in Table S1; 95% CIs for all 11 models in every evaluation set in Table S30):
 - 1D and 2D CNN: 0.989;
 - d1-3B image probe: 0.979;
 - rule heuristic: 0.977;
@@ -237,7 +265,7 @@ On BUT QDB, ten models reached pooled out-of-fold AUROC 0.938–0.989 (Table 1; 
 
 **No differences from the best.** None of these ten differed significantly from the best model after Holm adjustment (all p_Holm ≥ 0.29).
 
-**Zero-shot d1-3B.** Zero-shot d1-3B (0.852) was significantly worse than the best model, the 2D CNN, the multimodal net and the d1-3B probe (all p_Holm < 0.001). The difference is not a matter of capacity: the linear probe on its own frozen image tokens reached 0.979, an AUROC gain of 0.127 (95% CI 0.041–0.242).
+**Zero-shot d1-3B.** Zero-shot d1-3B (0.852) was significantly worse than the best model, the 2D CNN, the multimodal net and the d1-3B probe (all p_Holm < 0.001). The linear probe on the same model's frozen image tokens reached 0.979, an AUROC gain of 0.127 (95% CI 0.041–0.242). This shows that the representation contains useful task-relevant information that the zero-shot decision configuration does not exploit effectively.
 
 **Decision-level behaviour.** The models differed at the decision level, not in ranking.
 - *Natural prevalence.* Re-weighted to the 2.8% natural prevalence, positive predictive value at τ = 0.5 was 0.77 for the 1D CNN, 0.71 for the 2D CNN, 0.61 for the heuristic and 0.21–0.34 for the SQI models (Table S3).
@@ -255,17 +283,25 @@ On BUT QDB, ten models reached pooled out-of-fold AUROC 0.938–0.989 (Table 1; 
 
 ### 3.2 External rankings differ between datasets
 
-{{Table 9}}
-
 *Table 1. Pooled AUROC of each model per evaluation set; in parentheses, the Holm-adjusted p-value of the paired comparison with the best model of that set (bold). BUT QDB: subject-level cluster bootstrap; external sets: DeLong test. Models trained on BUT QDB only. HuBERT-ECG: primary (authors') preprocessing. Positive class: unusable.*
+
+{{Table 9}}
 
 ![](../figures/q1_figure1.png)
 
 *Figure 1. AUROC of each model in the four evaluation sets. The marker shows the outcome of the Holm-adjusted paired comparison with the best model of that set: best (diamond), not significantly different (filled) or significantly worse (open). Rows are grouped into tabular models, task-specific networks, the rule heuristic and the foundation-model approaches. Dashed line: chance. Source: Table 1.*
 
 **CinC 2011 (lead II against 12-lead labels).** The d1-3B image-token probe ranked recordings best (AUROC 0.833). It was significantly better than every other model, including the 2D CNN (0.787; difference 0.046, 95% CI 0.020–0.073; p_Holm = 0.015). The HuBERT-ECG probe was close to chance (0.562).
-- *SQI models.* The SQI logistic regression was inverted (0.320), and the refitted heuristic was also inverted (0.325).
+- *SQI models.* The SQI logistic regression was inverted (0.320), and so was the logistic-regression replacement of the heuristic (0.325).
 - *Label mismatch.* Averaging the scores of all 12 leads raised AUROC for every trained model except logistic regression. Over the random subsets, the mean was 0.852 for the 2D CNN and 0.877 for LightGBM (Table S5). This aggregation rule was chosen after the main analysis. It indicates that part of the CinC 2011 gap is the single-lead versus 12-lead label mismatch.
+
+- *Constant leads (post hoc, descriptive).* 65 of the 197 unacceptable records have a constant lead II. At τ = 0.5 these were flagged by:
+  - the heuristic, the multimodal net, zero-shot d1-3B and the d1-3B probe: 65 of 65;
+  - the 1D CNN: 64 of 65;
+  - the 2D CNN: 1 of 65;
+  - the four tabular models and the HuBERT-ECG probe: none.
+
+  Without these records, every model's AUROC fell except logistic regression and the HuBERT-ECG probe, and the d1-3B probe remained highest (0.751; Table S28). BUT QDB contains no constant windows, so several trained models never saw this failure during development.
 
 **CinC 2017 (single-lead label, natural prevalence).** The d1-3B image probe had the highest AUROC (0.908). Two models were not significantly different from it:
 - the HuBERT-ECG probe, 0.907 (p_Holm = 1.000);
@@ -280,33 +316,37 @@ All other models were significantly worse:
 - 1D CNN 0.773;
 - zero-shot d1-3B 0.757.
 
-The 1D CNN had been jointly best in-domain. On the balanced 556-recording subset, the HuBERT-ECG probe (0.916), the d1-3B probe (0.910), LightGBM and the heuristic were not significantly different from one another.
+The 1D CNN had been jointly best in-domain.
+
+**Aggregation.** With the post hoc recording mean instead of the maximum, every model's AUROC rose, by 0.03–0.07 (Table 3). The two probes remained highest (0.949 and 0.942), followed by the MLP (0.934), the heuristic (0.933) and LightGBM (0.930). Transfer performance therefore depends on the recording-level aggregation as well as on the model.
+
+**Balanced subset.** On the balanced 556-recording subset, the HuBERT-ECG probe (0.916), the d1-3B probe (0.910), LightGBM and the heuristic were not significantly different from one another.
 
 **The d1-3B probe across all evaluations.** The d1-3B image probe was the only model that was best, or not significantly different from the best, in all four evaluation sets. This statement was made on the 556-recording subset before the full CinC 2017 analysis, and the pre-specified rule would have withdrawn it; the full analysis confirmed it.
 
 **HuBERT-ECG depends on preprocessing and benefits from fine-tuning.** With our first preprocessing, the HuBERT-ECG probe gave 0.987 on BUT QDB, 0.732 on CinC 2011 and 0.867 on CinC 2017. With the authors' preprocessing, it gave 0.972, 0.562 and 0.907 (Table S25). In a single run, partial fine-tuning with the authors' preprocessing gave 0.969, 0.706 and 0.912. These values are descriptive: they were not tested against the probe and were not repeated across seeds.
 
-**Feature meaning shifts between datasets.** Several SQIs reverse their association with unusability between datasets (Table S6). Measured as univariate AUROC on BUT QDB versus CinC 2011:
+**Feature meaning shifts between datasets.** Several SQIs reverse their association with unusability between datasets (Table S6; distributions by dataset and class in Table S31). Measured as univariate AUROC on BUT QDB versus CinC 2011:
 - high-frequency ratio: 0.777 versus 0.307;
 - powerline ratio: 0.773 versus 0.312;
 - zero-crossing rate: 0.727 versus 0.248.
 
 bSQI is informative again in CinC 2017 (0.124, i.e., low agreement marks noise). The flatline fraction in CinC 2011 largely counts repeats caused by 5-µV amplitude quantization: acceptable records already have a median of 0.28. In BUT QDB, which is resampled from 1,000 Hz and takes continuous values, the flatline fraction is near zero.
 
-**The hand-set heuristic transferred better than its refitted counterpart.** Refitting the heuristic's seven inputs inside the folds lowered AUROC in every evaluation:
+**The hand-set heuristic outperformed its logistic-regression replacement.** The replacement, which used the same seven inputs (Table S22), had a lower AUROC in every evaluation:
 - BUT QDB: 0.925 versus 0.977 (cluster-bootstrap p = 0.001);
 - CinC 2011: 0.325 versus 0.685 (DeLong p < 0.001);
-- CinC 2017: 0.864 versus 0.887 (p = 0.001).
+- CinC 2017: 0.864 versus 0.887 (DeLong p < 0.001).
 
-The hand-set coefficients therefore act as priors that transfer better than a fit to BUT QDB. Whether they were chosen after inspecting BUT QDB outcomes is not documented.
+Whether the hand-set coefficients were chosen after inspecting BUT QDB outcomes is not documented (Section 4).
 
 **Noise stress.** Under paired electrode-motion stress (Table S7), every trained model lowered its usable probability as noise increased. At 0 dB, the mean paired change was −0.93 for logistic regression, −0.90 for LightGBM, −0.85 for the multimodal net, −0.68 for the 1D CNN and −0.67 for the 2D CNN. Zero-shot d1-3B changed by at most 0.09 and did not track the noise.
 
 ### 3.3 Multi-source training helps some models and harms others
 
-{{Table 10}}
-
 *Table 2. Leave-one-dataset-out AUROC [95% bootstrap CI] when training on the two other datasets (seed 42). Δ: paired difference from training on BUT QDB alone, with Holm adjustment within each held-out dataset. The rule heuristic has no trainable parameters. Seed repetition of the networks: Table S23.*
+
+{{Table 10}}
 
 ![](../figures/q1_figure2.png)
 
@@ -327,11 +367,11 @@ The seed-42 drop of the multimodal net on CinC 2011 (0.518) was not reproducible
 
 ### 3.4 Operating points and prevalence
 
-{{Table 8}}
+*Table 3. CinC 2017 at natural prevalence (8,512 recordings, 278 noisy), all 11 models trained on BUT QDB only. Recording maximum (pre-specified); the last column uses the recording mean (post hoc). Sens./FR: sensitivity and false reject rate at τ = 0.50; PPV/NPV: positive/negative predictive value. Bootstrap CIs for the seven main models: Table S29.*
 
-*Table 3. CinC 2017 at natural prevalence (8,512 recordings, 278 noisy; recording maximum). Models trained on BUT QDB only. Sens./FR: sensitivity and false reject rate at τ = 0.50.*
+{{Table 8c}}
 
-**Default threshold.** At the 3.3% prevalence of CinC 2017, no model reached a useful precision at the default threshold: positive predictive value was 0.08–0.20 (Table 3). The heuristic had the highest positive predictive value (0.199), but at 18.3% sensitivity.
+**Default threshold.** At the 3.3% prevalence of CinC 2017, positive predictive value at the default threshold was low for all 11 models (0.08–0.20; Table 3). The heuristic had the highest positive predictive value (0.199), but at 18.3% sensitivity.
 
 **Transferred thresholds.** Thresholds chosen on BUT QDB did not transfer (Table S4). The Target 1 rule (false reject rate ≤ 5% on BUT QDB) gave false reject rates on CinC 2017 of:
 - 15.7–54.5% for the trained models;
@@ -339,31 +379,37 @@ The seed-42 drop of the multimodal net on CinC 2011 (0.518) was not reproducible
 
 On CinC 2011, the same thresholds gave sensitivities between 0% (MLP) and 100% at a 100% false reject rate (heuristic).
 
+*Table 4. Target 1 thresholds (maximum sensitivity at FPR ≤ 5%) re-set on n = 100 randomly drawn labelled target recordings, evaluated on the remaining recordings (500 draws; median and 2.5–97.5 percentiles over draws).*
+- *Achieved FPR:* the share of draws with FPR ≤ 5% and ≤ 7.5%. The 7.5% level was pre-specified as a tolerance for the sampling error of a threshold chosen on n recordings.
+- *Fallback:* draws without a positive recording, for which the transferred threshold was kept.
+- *Brier:* uncalibrated BUT-only score versus Platt scaling fitted on the same draws. The median is over the draws in which Platt scaling could be fitted; the number skipped (single-class draws) is in parentheses.
+- *All sample sizes:* Table S24.
+
 {{Table 11}}
 
-*Table 4. Target 1 thresholds (maximum sensitivity at FPR ≤ 5%) re-set on n = 100 randomly drawn labelled target recordings, evaluated on the remaining recordings (500 draws; median and 2.5–97.5 percentiles). Fallback: draws without a positive recording, for which the transferred threshold was kept. Brier: uncalibrated BUT-only score versus Platt scaling fitted on the same draws. All sample sizes: Table S24.*
-
 **Local thresholds (Table 4).** Re-setting the threshold on a small labelled target sample brought false rejections close to the target in most draws.
-- *CinC 2011:* with n = 100, the false reject rate was at most 7.5% in 74–100% of draws, depending on the model. Median sensitivity was 54% for the d1-3B probe, 50% for LightGBM and 40% for the heuristic.
-- *CinC 2017:* with n = 100, the false reject rate was at most 7.5% in at least 93% of draws, but median sensitivity was 0–29%. A draw of 100 recordings contains about three noisy recordings, so the threshold rests on very few positives, and 21 of 500 draws contained none. Even with n = 200, median sensitivity remained 0–37% (Table S24).
+- *CinC 2011:* with n = 100, the false reject rate was at most 5% in 61–100% and at most 7.5% in 74–100% of draws, depending on the model. Median sensitivity was 54% for the d1-3B probe, 50% for LightGBM and 40% for the heuristic.
+- *CinC 2017:* with n = 100, the false reject rate was at most 5% in 77–95% and at most 7.5% in at least 93% of draws, but median sensitivity was 0–29%. A draw of 100 recordings contains about three noisy recordings, so the threshold rests on very few positives, and 21 of 500 draws contained none. Even with n = 200, median sensitivity remained 0–37% (Table S24).
 
 ![](../figures/q1_figure3.png)
 
 *Figure 3. Thresholds re-set on n labelled target recordings (Target 1, false reject rate ≤ 5%), evaluated on the remaining recordings: median over 500 draws for each model (grey) and the median over models (blue). On CinC 2017, 229 of 500 draws at n = 25 and 82 at n = 50 contained no noisy recording and kept the transferred threshold, which explains the values at n = 25. Source: Table S24.*
 
-**Calibration.** Platt scaling on the drawn recordings lowered the Brier score of every model. On CinC 2017, however, the recalibrated Brier scores (0.028–0.032 at n = 100) were close to that of a constant prediction at the prevalence (0.032). The gain therefore mainly corrects the probability level, not the ranking.
+**Calibration.** Platt scaling on the drawn recordings lowered the Brier score of every model. On CinC 2017, however, the recalibrated Brier scores (0.028–0.032 at n = 100) were close to that of a constant prediction at the prevalence (0.032). This comparison suggests that much of the gain reflects a corrected probability level; it does not by itself establish that the recalibrated probabilities are well calibrated.
 
 ### 3.5 Computational cost
 
-{{Table 4}}
-
 *Table 5. Per-window latency on an Apple M4 (median and 95th percentile of three runs of 25 windows), separating preprocessing from the forward pass.*
+
+{{Table 4}}
 
 **Image pipelines.** For the image pipelines, rendering dominated: about 60 ms (92% of the total) against 5 ms for the forward pass. This cost belongs to the plotting library rather than to rasterization as such: a direct raster renderer took 0.63 ms (Table S8). The image models, however, were not evaluated on those strips.
 
 **1D CNN.** The 1D CNN took 1.41 ms on the CPU from the native 1,000-Hz window, with no rendering step.
 
 **d1-3B.** d1-3B took 891 ms per window, dominated by its 828-ms forward pass.
+
+**Harness dependence.** Forward-pass times of a few milliseconds on the GPU differ between our two timing scripts (Limitation 8); only order-of-magnitude differences are interpreted.
 
 **Foundation-model probes and TabPFN (Table S27).**
 - *HuBERT-ECG probe:* 28.0 ms per window on MPS (64.1 ms on the CPU), of which 23.4 ms was the forward pass.
@@ -372,17 +418,21 @@ On CinC 2011, the same thresholds gave sensitivities between 0% (MLP) and 100% a
 
 ## 4. Discussion
 
-**Main finding.** The main finding is negative and practical: on a patient-independent in-domain benchmark, ten of eleven models are statistically indistinguishable, and their external rankings disagree with one another. In-domain accuracy is necessary, but it does not select a model for a new device.
+**Main finding.** The main finding is negative and practical: on a patient-independent in-domain benchmark, ten of eleven models did not differ significantly from the highest-AUROC model after multiplicity adjustment, and their external rankings disagree with one another. With 15 subjects, the absence of a significant difference does not establish equivalent performance. In-domain accuracy is necessary, but it does not select a model for a new device.
 
-**The CNNs.** The 1D and 2D CNNs were jointly best on BUT QDB, yet the 1D CNN was the worst trained model on CinC 2017. The 2D CNN was second on CinC 2011 but significantly behind the heuristic and LightGBM on CinC 2017.
+**The CNNs.** The 1D and 2D CNNs were jointly best on BUT QDB, yet the 1D CNN was the worst trained model on CinC 2017. The 2D CNN was second on CinC 2011 but significantly behind the heuristic, LightGBM and both probes on CinC 2017.
 
-**Feature reversal.** The SQI analyses explain part of this pattern. Features whose direction reverses between datasets cannot transfer under any classifier. TabPFN, which removes the tuning question for the tabular models, did not improve on their external results. This indicates that the features, not the baselines, limit tabular transfer.
+**Feature reversal.** The SQI analyses explain part of this pattern. Reversals in feature–outcome associations can undermine unchanged transfer, particularly for classifiers that rely strongly on those associations. TabPFN, which removes the tuning question for the tabular models, did not improve on their external results. These findings suggest that the selected feature representation contributes to the observed transfer limitations.
 
-**The heuristic.** The heuristic's hand-set coefficients encode priors (low detector agreement, high noise power, saturation and flatline imply poor quality) that are valid across devices. Refitting them on BUT QDB learned dataset-specific directions and lost transfer.
+**The heuristic.** The hand-set rule outperformed a logistic-regression replacement using the same seven inputs. The results are consistent with the rule providing useful inductive biases: low detector agreement, high noise power, saturation and flatline imply poor quality.
+
+Two caveats limit this interpretation:
+- *Functional form:* the replacement also changes the functional form, so the performance difference cannot be attributed solely to the hand-set coefficients.
+- *Development history:* the rule's development history is undocumented, which prevents a definitive assessment of whether BUT QDB influenced it.
 
 **The quantization artefact.** The quantization artefact in the flatline fraction is a concrete example of a feature whose meaning depends on the acquisition chain. It should be redefined (for example, on a minimum duration of constant signal at a quantization-aware tolerance) before it is used across devices.
 
-**Foundation models: adaptation, not capacity.** The zero-shot vision-language model was among the weakest models in-domain and did not track controlled noise. Yet a linear probe on the image tokens of the same forward pass was never significantly behind the best model. It was best on CinC 2011 and on the full CinC 2017 set. Its limitation is therefore adaptation, not representation.
+**Foundation models: information present but not exploited.** The zero-shot vision-language model was among the weakest models in-domain and did not track controlled noise. Yet a linear probe on the image tokens of the same forward pass was never significantly behind the best model. It was best on CinC 2011 and on the full CinC 2017 set. Its representation therefore contains task-relevant information that the zero-shot decision configuration does not exploit effectively. The probe shows that useful information is present; it does not identify every reason for the zero-shot failure.
 
 **HuBERT-ECG.** The HuBERT-ECG probe matched the best models in-domain and on CinC 2017, but was near chance on CinC 2011 with the authors' preprocessing. Two observations bear on this:
 - *Preprocessing:* changing the filter and scaling moved its CinC 2011 AUROC from 0.732 to 0.562 and its CinC 2017 AUROC from 0.867 to 0.907. For frozen foundation models, preprocessing is a model parameter that must be reported, and it can change conclusions.
@@ -398,10 +448,11 @@ Both observations are plausible for a model pre-trained on 12-lead recordings an
 
 For a deployment, the training sources and their label definitions matter as much as their number.
 
-**Deployment implications.** Three implications follow:
+**Deployment implications.** Four implications follow:
 - Thresholds must be set on the target population. Neither post-hoc nor nested thresholds from BUT QDB carried over. At low prevalence, however, local recalibration needs enough labelled positives, not a fixed number of recordings: 100–200 recordings controlled false rejections but left sensitivity poorly determined. An enriched calibration sample would be needed, for example one that oversamples flagged recordings for review.
 - Precision at realistic prevalence is low unless sensitivity is sacrificed. A quality gate should therefore be judged by its false reject rate per hour of usable signal and by the cost of a missed unusable segment, not by AUROC.
 - The rendering step of image-based quality models is a removable engineering cost, not an intrinsic one.
+- A deployed quality gate needs an explicit check for constant or disconnected signals. Several trained models, including the tabular models and the 2D CNN, scored completely flat CinC 2011 leads as usable, because no such signal occurred in the development data.
 
 ### 4.1 Limitations
 
@@ -429,13 +480,21 @@ For a deployment, the training sources and their label definitions matter as muc
 - HuBERT-ECG weights are licensed for non-commercial use.
 - The pre-training corpora of d1-3B and HuBERT-ECG (9.1 million 12-lead ECGs) were not checked record by record. Overlap with the public evaluation datasets, as unlabelled signals, could not be verified or excluded.
 
-**7. Post-hoc analyses.** The 12-lead aggregation rules and the CinC 2017 window mean were chosen after the main analysis. They are reported as sensitivity analyses. The heuristic refit, TabPFN, the HuBERT-ECG probe and LODO were added during revision, after the single-source results were known. They did not change any earlier result. The later additions were committed to a dated analysis plan before being run: seeds, full CinC 2017 d1-3B, local recalibration, HuBERT-ECG preprocessing check and fine-tuning. The HuBERT-ECG primary result changed as a consequence of the pre-specified preprocessing rule.
+**7. Post-hoc analyses.** The 12-lead aggregation rules and the CinC 2017 window mean were chosen after the main analysis. They are reported as sensitivity analyses. The heuristic's logistic-regression replacement, TabPFN, the HuBERT-ECG probe and LODO were added during revision, after the single-source results were known. They did not change any earlier result. The later additions were committed to a dated analysis plan before being run: seeds, full CinC 2017 d1-3B, local recalibration, HuBERT-ECG preprocessing check and fine-tuning. The HuBERT-ECG primary result changed as a consequence of the pre-specified preprocessing rule.
 
-**8. Latency.** Latency reflects one machine and Python implementations. TabPFN was timed on the CPU only.
+**8. Latency.** Latency reflects one machine and Python implementations, and TabPFN was timed on the CPU only. Table 5 and Table S8 come from different scripts and runs:
+- *Table 5:* the models are timed one after another in one process.
+- *Table S8:* a later script interleaves CPU and MPS passes per window and excludes the first window.
+
+Their MPS forward times of 1–6 ms differ by up to 2.3 ms in either direction (1D CNN 1.47 vs 2.80 ms; 2D CNN 5.12 vs 2.92 ms). MPS forward times at this scale are therefore harness-dependent. The conclusions rest only on differences of an order of magnitude: rendering of about 60 ms versus the forward pass, and 828 ms for d1-3B.
 
 **9. NSTDB.** The NSTDB SNR labels are nominal, and there is one noisy record per label and base record.
 
-**10. Demographics and fairness.** Performance was not assessed across demographic subgroups.
+**10. Aggregation and edge cases.**
+- *Aggregation:* external rankings depend on the recording-level aggregation (Table 3).
+- *Constant leads:* part of the CinC 2011 discrimination comes from 65 records with a constant lead II (Table S28).
+
+**11. Demographics and fairness.** Performance was not assessed across demographic subgroups.
 - *BUT QDB:* it reports the sex and age of its 15 healthy subjects (10 female and 8 male recordings, 21–83 years) [20]. With unusable windows in only 7 subjects, a subgroup analysis would not be informative.
 - *CinC datasets:* demographic information was not used.
 
@@ -445,7 +504,7 @@ Whether performance differs by sex, age or device population is therefore unknow
 
 **Summary.** Across eleven models and three external evaluations, in-domain performance on a patient-independent benchmark did not identify the model that transferred best:
 - the 1D CNN, jointly best in-domain, was the worst trained model on CinC 2017;
-- a hand-set rule outperformed its refitted counterpart and had a higher AUROC on CinC 2017 than every task-specific model;
+- a hand-set rule outperformed a logistic-regression replacement using the same inputs and had a higher AUROC on CinC 2017 than every task-specific model;
 - a linear probe on a vision-language model's frozen image tokens was the only model never significantly behind the best;
 - an ECG foundation model's probe was sensitive to its preprocessing.
 
@@ -465,6 +524,8 @@ Whether performance differs by sex, age or device population is therefore unknow
 
 **Patient and public involvement.** None.
 
+**Use of AI tools.** [AUTHORS TO CONFIRM] An AI coding assistant (Claude, Anthropic) was used for code development, analysis scripts and drafting of the manuscript text under the authors' direction. All analyses, results and text were checked by the authors, who take responsibility for the content.
+
 ## Data and code availability
 
 **Data.** All datasets are public on PhysioNet [11, 19, 21, 22].
@@ -473,28 +534,54 @@ Whether performance differs by sex, age or device population is therefore unknow
 
 ## References
 
-[1] Satija U, Ramkumar B, Manikandan MS. A review of signal quality evaluation technologies for electrocardiogram signals. IEEE Rev Biomed Eng. 2018;11:36–52. doi:10.1109/RBME.2018.2810957
+[1] Satija U, Ramkumar B, Manikandan MS. A review of signal processing techniques for electrocardiogram signal quality assessment. IEEE Rev Biomed Eng. 2018;11:36–52. doi:10.1109/RBME.2018.2810957
+
 [2] Clifford GD, Behar J, Li Q, Rezek I. Signal quality indices and data fusion for determining clinical acceptability of electrocardiograms. Physiol Meas. 2012;33(9):1419–1433. doi:10.1088/0967-3334/33/9/1419
+
 [3] Orphanidou C, Bonnici T, Charlton P, Clifton D, Vallance D, Tarassenko L. Signal-quality indices for the electrocardiogram and photoplethysmogram: derivation and applications to wireless monitoring. IEEE J Biomed Health Inform. 2015;19(3):832–838. doi:10.1109/JBHI.2014.2338351
+
 [4] Li Q, Mark RG, Clifford GD. Robust heart rate estimation from multiple asynchronous noisy sources using signal quality indices and a Kalman filter. Physiol Meas. 2008;29(1):15–32. doi:10.1088/0967-3334/29/1/002
+
 [5] Liu F, Xia S, Wei S, Chen L, Ren Y, et al. Wearable electrocardiogram quality assessment using wavelet scattering and LSTM. Front Physiol. 2022;13:905447. doi:10.3389/fphys.2022.905447
+
 [6] Hu Y, Liu Q, Zhou Z, Xu W, Tang H. A paralleled multi-task learning-based framework for single-lead ECG fine-grained noise localization, denoising and signal quality assessment. Sensors. 2025;25(23):7152. doi:10.3390/s25237152
-[7] Huang X, et al. Pseudo anomalies enhanced deep support vector data description for electrocardiogram quality assessment. Comput Biol Med. 2024. doi:10.1016/j.compbiomed.2024.107928
+
+[7] Huang X, Zhang F, Fan H, Chang H, Zhou B, Li Z. Pseudo anomalies enhanced deep support vector data description for electrocardiogram quality assessment. Comput Biol Med. 2024;170:107928. doi:10.1016/j.compbiomed.2024.107928
+
 [8] Herraiz ÁH, et al. A deep learning approach for featureless robust quality assessment of intermittent atrial fibrillation recordings from portable and wearable devices. Entropy. 2020;22(7):733. doi:10.3390/e22070733
+
 [9] Liquid AI. LiquidAI/d1-3B: open-weight edge multimodal decision model. Hugging Face; 2026. Revision 051bcc464b01b9f92942b364d9586b0ef5912432. https://huggingface.co/LiquidAI/d1-3B
+
 [10] Smital L, Haider CR, Vitek M, et al. Real-time quality assessment of long-term ECG signals recorded by wearables in free-living conditions. IEEE Trans Biomed Eng. 2020;67(10):2721–2734. doi:10.1109/TBME.2020.2969719
+
 [11] Silva I, Moody GB, Celi L. Improving the quality of ECGs collected using mobile phones: the PhysioNet/Computing in Cardiology Challenge 2011. Comput Cardiol. 2011;38:273–276.
+
 [12] PhysioNet/Computing in Cardiology Challenge 2011: challenge protocol. https://moody-challenge.physionet.org/2011/
+
 [13] Subbaswamy A, Saria S. From development to deployment: dataset shift, causality, and shift-stable models in health AI. Biostatistics. 2020;21(2):345–352. doi:10.1093/biostatistics/kxz041
+
 [14] Guo LL, et al. Evaluation of domain generalization and adaptation on improving model robustness to temporal dataset shift in clinical medicine. Sci Rep. 2022;12:2726. doi:10.1038/s41598-022-06484-1
+
 [15] Moeyersons J, Smets E, Morales J, et al. Artefact detection and quality assessment of ambulatory ECG signals. Comput Methods Programs Biomed. 2019;182:105050. doi:10.1016/j.cmpb.2019.105050
+
 [16] Hollmann N, Müller S, Purucker L, et al. Accurate predictions on small data with a tabular foundation model. Nature. 2025;637(8045):319–326. doi:10.1038/s41586-024-08328-6
+
 [17] Coppola E, Savardi M, Massussi M, Adamo M, Metra M, Signoroni A. HuBERT-ECG as a self-supervised foundation model for broad and scalable cardiac applications. medRxiv. 2024. doi:10.1101/2024.11.14.24317328 (preprint)
+
 [18] McKeen K, Masood S, Toma A, Rubin B, Wang B. ECG-FM: an open electrocardiogram foundation model. JAMIA Open. 2025;8(5):ooaf122. doi:10.1093/jamiaopen/ooaf122
+
 [19] Nemcova A, Smisek R, Opravilová K, Vitek M, Smital L, Maršánová L. Brno University of Technology ECG Quality Database (BUT QDB), version 1.0.0. PhysioNet; 2020. doi:10.13026/kah4-0w24
+
 [20] Smital L, Nemcova A, Saclova L, Smisek R, Opravilova K, Filipenska M, Vitek M. Real-world 24h+ ECG dataset with quality annotations and motion context. Sci Data. 2026. doi:10.1038/s41597-026-07905-w
+
 [21] Clifford GD, Liu C, Moody B, Lehman LH, Silva I, Li Q, Johnson AE, Mark RG. AF classification from a short single lead ECG recording: the PhysioNet/Computing in Cardiology Challenge 2017. Comput Cardiol. 2017;44. doi:10.22489/CinC.2017.065-469
+
 [22] Moody GB, Muldrow WE, Mark RG. A noise stress test for arrhythmia detectors. Comput Cardiol. 1984;11:381–384.
+
 [23] Pan J, Tompkins WJ. A real-time QRS detection algorithm. IEEE Trans Biomed Eng. 1985;BME-32(3):230–236. doi:10.1109/TBME.1985.325532
+
 [24] DeLong ER, DeLong DM, Clarke-Pearson DL. Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach. Biometrics. 1988;44(3):837–845.
+
 [25] Holm S. A simple sequentially rejective multiple test procedure. Scand J Stat. 1979;6(2):65–70.
+
+[26] Grinsztajn L, Flöge K, Key O, et al. TabPFN-3: technical report. arXiv:2605.13986. 2026.

@@ -83,7 +83,7 @@ For tabular and multimodal models, we extracted 13 input features comprising 11 
 6. `qrs_energy_ratio`: Relative Welch spectral power in the QRS depolarization band (5-15 Hz) relative to the ECG band.
 7. `kurtosis_ksqi`: Sample kurtosis of the 10-second signal distribution (scipy.stats.kurtosis) [18].
 8. `skewness_ssqi`: Sample skewness of the 10-second signal distribution (scipy.stats.skew) [18].
-9. `zero_crossing_rate`: Rate of sign zero-crossings after mean subtraction.
+9. `zero_crossing_rate`: Rate of sign zero-crossings after median subtraction.
 10. `powerline_noise_ratio`: Relative Welch spectral power in powerline notch bands (49-51 Hz and 59-61 Hz) relative to the ECG band.
 11. `signal_std`: Standard deviation of signal amplitude in mV.
 12. `duration_sec`: Window duration in seconds (constant metadata: 10.0 s in BUT QDB).
