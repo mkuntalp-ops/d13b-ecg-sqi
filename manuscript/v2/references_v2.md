@@ -23,7 +23,7 @@ nstdb: Moody GB, Muldrow WE, Mark RG. A noise stress test for arrhythmia detecto
 pantompkins: Pan J, Tompkins WJ. A real-time QRS detection algorithm. IEEE Trans Biomed Eng. 1985;BME-32(3):230–236. doi:10.1109/TBME.1985.325532
 delong: DeLong ER, DeLong DM, Clarke-Pearson DL. Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach. Biometrics. 1988;44(3):837–845.
 holm: Holm S. A simple sequentially rejective multiple test procedure. Scand J Stat. 1979;6(2):65–70.
-tabpfn3: Grinsztajn L, Flöge K, Key O, et al. TabPFN-3: technical report. arXiv:2605.13986. 2026.
+tabpfn3: Grinsztajn L, Flöge K, Key O, et al. TabPFN-3: technical report. arXiv:2605.13986. 2026 (technical report, not peer reviewed).
 tripod: Collins GS, Moons KGM, Dhiman P, et al. TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378. doi:10.1136/bmj-2023-078378
 hayn: Hayn D, Jammerbund B, Schreier G. QRS detection based ECG quality assessment. Physiol Meas. 2012;33(9):1449–1461. doi:10.1088/0967-3334/33/9/1449
 johannesen: Johannesen L, Galeotti L. Automatic ECG quality scoring methodology: mimicking human annotators. Physiol Meas. 2012;33(9):1479–1489. doi:10.1088/0967-3334/33/9/1479
@@ -38,12 +38,12 @@ morgado: Morgado E, Alonso-Atienza F, Santiago-Mozos R, et al. Quality estimatio
 shahriari: Shahriari Y, Fidler R, Pelter MM, Bai Y, Villaroman A, Hu X. Electrocardiogram signal quality assessment based on structural image similarity metric. IEEE Trans Biomed Eng. 2018;65(4):745–753. doi:10.1109/TBME.2017.2717876
 liu2021: Liu G, Han X, Tian L, Zhou W, Liu H. ECG quality assessment based on hand-crafted statistics and deep-learned S-transform spectrogram features. Comput Methods Programs Biomed. 2021;208:106269. doi:10.1016/j.cmpb.2021.106269
 heartbeit: Vaid A, Jiang J, Sawant A, et al. A foundational vision transformer improves diagnostic performance for electrocardiograms. NPJ Digit Med. 2023;6:108. doi:10.1038/s41746-023-00840-9
-stmem: Na Y, Park M, Tae Y, Joo S. Guiding masked representation learning to capture spatio-temporal relationship of electrocardiogram. arXiv:2402.09450. 2024.
+stmem: Na Y, Park M, Tae Y, Joo S. Guiding masked representation learning to capture spatio-temporal relationship of electrocardiogram. In: International Conference on Learning Representations (ICLR); 2024. https://openreview.net/forum?id=WcOohbsF4H
 ecgfounder: Li J, Aguirre AD, Junior VM, et al. An electrocardiogram foundation model built on over 10 million recordings. NEJM AI. 2025;2(7). doi:10.1056/AIoa2401033
-merl: Liu C, Wan Z, Ouyang C, et al. Zero-shot ECG classification with multimodal learning and test-time clinical knowledge enhancement. arXiv:2403.06659. 2024.
-pulse: Liu R, Bai Y, Yue X, Zhang P. Teach multimodal LLMs to comprehend electrocardiographic images. arXiv:2410.19008. 2024.
-kmerl: Liu C, Ouyang C, Wan Z, et al. Knowledge-enhanced multimodal ECG representation learning with arbitrary-lead inputs. arXiv:2502.17900. 2025.
-ecgchat: Zhao Y, Kang J, Zhang T, et al. ECG-Chat: a large ECG-language model for cardiac disease diagnosis. arXiv:2408.08849. 2024.
+merl: Liu C, Wan Z, Ouyang C, et al. Zero-shot ECG classification with multimodal learning and test-time clinical knowledge enhancement. In: Proceedings of the 41st International Conference on Machine Learning. Proc Mach Learn Res. 2024;235:31949–31963.
+pulse: Liu R, Bai Y, Yue X, Zhang P. Teach multimodal LLMs to comprehend electrocardiographic images. arXiv:2410.19008. 2024 (preprint).
+kmerl: Liu C, Ouyang C, Wan Z, et al. Knowledge-enhanced multimodal ECG representation learning with arbitrary-lead inputs. In: Findings of the Association for Computational Linguistics: EMNLP 2025; 2025. p. 7298–7316. doi:10.18653/v1/2025.findings-emnlp.385
+ecgchat: Zhao Y, Kang J, Zhang T, et al. ECG-Chat: a large ECG-language model for cardiac disease diagnosis. arXiv:2408.08849. 2024 (preprint).
 vancalster: Van Calster B, McLernon DJ, van Smeden M, Wynants L, Steyerberg EW. Calibration: the Achilles heel of predictive analytics. BMC Med. 2019;17:230. doi:10.1186/s12916-019-1466-7
 ribeiro: Ribeiro AH, Ribeiro MH, Paixão GMM, et al. Automatic diagnosis of the 12-lead ECG using a deep neural network. Nat Commun. 2020;11:1760. doi:10.1038/s41467-020-15432-4
 hannun: Hannun AY, Rajpurkar P, Haghpanahi M, et al. Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network. Nat Med. 2019;25(1):65–69. doi:10.1038/s41591-018-0268-3

@@ -14,7 +14,7 @@
 
 | Item | Topic (paraphrase) | Status | Where / note |
 |---|---|---|---|
-| 1 | Title identifies development/evaluation, population, outcome | Partly | The title names the finding (in-domain performance does not identify the models that transfer), the task (ECG usability models) and the design (patient-independent benchmark of eleven approaches across four datasets). It does not use the words "development" and "evaluation". |
+| 1 | Title identifies development/evaluation, population, outcome | Partly | The title names the finding (in-domain performance did not identify the models that ranked best externally), the task (ECG usability models) and the design (benchmark of eleven approaches with subject-grouped development and heterogeneous external datasets). It does not use the words "development" and "evaluation". |
 | 2 | Abstract per TRIPOD+AI for Abstracts | Partly | Structured abstract (250 words). Not checked item by item against the 13-item abstract checklist. |
 | 3a | Healthcare context, rationale, existing models | Reported | Section 1 |
 | 3b | Target population, intended purpose, intended users | Reported | Section 1: automatic gate before downstream ECG analysis; output used by developers and operators of analysis pipelines to discard a segment or request a new recording; not a replacement for clinical interpretation. |
@@ -27,7 +27,7 @@
 | 6c | Treatments | N/A | Signal-quality task |
 | 7 | Data preprocessing and quality checks | Reported | Sections 2.1 and 2.2: resampling, unit harmonisation, and the deterministic handling of edge cases. The extractor sets non-finite values to 0, clips spectral ratios and moments (counts given), and assigns constant windows flatline and saturation fractions of 1. Supplementary Methods S-M1. |
 | 8a | Outcome definition and assessment | Reported | Section 2.1: Class 3 vs 1–2, 12-lead acceptability and "too noisy" labels; recording maximum |
-| 8b | Outcome assessors' qualifications | Partly | BUT QDB uses a consensus of three experts [10, 20]. Qualifications are not restated; the CinC labels follow the challenge papers. |
+| 8b | Outcome assessors' qualifications | Partly | BUT QDB uses a consensus of three experts (Smital et al. 2020 and the dataset descriptor, Smital et al. 2026; cited in Section 2.1 of the main manuscript). Qualifications are not restated; the CinC labels follow the challenge papers. |
 | 8c | Blinding of outcome assessment | Not reported | Not known for the public labels. |
 | 9a | How predictors were chosen | Reported | Section 2.2 (SQIs from the literature) |
 | 9b | Predictor definitions and measurement | Reported | Section 2.2; Supplementary Methods S-M1 |

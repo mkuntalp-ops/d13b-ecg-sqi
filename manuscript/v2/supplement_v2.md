@@ -70,7 +70,7 @@ p_vis = 1 / (1 + exp(−logit_vis))
 
 ### S-M5. Latency measurement (`experiments/latency_all.sh`)
 
-All latency scripts were run in one session by a single entry point with no other computation running. Latency reflects one machine and Python implementations, and TabPFN was timed on the CPU only. Table S45 and Table S8 come from different scripts: in Table S45 (`experiments/empirical_latency_benchmark.py`) the models are timed one after another in one process, whereas the script of Table S8 (`experiments/latency_extended.py`) interleaves CPU and MPS passes per window and excludes the first window. Their MPS forward times of a few milliseconds differ (1D CNN 1.28 vs 2.60 ms; 2D CNN 4.71 vs 2.83 ms). Part of the image-model difference is explained by caching: the image models cache each decoded and resized strip after first use, so decoding and resizing fall inside the timed forward pass for 19 of 25 windows in Table S45, but only in the first of three runs in Table S8. The remaining differences, including the 1D CNN's, are unexplained, so MPS forward times at this scale are treated as harness-dependent; the conclusions rest only on differences of an order of magnitude, namely rendering of about 59 ms versus the forward pass, and 833 ms for d1-3B.
+All latency scripts were run in one session by a single entry point with no other computation running. Latency reflects one machine and Python implementations, and TabPFN was timed on the CPU only. Table S45 and Table S8 come from different scripts: in Table S45 (`experiments/empirical_latency_benchmark.py`) the models are timed one after another in one process, whereas the script of Table S8 (`experiments/latency_extended.py`) interleaves CPU and MPS passes per window and excludes the first window. Their MPS forward times of a few milliseconds differ (1D CNN 1.31 vs 2.75 ms; 2D CNN 5.83 vs 3.09 ms). Part of the image-model difference is explained by caching: the image models cache each decoded and resized strip after first use, so decoding and resizing fall inside the timed forward pass for 19 of 25 windows in Table S45, but only in the first of three runs in Table S8. The remaining differences, including the 1D CNN's, are unexplained, so MPS forward times at this scale are treated as harness-dependent; the conclusions rest only on differences of an order of magnitude, namely rendering of about 61 ms versus the forward pass, and 831 ms for d1-3B. Every model in Table S45 is timed from the same input, the stored 500-Hz window, to its decision: models that need a strip image (the 2D CNN, the multimodal net, zero-shot d1-3B and the rule heuristic, which uses two strip-image features) are charged for rendering it. In an earlier version the heuristic read its strip from a cache, so its total (2.53 ms) omitted rendering; the session was repeated with the common boundary, and the earlier outputs are kept with the results.
 
 ### S-M6. Implementation note on HuBERT-ECG preprocessing
 
@@ -102,7 +102,7 @@ Under paired electrode-motion stress (Tables S7 and S16), every trained model lo
 
 ### S-R6. Computational cost
 
-For the image pipelines, rendering dominated: about 59 ms (93% of the total) against 4.7 ms for the forward pass. This cost belongs to the plotting library rather than to rasterization as such: a direct raster renderer took 0.62 ms (Table S8), and the 2D CNN retrained on such strips kept its discrimination (Table S33; AUROC on BUT QDB 0.980 versus 0.985, Δ −0.005, 95% CI −0.027 to 0.005; CinC 2017 0.852 versus 0.850; on CinC 2011 it improved, 0.798 versus 0.787, Δ +0.012, 95% CI 0.003–0.021, p_Holm = 0.025). The d1-3B probe and the multimodal net were not re-evaluated on raster strips. The 1D CNN, which needs no rendering step, took 1.28 ms on the GPU from the stored 500-Hz window (Table S45). d1-3B took 894 ms per window, dominated by its 833-ms forward pass. Forward-pass times of a few milliseconds on the GPU differ between our two timing scripts (Supplementary Methods S-M5), so only order-of-magnitude differences are interpreted. Among the foundation-model approaches (Table S25), the HuBERT-ECG probe took 33.1 ms per window on MPS (60.2 ms on the CPU), of which 28.7 ms was the forward pass; the linear d1-3B probe adds 0.12 ms to the d1-3B forward pass; and TabPFN, which predicts in context over the 988 training windows, took 3.8 s per window on the CPU.
+For the image pipelines, rendering dominated: about 61 ms (92% of the total) against 5.8 ms for the forward pass. The rule heuristic also needs the strip, so from the stored window it took 62.70 ms, of which 62.44 ms was preprocessing; only the three SQI models (1.51–2.42 ms) and the 1D CNN avoid rendering. This cost belongs to the plotting library rather than to rasterization as such: a direct raster renderer took 0.63 ms (Table S8), and the 2D CNN retrained on such strips kept its discrimination (Table S33; AUROC on BUT QDB 0.980 versus 0.985, Δ −0.005, 95% CI −0.027 to 0.005; CinC 2017 0.852 versus 0.850; on CinC 2011 it improved, 0.798 versus 0.787, Δ +0.012, 95% CI 0.003–0.021, p_Holm = 0.025). The d1-3B probe and the multimodal net were not re-evaluated on raster strips. The 1D CNN, which needs no rendering step, took 1.31 ms on the GPU from the stored 500-Hz window (Table S45). d1-3B took 896 ms per window, dominated by its 831-ms forward pass. Forward-pass times of a few milliseconds on the GPU differ between our two timing scripts (Supplementary Methods S-M5), so only order-of-magnitude differences are interpreted. Among the foundation-model approaches (Table S25), the HuBERT-ECG probe took 28.0 ms per window on MPS (60.6 ms on the CPU), of which 23.6 ms was the forward pass; the linear d1-3B probe adds 0.12 ms to the d1-3B forward pass; and TabPFN, which predicts in context over the 988 training windows, took 3.8 s per window on the CPU.
 
 ### S-R7. Quality gating of a downstream rhythm classifier
 
@@ -134,7 +134,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | **Rule-Based SQI Heuristic** | 81.1% / 5.3% | 80.7% / 4.9% | 70.6% / 4.4% | 80.3% / 4.8% | 87.8% / 9.6% |
 | **LiquidAI d1-3B (Zero-Shot)** | 50.4% / 4.0% | 50.4% / 4.0% | 81.1% / 43.5% | 82.8% / 43.3% | 54.2% / 17.5% |
 
-## Table S3. BUT QDB precision metrics re-weighted to the natural prevalence of Class 3 (2.14% inside the official intervals, primary; 16.0% over all annotated intervals).
+## Table S3. BUT QDB precision metrics projected to the prevalence of Class 3 inside the official intervals (2.14%, primary) and over all annotated intervals including the excluded stretch (16.0%; tabulated for continuity with the earlier version, not interpreted). The projection changes the class ratio only and assumes that the score distributions within each class in the quota cohort hold for all eligible windows; the values are conditional projections, not estimates for the full eligible population (main text, section 2.4; Table S43).
 
 | Model Architecture | AP, quota cohort (24.1%) | AP, natural, all records (16.0%) | AP, natural, official intervals (2.14%) | PPV at τ = 0.50, 16.0% | PPV at τ = 0.50, 2.14% | NPV at τ = 0.50, 2.14% | False rejections per hour of usable signal |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -220,19 +220,19 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 
 | Step | Median (three runs) | Range of run medians | p95 (median over runs) |
 | :--- | :---: | :---: | :---: |
-| Unit conversion (µV to mV) | 0.01 ms | 0.01–0.01 ms | 0.01 ms |
-| Resampling 1,000 → 500 Hz | 0.09 ms | 0.09–0.10 ms | 0.10 ms |
-| SQI extraction (13 features) | 1.67 ms | 1.66–1.70 ms | 1.73 ms |
-| Rendering, Matplotlib (used by all image models) | 56.69 ms | 56.32–56.93 ms | 122.16 ms |
-| Rendering, direct raster (PIL; timing only) | 0.62 ms | 0.58–0.63 ms | 0.69 ms |
-| 1D CNN forward, CPU | 1.29 ms | 1.28–1.31 ms | 1.39 ms |
-| 1D CNN raw-to-decision, CPU | 1.39 ms | 1.39–1.42 ms | 1.50 ms |
-| 2D CNN forward, CPU | 5.08 ms | 5.07–6.80 ms | 5.21 ms |
-| Multimodal net forward, CPU | 4.36 ms | 4.36–5.41 ms | 4.50 ms |
-| 1D CNN forward, MPS | 2.60 ms | 2.60–2.61 ms | 2.76 ms |
-| 1D CNN raw-to-decision, MPS | 2.71 ms | 2.70–2.72 ms | 2.87 ms |
-| 2D CNN forward, MPS | 2.83 ms | 2.81–2.83 ms | 3.42 ms |
-| Multimodal net forward, MPS | 2.96 ms | 2.93–2.99 ms | 3.55 ms |
+| Unit conversion (µV to mV) | 0.01 ms | 0.01–0.01 ms | 0.02 ms |
+| Resampling 1,000 → 500 Hz | 0.09 ms | 0.09–0.09 ms | 0.10 ms |
+| SQI extraction (13 features) | 1.67 ms | 1.66–1.68 ms | 1.79 ms |
+| Rendering, Matplotlib (used by all image models) | 57.31 ms | 57.26–57.31 ms | 118.18 ms |
+| Rendering, direct raster (PIL; timing only) | 0.63 ms | 0.59–0.64 ms | 0.68 ms |
+| 1D CNN forward, CPU | 1.32 ms | 1.31–1.33 ms | 1.40 ms |
+| 1D CNN raw-to-decision, CPU | 1.42 ms | 1.41–1.44 ms | 1.51 ms |
+| 2D CNN forward, CPU | 5.14 ms | 5.08–6.84 ms | 5.29 ms |
+| Multimodal net forward, CPU | 4.50 ms | 4.39–5.42 ms | 4.59 ms |
+| 1D CNN forward, MPS | 2.75 ms | 2.68–2.78 ms | 2.95 ms |
+| 1D CNN raw-to-decision, MPS | 2.85 ms | 2.78–2.89 ms | 3.05 ms |
+| 2D CNN forward, MPS | 3.09 ms | 2.93–3.50 ms | 3.96 ms |
+| Multimodal net forward, MPS | 3.33 ms | 3.13–3.76 ms | 4.39 ms |
 
 ## Table S9. Seed stability of the 1D CNN, 2D CNN and multimodal net. CinC rows refer to the 998-record CinC 2011 evaluation.
 
@@ -511,15 +511,15 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 
 | Step | Median (three runs) | Range of run medians | p95 (median over runs) |
 | :--- | :---: | :---: | :---: |
-| HuBERT-ECG: preprocessing (authors' pipeline) | 4.16 ms | 4.13–4.18 ms | 4.33 ms |
-| HuBERT-ECG: forward pass, CPU | 55.71 ms | 55.60–56.05 ms | 57.85 ms |
-| HuBERT-ECG: forward pass, MPS | 28.73 ms | 28.13–29.14 ms | 30.85 ms |
-| HuBERT-ECG: linear probe | 0.25 ms | 0.23–0.26 ms | 0.28 ms |
-| HuBERT-ECG probe: total, CPU | 60.17 ms | 59.99–60.50 ms | 62.48 ms |
-| HuBERT-ECG probe: total, MPS | 33.09 ms | 32.53–33.54 ms | 35.23 ms |
+| HuBERT-ECG: preprocessing (authors' pipeline) | 4.18 ms | 4.16–4.18 ms | 4.29 ms |
+| HuBERT-ECG: forward pass, CPU | 56.17 ms | 56.12–56.38 ms | 57.06 ms |
+| HuBERT-ECG: forward pass, MPS | 23.58 ms | 23.48–23.68 ms | 29.52 ms |
+| HuBERT-ECG: linear probe | 0.25 ms | 0.24–0.26 ms | 0.28 ms |
+| HuBERT-ECG probe: total, CPU | 60.57 ms | 60.53–60.80 ms | 61.48 ms |
+| HuBERT-ECG probe: total, MPS | 28.01 ms | 27.92–28.12 ms | 33.91 ms |
 | d1-3B image probe: linear probe (added to the d1-3B forward pass of Table S45) | 0.12 ms | 0.11–0.12 ms | 0.13 ms |
-| TabPFN: fit on 988 windows (once per model) | 161.62 ms | 117.47–476.28 ms | 161.62 ms |
-| TabPFN: prediction of one window, CPU | 3783.23 ms | 3774.67–3783.49 ms | 3793.67 ms |
+| TabPFN: fit on 988 windows (once per model) | 156.21 ms | 118.95–473.35 ms | 156.21 ms |
+| TabPFN: prediction of one window, CPU | 3786.46 ms | 3773.02–3788.83 ms | 3800.81 ms |
 
 ## Table S26. CinC 2011 records with a constant lead II (73 of 225 unacceptable records; post hoc, descriptive). Number flagged at τ = 0.50 and AUROC with and without these records; models trained on BUT QDB only.
 
@@ -878,15 +878,39 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | **Logistic Regression (SQI)** | 0.899 (10) | 0.322 (11) | 0.870 (6) | 0.863 (6) |
 | **LiquidAI d1-3B (Zero-Shot)** | 0.828 (11) | 0.641 (8) | 0.757 (11) | 0.739 (11) |
 
-## Table S45. Per-window latency on an Apple M4 (median and 95th percentile of three runs of 25 windows), separating preprocessing from the forward pass. (Table 5 of the main text in an earlier version.)
+## Table S45. Per-window latency on an Apple M4 (median and 95th percentile of three runs of 25 windows), separating preprocessing from the forward pass. Every model is timed from the stored 500-Hz window to its decision; rendering is included for every model that needs a strip image, including the rule heuristic. (Table 5 of the main text in an earlier version.)
 
 | Model Architecture | Parameters | Disk Weights | Execution Device | Preproc Median (p95) | Forward Median (p95) | Total Median (p95) | Total Median, Range over Runs | Preproc Share (Median of Ratios) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Rule-Based SQI Heuristic** | 0 | 0.00 MiB | CPU | 2.32 ms (3.11 ms) | 0.21 ms (0.23 ms) | 2.53 ms (3.33 ms) | 2.46–2.76 ms | 91.5% |
-| **Logistic Regression (SQI)** | 12 | 0.01 MiB | CPU | 1.36 ms (1.44 ms) | 0.18 ms (0.22 ms) | 1.54 ms (1.68 ms) | 1.47–1.56 ms | 88.3% |
-| **LightGBM (SQI)** | 1,094 | 0.14 MiB | CPU | 1.35 ms (1.48 ms) | 0.18 ms (0.26 ms) | 1.53 ms (1.70 ms) | 1.47–1.53 ms | 88.2% |
-| **Independent SQI MLP** | 3,073 | 0.01 MiB | Apple M4 (MPS) | 1.34 ms (1.62 ms) | 0.99 ms (1.12 ms) | 2.33 ms (2.66 ms) | 2.31–2.41 ms | 57.2% |
-| **1D CNN (Raw Signal)** | 167,489 | 0.64 MiB | Apple M4 (MPS) | 0.00 ms (0.00 ms) | 1.28 ms (1.79 ms) | 1.28 ms (1.79 ms) | 1.27–1.46 ms | 0.0% |
-| **2D CNN (Rendered Image)** | 245,697 | 0.94 MiB | Apple M4 (MPS) | 59.11 ms (135.57 ms) | 4.71 ms (5.20 ms) | 63.62 ms (140.60 ms) | 63.23–65.24 ms | 92.6% |
-| **SinglePass Multimodal Net** | 131,841 | 0.47 MiB | Apple M4 (MPS) | 60.53 ms (129.28 ms) | 5.02 ms (5.60 ms) | 65.36 ms (134.31 ms) | 64.78–66.50 ms | 92.4% |
-| **LiquidAI d1-3B (Zero-Shot)** | 3,120,000,000 | 5958.00 MiB | Apple M4 (MPS) | 61.19 ms (142.62 ms) | 833.34 ms (837.23 ms) | 894.41 ms (977.17 ms) | 893.97–894.43 ms | 6.8% |
+| **Rule-Based SQI Heuristic** | 0 | 0.00 MiB | CPU | 62.44 ms (142.96 ms) | 0.25 ms (0.28 ms) | 62.70 ms (143.21 ms) | 61.91–63.83 ms | 99.6% |
+| **Logistic Regression (SQI)** | 12 | 0.01 MiB | CPU | 1.35 ms (1.51 ms) | 0.18 ms (0.24 ms) | 1.53 ms (1.76 ms) | 1.51–1.54 ms | 88.3% |
+| **LightGBM (SQI)** | 1,094 | 0.14 MiB | CPU | 1.34 ms (1.56 ms) | 0.18 ms (0.25 ms) | 1.51 ms (1.78 ms) | 1.49–1.52 ms | 87.7% |
+| **Independent SQI MLP** | 3,073 | 0.01 MiB | Apple M4 (MPS) | 1.37 ms (1.68 ms) | 1.03 ms (1.75 ms) | 2.42 ms (3.38 ms) | 2.39–2.62 ms | 56.2% |
+| **1D CNN (Raw Signal)** | 167,489 | 0.64 MiB | Apple M4 (MPS) | 0.00 ms (0.00 ms) | 1.31 ms (2.10 ms) | 1.31 ms (2.11 ms) | 1.29–1.56 ms | 0.0% |
+| **2D CNN (Rendered Image)** | 245,697 | 0.94 MiB | Apple M4 (MPS) | 60.72 ms (131.51 ms) | 5.83 ms (6.25 ms) | 65.92 ms (141.08 ms) | 65.41–66.29 ms | 91.4% |
+| **SinglePass Multimodal Net** | 131,841 | 0.47 MiB | Apple M4 (MPS) | 62.88 ms (131.44 ms) | 5.60 ms (6.17 ms) | 68.32 ms (137.26 ms) | 67.34–71.56 ms | 91.9% |
+| **LiquidAI d1-3B (Zero-Shot)** | 3,120,000,000 | 5958.00 MiB | Apple M4 (MPS) | 64.16 ms (153.21 ms) | 830.84 ms (834.07 ms) | 896.00 ms (984.59 ms) | 891.65–896.13 ms | 7.2% |
+
+## Table S46. Harmonised-pipeline comparison (post hoc, secondary; definition committed before any harmonised score was computed). AUROC with the original pipeline and with three input safeguards: G1, constant-input rule (a window with zero signal SD is scored unusable); G2, quantization-insensitive flatline input; G3, standardised inputs clipped to [−3, 3] with training statistics. Δ with 95% CI: subject cluster bootstrap on BUT QDB, DeLong externally; no multiplicity adjustment. Models marked "G1 only" were not refitted. Seed 42; rows ordered by harmonised AUROC on CinC 2011. BUT QDB contains no constant window.
+
+| Model | Safeguards applied | BUT QDB (988 windows): original → harmonised (Δ [95% CI]) | CinC 2011 lead II (998 records): original → harmonised (Δ [95% CI]) | CinC 2017 (8,512 recordings): original → harmonised (Δ [95% CI]) | Distinct scores on CinC 2011: original → harmonised |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **d1-3B image-token probe** | G1 only | 0.971 → 0.971 (unchanged) | 0.824 → 0.824 (+0.000 [-0.000 to +0.001]) | 0.894 → 0.894 (unchanged) | 930 → 926 |
+| **2D CNN (Rendered Image)** | G1 only | 0.985 → 0.985 (unchanged) | 0.787 → 0.808 (+0.022 [+0.015 to +0.029]) | 0.850 → 0.850 (unchanged) | 930 → 926 |
+| **HuBERT-ECG probe** | G1 only | 0.938 → 0.938 (unchanged) | 0.562 → 0.787 (+0.224 [+0.180 to +0.268]) | 0.906 → 0.906 (unchanged) | 926 → 926 |
+| **LightGBM (SQI)** | G1, G2, G3 | 0.957 → 0.956 (-0.001 [-0.009 to +0.005]) | 0.752 → 0.779 (+0.026 [+0.016 to +0.037]) | 0.891 → 0.888 (-0.004 [-0.007 to -0.001]) | 900 → 832 |
+| **1D CNN (Raw Signal)** | G1 only | 0.983 → 0.983 (unchanged) | 0.695 → 0.770 (+0.075 [+0.058 to +0.092]) | 0.768 → 0.768 (unchanged) | 911 → 909 |
+| **Logistic Regression (SQI)** | G1, G2, G3 | 0.899 → 0.912 (+0.013 [+0.000 to +0.029]) | 0.322 → 0.766 (+0.443 [+0.380 to +0.507]) | 0.870 → 0.890 (+0.020 [+0.013 to +0.026]) | 28 → 926 |
+| **Independent SQI MLP** | G1, G2, G3 | 0.904 → 0.899 (-0.005 [-0.048 to +0.071]) | 0.675 → 0.761 (+0.086 [+0.051 to +0.122]) | 0.876 → 0.889 (+0.013 [+0.001 to +0.025]) | 15 → 913 |
+| **TabPFN (SQI)** | G1, G2, G3 | 0.956 → 0.955 (-0.001 [-0.008 to +0.004]) | 0.731 → 0.741 (+0.010 [-0.002 to +0.022]) | 0.853 → 0.857 (+0.004 [+0.001 to +0.007]) | 926 → 926 |
+| **Rule-Based SQI Heuristic** | G1, G2 | 0.971 → 0.971 (-0.000 [-0.000 to +0.000]) | 0.678 → 0.738 (+0.060 [+0.032 to +0.089]) | 0.887 → 0.888 (+0.001 [+0.000 to +0.001]) | 926 → 926 |
+| **SinglePass Multimodal Net** | G1, G2, G3 | 0.966 → 0.941 (-0.024 [-0.062 to +0.000]) | 0.500 → 0.731 (+0.231 [+0.186 to +0.276]) | 0.799 → 0.858 (+0.058 [+0.047 to +0.070]) | 1 → 914 |
+| **LiquidAI d1-3B (Zero-Shot)** | G1 only | 0.828 → 0.828 (unchanged) | 0.641 → 0.641 (unchanged) | 0.757 → 0.757 (unchanged) | 48 → 48 |
+
+## Table S47. Harmonised-pipeline comparison, continued. Top: Spearman correlation of the 11 AUROCs between evaluation sets, original and harmonised (descriptive; n = 11 models). Middle: seed range of the refitted networks under BUT-only transfer. Bottom: share of windows whose standardised input lies beyond 3 SD of the BUT QDB distribution, with the median absolute z-score, before clipping.
+
+| Evaluation sets compared | Models | Spearman ρ, original AUROCs | Spearman ρ, harmonised AUROCs |
+| :--- | :---: | :---: | :---: |
+| BUT QDB vs CinC 2011 lead II | 11 | +0.61 | +0.49 |
+| BUT QDB vs CinC 2017 | 11 | -0.02 | -0.19 |
+| CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.43 |

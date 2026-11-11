@@ -136,7 +136,7 @@ def checks() -> list:
         c.append((frag.format(f3(holm_best(C17, m))), MAIN))
     # Abstract
     zs = [auroc(f, ZS) for f in (BUT, C11, C17)]
-    c += [(f"zero-shot d1-3B was weak ({f3(min(zs))}–{f3(max(zs))})", MAIN),
+    c += [(f"Zero-shot d1-3B was weak ({f3(min(zs))}–{f3(max(zs))})", MAIN),
           (f"rose from eighth to first ({f3(auroc(C17, HUB))}) while near chance on CinC 2011 ({f3(auroc(C11, HUB))})", MAIN),
           (f"fell from second ({f3(auroc(BUT, CNN1))}) to tenth ({f3(auroc(C17, CNN1))})", MAIN)]
     # 12 leads
@@ -162,13 +162,14 @@ def checks() -> list:
     h12 = pd.read_csv(R / "hubert_probe_twelve_lead_summary.csv").set_index("aggregation")
     hc = pd.read_csv(R / "hubert_probe_twelve_lead_comparisons.csv")
     hk = pd.read_csv(R / "hubert_probe_twelve_lead_constant_leads.csv").set_index("aggregation")
+    k_hub_73 = float(pd.read_csv(R / "cinc2011_constant_lead_check.csv").set_index("model").auroc_without_constant[HUB])
     assert (hc.p_holm < 0.001).all() and len(hc) == 4
     hd = lambda a: f3(abs(float(hc[hc.comparison == f"HuBERT {a} vs d1 image probe {a}"].delta.iloc[0])))  # noqa: E731
     assert f3(h12.auroc["lead_II"]) == "0.562"
     c += [(f"it reached {f3(h12.auroc['max_12'])} with the maximum and {f3(h12.auroc['mean_12'])} with the mean, {hd('max_12')} and {hd('mean_12')} below the d1-3B probe", MAIN),
           (f"Without the records with a constant lead its AUROC was {f3(hk.auroc_without_constant['max_12'])} and {f3(hk.auroc_without_constant['mean_12'])}", MAIN),
           (f"Given the real 12 leads in one input, it reached {f3(h12.auroc['native_12'])}", MAIN),
-          (f"({f3(hk.auroc_without_constant['lead_II'])} on lead II without them)", MAIN)]
+          (f"its lead II AUROC was {f3(hk.auroc_without_constant['lead_II'])} (Table S35; without only the 73 records whose lead II is constant, {f3(k_hub_73)}, Table S26)", MAIN)]
     # Raster
     r = pd.read_csv(R / "raster_2dcnn_summary.csv").set_index("dataset")
     a = r.loc["BUT QDB (5-fold subject CV)"]
@@ -304,7 +305,7 @@ def checks() -> list:
     c.append((f"HuBERT-ECG probe ({aucf(HUB, M2, P)} and {aucf(HUB, ME, P)}) and LightGBM ({aucf(GBM, M2, P)} and {aucf(GBM, ME, P)})", MAIN))
     ptb = pd.read_csv(R / "ptbxl_frozen_summary.csv")
     ptb_max = float(ptb[(ptb.outcome == "global_vs_clean") & (ptb.aggregation == "max_12")].auroc.max())
-    c += [(f"On PTB-XL no model exceeded {f3(ptb_max)}.", MAIN), (f"Under the maximum rule no model exceeded an AUROC of {f3(ptb_max)} on this outcome.", MAIN)]
+    c += [(f"Under the maximum rule no model exceeded an AUROC of {f3(ptb_max)} on this outcome.", MAIN)]
     assert aucf(PROBE, M2) == "0.579"
     c.append((f"(AUROC {aucf(PROBE, M2)}–{aucf(PROBE, ME)})", MAIN))
     # 12-lead value in the abstract
@@ -330,7 +331,7 @@ def checks() -> list:
     c.append((f"the other nine models stayed significantly below the probe (all p_Holm ≤ {f3(others.p_holm.max())})", MAIN))
     aw = lambda m: f3(float(x.auroc_a if x.model_a == m else x.auroc_b))  # noqa: E731
     assert (aw(PROBE), aw(CNN2)) == ("0.740", "0.716")
-    c.append((f"(Holm-adjusted p = {f3(pair(C11, CNN2, PROBE).p_holm)} with them; p = {f3(x.p)} without)", MAIN))
+    c.append((f"(Holm-adjusted p = {f3(pair(C11, CNN2, PROBE).p_holm)} with them, {f3(x.p_holm)} without)", MAIN))
     c.append((f"({int(x.n_units)} records, {int(x.n_positive)} unacceptable)", SUPP))
     # BUT QDB per-subject AUROC
     ps = pd.read_csv(R / "butqdb_per_subject_auroc.csv", dtype={"subject": str})
@@ -379,6 +380,57 @@ def checks() -> list:
     c.append((f"{f17.min():.1f}–{f17.max():.1f}% across the 11 models on CinC 2017 and {f11.min():.1f}–{f11.max():.1f}% on CinC 2011 (Table S4)", MAIN))
     c.append((f"gave {f17.min():.0f}–{f17.max():.0f}% on CinC 2017", MAIN))
     c.append((f"the number of windows alone gave AUROC {f3(float(ls[ls.aggregation == 'none'].auroc.iloc[0]))}", MAIN))
+    # ---- latency prose (session repeated 2026-11-11 with a common input boundary; PAPER-009)
+    lv = latency_values()
+    runs = [pd.read_csv(R / "latency_repeats" / f"run{k}_summary.csv").set_index("Model") for k in (1, 2, 3)]
+    lmed = lambda m, col: float(np.median([r.loc[m, col] for r in runs]))  # noqa: E731
+    HN = "Rule-Based SQI Heuristic"
+    sqi_tot = [lmed(m, "Total_End_to_End_Median_ms") for m in ("Logistic Regression (SQI)", "LightGBM (SQI)", "Independent SQI MLP")]
+    c += [(f"about {lv['LAT_RENDER']} ms ({lv['LAT_RENDER_PCT']}% of the total) against {lv['LAT_2DFWD']} ms for the forward pass", SUPP),
+          (f"it took {lmed(HN, 'Total_End_to_End_Median_ms'):.2f} ms, of which {lmed(HN, 'Preprocess_Median_ms'):.2f} ms was preprocessing; only the three SQI models "
+           f"({min(sqi_tot):.2f}–{max(sqi_tot):.2f} ms) and the 1D CNN avoid rendering", SUPP),
+          (f"a direct raster renderer took {lv['LAT_RASTER']} ms (Table S8)", SUPP),
+          (f"took {lv['LAT_1D']} ms on the GPU from the stored 500-Hz window (Table S45). d1-3B took {lv['LAT_D1']} ms per window, dominated by its {lv['LAT_D1FWD']}-ms forward pass.", SUPP),
+          (f"the HuBERT-ECG probe took {lv['LAT_HUB']} ms per window on MPS ({lv['LAT_HUBCPU']} ms on the CPU), of which {lv['LAT_HUBFWD']} ms was the forward pass; "
+           f"the linear d1-3B probe adds {lv['LAT_D1PROBE']} ms to the d1-3B forward pass", SUPP),
+          (f"took {lv['LAT_TAB']} s per window on the CPU", SUPP),
+          (f"(1D CNN {lv['LAT_T5_1D']} vs {lv['LAT_S8_1D']} ms; 2D CNN {lv['LAT_T5_2D']} vs {lv['LAT_S8_2D']} ms)", SUPP),
+          (f"namely rendering of about {lv['LAT_RENDER']} ms versus the forward pass, and {lv['LAT_D1FWD']} ms for d1-3B", SUPP)]
+    # ---- harmonised pipeline (PAPER-002; experiments/harmonised_pipeline.py)
+    hs = pd.read_csv(R / "harmonised_summary.csv").set_index(["dataset", "model"])
+    hseed = pd.read_csv(R / "harmonised_seed_range.csv")
+    hr = pd.read_csv(R / "harmonised_rank_agreement.csv").set_index(["set_a", "set_b"])
+    ho = lambda ds, m: f3(hs.loc[(ds, m), "auroc_original"])  # noqa: E731
+    hh = lambda ds, m: f3(hs.loc[(ds, m), "auroc_harmonised"])  # noqa: E731
+    def seeds(ds, m):
+        g = hseed[(hseed.dataset == ds) & (hseed.model == m)].auroc_harmonised
+        assert len(g) == 5
+        return f"{f3(g.min())}–{f3(g.max())}"
+    D = "CinC2011"
+    c.append((f"logistic regression rose from {ho(D, LR)} to {hh(D, LR)}, the multimodal net from {ho(D, MM)} to {hh(D, MM)} (seeds: {seeds(D, MM)}) "
+              f"and the MLP from {ho(D, MLP)} to {hh(D, MLP)} (seeds: {seeds(D, MLP)})", MAIN))
+    assert not hs.loc[(D, HUB), "refitted"] and not hs.loc[(D, CNN1), "refitted"]
+    c.append((f"raised the HuBERT-ECG probe from {ho(D, HUB)} to {hh(D, HUB)} and the 1D CNN from {ho(D, CNN1)} to {hh(D, CNN1)}", MAIN))
+    c11h = hs.loc[D]
+    others = c11h.drop(ZS)
+    rng_h, rng_o = f"{f3(others.auroc_harmonised.min())}–{f3(others.auroc_harmonised.max())}", f"{f3(others.auroc_original.min())}–{f3(others.auroc_original.max())}"
+    c.append((f"then spanned {rng_h} instead of {rng_o}", MAIN))
+    c.append((f"from {rng_o} to {rng_h}", MAIN))                       # abstract
+    c.append((f"({rng_h} for the ten models other than zero-shot d1-3B, against {rng_o})", MAIN))
+    top2 = c11h.auroc_harmonised.sort_values(ascending=False).index[:2]
+    assert list(top2) == [PROBE, CNN2] and hh(D, ZS) == ho(D, ZS)
+    c.append((f"the d1-3B probe ({hh(D, PROBE)}) and the 2D CNN ({hh(D, CNN2)}) remained the two highest, and zero-shot d1-3B was unchanged ({hh(D, ZS)})", MAIN))
+    dmax = lambda ds: hs.loc[ds].delta.abs().max()  # noqa: E731
+    mm17 = hs.loc[("CinC2017", MM)]
+    assert hs.loc["CinC2017"].delta.abs().idxmax() == MM
+    c.append((f"In-domain AUROCs changed by at most {f3(dmax('BUT_QDB'))} and CinC 2017 AUROCs by at most {f3(dmax('CinC2017'))} "
+              f"(multimodal net, {f3(mm17.auroc_original)} to {f3(mm17.auroc_harmonised)})", MAIN))
+    a, b_, x_ = hr.loc[("BUT_QDB", "CinC2011")], hr.loc[("BUT_QDB", "CinC2017")], hr.loc[("CinC2011", "CinC2017")]
+    assert b_.spearman_harmonised < 0 and b_.spearman_original < 0
+    c.append((f"was {a.spearman_harmonised:.2f} on CinC 2011 and −{-b_.spearman_harmonised:.2f} on CinC 2017, against {a.spearman_original:.2f} and "
+              f"−{-b_.spearman_original:.2f} with the original pipeline, while the agreement between the two external datasets rose from "
+              f"{x_.spearman_original:.2f} to {x_.spearman_harmonised:.2f}", MAIN))
+    c.append((f"its lead II AUROC was {hh(D, HUB)} (Table S46)", MAIN))
     return c
 
 

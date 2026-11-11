@@ -90,14 +90,14 @@ NSTDB windows: clean control = 44, active noise = 264
 
 | Model Architecture | Parameters | Disk Weights | Execution Device | Preproc Median (p95) | Forward Median (p95) | Total Median (p95) | Total Median, Range over Runs | Preproc Share (Median of Ratios) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Rule-Based SQI Heuristic** | 0 | 0.00 MiB | CPU | 2.32 ms (3.11 ms) | 0.21 ms (0.23 ms) | 2.53 ms (3.33 ms) | 2.46–2.76 ms | 91.5% |
-| **Logistic Regression (SQI)** | 12 | 0.01 MiB | CPU | 1.36 ms (1.44 ms) | 0.18 ms (0.22 ms) | 1.54 ms (1.68 ms) | 1.47–1.56 ms | 88.3% |
-| **LightGBM (SQI)** | 1,094 | 0.14 MiB | CPU | 1.35 ms (1.48 ms) | 0.18 ms (0.26 ms) | 1.53 ms (1.70 ms) | 1.47–1.53 ms | 88.2% |
-| **Independent SQI MLP** | 3,073 | 0.01 MiB | Apple M4 (MPS) | 1.34 ms (1.62 ms) | 0.99 ms (1.12 ms) | 2.33 ms (2.66 ms) | 2.31–2.41 ms | 57.2% |
-| **1D CNN (Raw Signal)** | 167,489 | 0.64 MiB | Apple M4 (MPS) | 0.00 ms (0.00 ms) | 1.28 ms (1.79 ms) | 1.28 ms (1.79 ms) | 1.27–1.46 ms | 0.0% |
-| **2D CNN (Rendered Image)** | 245,697 | 0.94 MiB | Apple M4 (MPS) | 59.11 ms (135.57 ms) | 4.71 ms (5.20 ms) | 63.62 ms (140.60 ms) | 63.23–65.24 ms | 92.6% |
-| **SinglePass Multimodal Net** | 131,841 | 0.47 MiB | Apple M4 (MPS) | 60.53 ms (129.28 ms) | 5.02 ms (5.60 ms) | 65.36 ms (134.31 ms) | 64.78–66.50 ms | 92.4% |
-| **LiquidAI d1-3B (Zero-Shot)** | 3,120,000,000 | 5958.00 MiB | Apple M4 (MPS) | 61.19 ms (142.62 ms) | 833.34 ms (837.23 ms) | 894.41 ms (977.17 ms) | 893.97–894.43 ms | 6.8% |
+| **Rule-Based SQI Heuristic** | 0 | 0.00 MiB | CPU | 62.44 ms (142.96 ms) | 0.25 ms (0.28 ms) | 62.70 ms (143.21 ms) | 61.91–63.83 ms | 99.6% |
+| **Logistic Regression (SQI)** | 12 | 0.01 MiB | CPU | 1.35 ms (1.51 ms) | 0.18 ms (0.24 ms) | 1.53 ms (1.76 ms) | 1.51–1.54 ms | 88.3% |
+| **LightGBM (SQI)** | 1,094 | 0.14 MiB | CPU | 1.34 ms (1.56 ms) | 0.18 ms (0.25 ms) | 1.51 ms (1.78 ms) | 1.49–1.52 ms | 87.7% |
+| **Independent SQI MLP** | 3,073 | 0.01 MiB | Apple M4 (MPS) | 1.37 ms (1.68 ms) | 1.03 ms (1.75 ms) | 2.42 ms (3.38 ms) | 2.39–2.62 ms | 56.2% |
+| **1D CNN (Raw Signal)** | 167,489 | 0.64 MiB | Apple M4 (MPS) | 0.00 ms (0.00 ms) | 1.31 ms (2.10 ms) | 1.31 ms (2.11 ms) | 1.29–1.56 ms | 0.0% |
+| **2D CNN (Rendered Image)** | 245,697 | 0.94 MiB | Apple M4 (MPS) | 60.72 ms (131.51 ms) | 5.83 ms (6.25 ms) | 65.92 ms (141.08 ms) | 65.41–66.29 ms | 91.4% |
+| **SinglePass Multimodal Net** | 131,841 | 0.47 MiB | Apple M4 (MPS) | 62.88 ms (131.44 ms) | 5.60 ms (6.17 ms) | 68.32 ms (137.26 ms) | 67.34–71.56 ms | 91.9% |
+| **LiquidAI d1-3B (Zero-Shot)** | 3,120,000,000 | 5958.00 MiB | Apple M4 (MPS) | 64.16 ms (153.21 ms) | 830.84 ms (834.07 ms) | 896.00 ms (984.59 ms) | 891.65–896.13 ms | 7.2% |
 
 ## Table 5
 
@@ -240,19 +240,19 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 
 | Step | Median (three runs) | Range of run medians | p95 (median over runs) |
 | :--- | :---: | :---: | :---: |
-| Unit conversion (µV to mV) | 0.01 ms | 0.01–0.01 ms | 0.01 ms |
-| Resampling 1,000 → 500 Hz | 0.09 ms | 0.09–0.10 ms | 0.10 ms |
-| SQI extraction (13 features) | 1.67 ms | 1.66–1.70 ms | 1.73 ms |
-| Rendering, Matplotlib (used by all image models) | 56.69 ms | 56.32–56.93 ms | 122.16 ms |
-| Rendering, direct raster (PIL; timing only) | 0.62 ms | 0.58–0.63 ms | 0.69 ms |
-| 1D CNN forward, CPU | 1.29 ms | 1.28–1.31 ms | 1.39 ms |
-| 1D CNN raw-to-decision, CPU | 1.39 ms | 1.39–1.42 ms | 1.50 ms |
-| 2D CNN forward, CPU | 5.08 ms | 5.07–6.80 ms | 5.21 ms |
-| Multimodal net forward, CPU | 4.36 ms | 4.36–5.41 ms | 4.50 ms |
-| 1D CNN forward, MPS | 2.60 ms | 2.60–2.61 ms | 2.76 ms |
-| 1D CNN raw-to-decision, MPS | 2.71 ms | 2.70–2.72 ms | 2.87 ms |
-| 2D CNN forward, MPS | 2.83 ms | 2.81–2.83 ms | 3.42 ms |
-| Multimodal net forward, MPS | 2.96 ms | 2.93–2.99 ms | 3.55 ms |
+| Unit conversion (µV to mV) | 0.01 ms | 0.01–0.01 ms | 0.02 ms |
+| Resampling 1,000 → 500 Hz | 0.09 ms | 0.09–0.09 ms | 0.10 ms |
+| SQI extraction (13 features) | 1.67 ms | 1.66–1.68 ms | 1.79 ms |
+| Rendering, Matplotlib (used by all image models) | 57.31 ms | 57.26–57.31 ms | 118.18 ms |
+| Rendering, direct raster (PIL; timing only) | 0.63 ms | 0.59–0.64 ms | 0.68 ms |
+| 1D CNN forward, CPU | 1.32 ms | 1.31–1.33 ms | 1.40 ms |
+| 1D CNN raw-to-decision, CPU | 1.42 ms | 1.41–1.44 ms | 1.51 ms |
+| 2D CNN forward, CPU | 5.14 ms | 5.08–6.84 ms | 5.29 ms |
+| Multimodal net forward, CPU | 4.50 ms | 4.39–5.42 ms | 4.59 ms |
+| 1D CNN forward, MPS | 2.75 ms | 2.68–2.78 ms | 2.95 ms |
+| 1D CNN raw-to-decision, MPS | 2.85 ms | 2.78–2.89 ms | 3.05 ms |
+| 2D CNN forward, MPS | 3.09 ms | 2.93–3.50 ms | 3.96 ms |
+| Multimodal net forward, MPS | 3.33 ms | 3.13–3.76 ms | 4.39 ms |
 
 ## Table 7b
 
@@ -483,15 +483,15 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 
 | Step | Median (three runs) | Range of run medians | p95 (median over runs) |
 | :--- | :---: | :---: | :---: |
-| HuBERT-ECG: preprocessing (authors' pipeline) | 4.16 ms | 4.13–4.18 ms | 4.33 ms |
-| HuBERT-ECG: forward pass, CPU | 55.71 ms | 55.60–56.05 ms | 57.85 ms |
-| HuBERT-ECG: forward pass, MPS | 28.73 ms | 28.13–29.14 ms | 30.85 ms |
-| HuBERT-ECG: linear probe | 0.25 ms | 0.23–0.26 ms | 0.28 ms |
-| HuBERT-ECG probe: total, CPU | 60.17 ms | 59.99–60.50 ms | 62.48 ms |
-| HuBERT-ECG probe: total, MPS | 33.09 ms | 32.53–33.54 ms | 35.23 ms |
+| HuBERT-ECG: preprocessing (authors' pipeline) | 4.18 ms | 4.16–4.18 ms | 4.29 ms |
+| HuBERT-ECG: forward pass, CPU | 56.17 ms | 56.12–56.38 ms | 57.06 ms |
+| HuBERT-ECG: forward pass, MPS | 23.58 ms | 23.48–23.68 ms | 29.52 ms |
+| HuBERT-ECG: linear probe | 0.25 ms | 0.24–0.26 ms | 0.28 ms |
+| HuBERT-ECG probe: total, CPU | 60.57 ms | 60.53–60.80 ms | 61.48 ms |
+| HuBERT-ECG probe: total, MPS | 28.01 ms | 27.92–28.12 ms | 33.91 ms |
 | d1-3B image probe: linear probe (added to the d1-3B forward pass of Table S45) | 0.12 ms | 0.11–0.12 ms | 0.13 ms |
-| TabPFN: fit on 988 windows (once per model) | 161.62 ms | 117.47–476.28 ms | 161.62 ms |
-| TabPFN: prediction of one window, CPU | 3783.23 ms | 3774.67–3783.49 ms | 3793.67 ms |
+| TabPFN: fit on 988 windows (once per model) | 156.21 ms | 118.95–473.35 ms | 156.21 ms |
+| TabPFN: prediction of one window, CPU | 3786.46 ms | 3773.02–3788.83 ms | 3800.81 ms |
 
 ## Table 8c
 
@@ -874,4 +874,50 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | CinC2011 lead II vs CinC2017 | 11 | +0.19 | 0.574 |
 | CinC2011 lead II vs CinC2017 balanced subset | 11 | +0.21 | 0.537 |
 | CinC2017 vs CinC2017 balanced subset | 11 | +0.99 | < 0.001 |
+
+## Table 26
+
+| Model | Safeguards applied | BUT QDB (988 windows): original → harmonised (Δ [95% CI]) | CinC 2011 lead II (998 records): original → harmonised (Δ [95% CI]) | CinC 2017 (8,512 recordings): original → harmonised (Δ [95% CI]) | Distinct scores on CinC 2011: original → harmonised |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **d1-3B image-token probe** | G1 only | 0.971 → 0.971 (unchanged) | 0.824 → 0.824 (+0.000 [-0.000 to +0.001]) | 0.894 → 0.894 (unchanged) | 930 → 926 |
+| **2D CNN (Rendered Image)** | G1 only | 0.985 → 0.985 (unchanged) | 0.787 → 0.808 (+0.022 [+0.015 to +0.029]) | 0.850 → 0.850 (unchanged) | 930 → 926 |
+| **HuBERT-ECG probe** | G1 only | 0.938 → 0.938 (unchanged) | 0.562 → 0.787 (+0.224 [+0.180 to +0.268]) | 0.906 → 0.906 (unchanged) | 926 → 926 |
+| **LightGBM (SQI)** | G1, G2, G3 | 0.957 → 0.956 (-0.001 [-0.009 to +0.005]) | 0.752 → 0.779 (+0.026 [+0.016 to +0.037]) | 0.891 → 0.888 (-0.004 [-0.007 to -0.001]) | 900 → 832 |
+| **1D CNN (Raw Signal)** | G1 only | 0.983 → 0.983 (unchanged) | 0.695 → 0.770 (+0.075 [+0.058 to +0.092]) | 0.768 → 0.768 (unchanged) | 911 → 909 |
+| **Logistic Regression (SQI)** | G1, G2, G3 | 0.899 → 0.912 (+0.013 [+0.000 to +0.029]) | 0.322 → 0.766 (+0.443 [+0.380 to +0.507]) | 0.870 → 0.890 (+0.020 [+0.013 to +0.026]) | 28 → 926 |
+| **Independent SQI MLP** | G1, G2, G3 | 0.904 → 0.899 (-0.005 [-0.048 to +0.071]) | 0.675 → 0.761 (+0.086 [+0.051 to +0.122]) | 0.876 → 0.889 (+0.013 [+0.001 to +0.025]) | 15 → 913 |
+| **TabPFN (SQI)** | G1, G2, G3 | 0.956 → 0.955 (-0.001 [-0.008 to +0.004]) | 0.731 → 0.741 (+0.010 [-0.002 to +0.022]) | 0.853 → 0.857 (+0.004 [+0.001 to +0.007]) | 926 → 926 |
+| **Rule-Based SQI Heuristic** | G1, G2 | 0.971 → 0.971 (-0.000 [-0.000 to +0.000]) | 0.678 → 0.738 (+0.060 [+0.032 to +0.089]) | 0.887 → 0.888 (+0.001 [+0.000 to +0.001]) | 926 → 926 |
+| **SinglePass Multimodal Net** | G1, G2, G3 | 0.966 → 0.941 (-0.024 [-0.062 to +0.000]) | 0.500 → 0.731 (+0.231 [+0.186 to +0.276]) | 0.799 → 0.858 (+0.058 [+0.047 to +0.070]) | 1 → 914 |
+| **LiquidAI d1-3B (Zero-Shot)** | G1 only | 0.828 → 0.828 (unchanged) | 0.641 → 0.641 (unchanged) | 0.757 → 0.757 (unchanged) | 48 → 48 |
+
+## Table 27
+
+| Evaluation sets compared | Models | Spearman ρ, original AUROCs | Spearman ρ, harmonised AUROCs |
+| :--- | :---: | :---: | :---: |
+| BUT QDB vs CinC 2011 lead II | 11 | +0.61 | +0.49 |
+| BUT QDB vs CinC 2017 | 11 | -0.02 | -0.19 |
+| CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.43 |
+
+| Model (harmonised, BUT-only transfer) | Evaluation set | AUROC, seed 42 | AUROC, range over seeds 42 and 1–4 | Distinct scores, range over seeds |
+| :--- | :--- | :---: | :---: | :---: |
+| **Independent SQI MLP** | CinC 2011 lead II (998 records) | 0.761 | 0.686–0.776 | 913–914 |
+| **SinglePass Multimodal Net** | CinC 2011 lead II (998 records) | 0.731 | 0.706–0.768 | 905–914 |
+| **Independent SQI MLP** | CinC 2017 (8,512 recordings) | 0.889 | 0.873–0.891 | 8499–8509 |
+| **SinglePass Multimodal Net** | CinC 2017 (8,512 recordings) | 0.858 | 0.821–0.858 | 8421–8497 |
+
+| Input (standardised with BUT QDB mean and SD) | BUT QDB: share of windows beyond 3 SD (median absolute z) | CinC 2011 lead II: share of windows beyond 3 SD (median absolute z) | CinC 2017: share of windows beyond 3 SD (median absolute z) |
+| :--- | :---: | :---: | :---: |
+| bsqi_detector_agreement | 0.1% (0.828) | 7.8% (1.04) | 0.1% (0.641) |
+| baseline_wander_ratio | 2.4% (0.441) | 2.5% (0.419) | 3.3% (0.384) |
+| high_frequency_noise_ratio | 4.6% (0.241) | 0.0% (0.24) | 0.0% (0.241) |
+| saturation_fraction | 0.2% (0.045) | 57.7% (22.2) | 3.1% (0.045) |
+| flatline_fraction | 1.0% (0.543) | 100.0% (2.29e+03) | 52.6% (4.18) |
+| qrs_energy_ratio | 0.1% (0.71) | 7.7% (1.08) | 0.1% (0.924) |
+| kurtosis_ksqi | 0.7% (0.796) | 1.2% (0.549) | 0.5% (0.52) |
+| skewness_ssqi | 0.4% (0.902) | 1.1% (0.72) | 0.9% (0.648) |
+| zero_crossing_rate | 3.5% (0.439) | 0.2% (0.366) | 0.0% (0.608) |
+| powerline_noise_ratio | 4.6% (0.237) | 0.0% (0.237) | 0.0% (0.237) |
+| signal_std | 0.8% (0.191) | 2.0% (0.354) | 0.0% (0.303) |
+| flatline_fraction_robust (replaces flatline_fraction; G2) | 0.0% (0) | 0.0% (0) | 0.0% (0) |
 

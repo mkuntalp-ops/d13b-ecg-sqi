@@ -69,10 +69,13 @@ def run_empirical_profiling(n_samples: int = 25):
     for idx, row in eval_df.iterrows():
         raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         
-        # Preprocessing: SQI extraction + Image load & ink density array conversion
+        # Preprocessing: SQI extraction + strip rendering + grey-level array conversion.
+        # Same input boundary as the image models (stored 500-Hz window -> decision): the strip is rendered here,
+        # not read from the cache. Before 2026-11-11 the cached PNG was opened instead, so the heuristic's total
+        # left out the rendering step that the image models were charged for (reviewer finding PAPER-009).
         t0_pre = time.perf_counter()
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
-        img = Image.open(row["image_path"]).convert("L")
+        img = render_ecg_image(raw_sig, TARGET_FS, dpi=100).convert("L")
         _ = np.array(img, dtype=np.float32)
         t_pre_ms = (time.perf_counter() - t0_pre) * 1000.0
 
@@ -108,7 +111,7 @@ def run_empirical_profiling(n_samples: int = 25):
         "Forward_p95_ms": float(np.percentile(fwd_times, 95)),
         "Total_End_to_End_Median_ms": float(np.median(total_times)),
         "Total_End_to_End_p95_ms": float(np.percentile(total_times, 95)),
-        "Pipeline_Description": "SQI extraction + image array conversion + log-odds (0 params)"
+        "Pipeline_Description": "SQI extraction + Matplotlib rendering (100 DPI) + image array conversion + log-odds (0 params)"
     })
 
     # -------------------------------------------------------------

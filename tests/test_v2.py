@@ -313,6 +313,42 @@ class TestAuditSensitivity(unittest.TestCase):
             self.a.patient_check(pd.DataFrame({"ecg_id": [9], "stratum": ["clean"]}), meta)
 
 
+class TestHarmonisedPipeline(unittest.TestCase):
+    """Safeguards of the harmonised-pipeline analysis (PAPER-002; pre-stated 2026-11-11)."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(ROOT / "experiments"))
+        import harmonised_inputs
+        import harmonised_pipeline
+        cls.h, cls.hp = harmonised_inputs, harmonised_pipeline
+
+    def test_feature_lists(self):
+        self.assertEqual(self.h.ORIGINAL, MODEL_INPUT_FEATURE_NAMES)
+        self.assertEqual(len(self.h.HARMONISED), 11)
+        self.assertNotIn("flatline_fraction", self.h.HARMONISED)
+        self.assertEqual(self.h.HARMONISED.index("flatline_fraction_robust"), self.h.ORIGINAL.index("flatline_fraction"))
+        self.assertEqual(self.h.CLIP, 3.0)
+
+    def test_zclip_uses_training_statistics_and_bound(self):
+        rng = np.random.default_rng(0)
+        train = np.column_stack([rng.normal(5, 2, 500), np.full(500, 0.25), rng.normal(0, 1e-4, 500)])
+        mean, sd = self.h.zclip_fit(train)
+        self.assertEqual(sd[1], 1.0)                       # constant training column: SD replaced by 1
+        test = np.array([[5.0, 0.25, 0.0], [1e6, 0.25, 1.0], [-1e6, 9.0, np.nan]])
+        z = self.h.zclip_apply(test, mean, sd)
+        self.assertTrue((np.abs(z) <= 3.0).all())
+        self.assertAlmostEqual(z[0, 0], (5.0 - mean[0]) / sd[0])
+        self.assertEqual((z[1, 0], z[2, 0]), (3.0, -3.0))   # a value thousands of SDs away is bounded
+        self.assertEqual(z[1, 2], 3.0)
+        self.assertEqual(z[0, 1], 0.0)
+        self.assertTrue(np.isfinite(z).all())
+
+    def test_constant_rule(self):
+        p = self.hp.apply_constant_rule(np.array([0.2, 0.0, 0.9]), np.array([False, True, False]))
+        self.assertEqual(list(p), [0.2, 1.0, 0.9])
+
+
 @unittest.skipUnless((V2 / "model_cis.csv").exists() and (V2 / "external_window_predictions.csv").exists(),
                      "v2 outputs not present")
 class TestCinc2017WindowTable(unittest.TestCase):

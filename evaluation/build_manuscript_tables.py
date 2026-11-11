@@ -1198,6 +1198,66 @@ def table_25() -> str:
     return "\n".join(out)
 
 
+_HARM_SETS = [("BUT_QDB", "BUT QDB (988 windows)"), ("CinC2011", "CinC 2011 lead II (998 records)"), ("CinC2017", "CinC 2017 (8,512 recordings)")]
+
+
+def table_26() -> str:
+    """Harmonised-pipeline comparison: original and harmonised AUROC per model and set (experiments/harmonised_pipeline.py;
+    post hoc, secondary, pre-stated; reviewer finding PAPER-002)."""
+    path = RESULTS / "harmonised_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path).set_index(["dataset", "model"])
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    out = ["| Model | Safeguards applied | " + " | ".join(f"{name}: original → harmonised (Δ [95% CI])" for _, name in _HARM_SETS) + " | Distinct scores on CinC 2011: original → harmonised |",
+           "| :--- | :--- | " + " | ".join([":---:"] * len(_HARM_SETS)) + " | :---: |"]
+    order = s.loc["CinC2011"].sort_values("auroc_harmonised", ascending=False).index
+    for m in order:
+        refit = bool(s.loc[("CinC2011", m), "refitted"])
+        which = ("G1, G2" if m == "Rule_Based_SQI_Heuristic" else "G1, G2, G3") if refit else "G1 only"
+        cells = []
+        for ds, _ in _HARM_SETS:
+            r = s.loc[(ds, m)]
+            if r.auroc_original == r.auroc_harmonised and r.delta == 0:
+                cells.append(f"{r.auroc_original:.3f} → {r.auroc_harmonised:.3f} (unchanged)")
+            else:
+                cells.append(f"{r.auroc_original:.3f} → {r.auroc_harmonised:.3f} ({r.delta:+.3f} [{r.ci_lo:+.3f} to {r.ci_hi:+.3f}])")
+        r = s.loc[("CinC2011", m)]
+        out.append(f"| **{labels.get(m, m)}** | {which} | " + " | ".join(cells) + f" | {int(r.n_distinct_original)} → {int(r.n_distinct_harmonised)} |")
+    return "\n".join(out)
+
+
+def table_27() -> str:
+    """Harmonised-pipeline comparison: rank agreement, seed range and input diagnostics (experiments/harmonised_pipeline.py)."""
+    paths = [RESULTS / f for f in ("harmonised_rank_agreement.csv", "harmonised_seed_range.csv", "harmonised_input_diagnostics.csv")]
+    for path in paths:
+        if not path.exists():
+            return _missing(path)
+    rk, sd, dg = (pd.read_csv(x) for x in paths)
+    names = dict(_HARM_SETS)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    out = ["| Evaluation sets compared | Models | Spearman ρ, original AUROCs | Spearman ρ, harmonised AUROCs |", "| :--- | :---: | :---: | :---: |"]
+    for r in rk.itertuples():
+        out.append(f"| {names[r.set_a].split(' (')[0]} vs {names[r.set_b].split(' (')[0]} | {r.n_models} | {r.spearman_original:+.2f} | {r.spearman_harmonised:+.2f} |")
+    out += ["", "| Model (harmonised, BUT-only transfer) | Evaluation set | AUROC, seed 42 | AUROC, range over seeds 42 and 1–4 | Distinct scores, range over seeds |",
+            "| :--- | :--- | :---: | :---: | :---: |"]
+    for (m, ds), g in sd.groupby(["model", "dataset"], sort=False):
+        s42 = float(g.auroc_harmonised[g.seed == 42].iloc[0])
+        out.append(f"| **{labels.get(m, m)}** | {names[ds]} | {s42:.3f} | {g.auroc_harmonised.min():.3f}–{g.auroc_harmonised.max():.3f} | "
+                   f"{int(g.n_distinct.min())}–{int(g.n_distinct.max())} |")
+    out += ["", "| Input (standardised with BUT QDB mean and SD) | " + " | ".join(f"{n.split(' (')[0]}: share of windows beyond 3 SD (median absolute z)" for _, n in _HARM_SETS) + " |",
+            "| :--- | " + " | ".join([":---:"] * len(_HARM_SETS)) + " |"]
+    o = dg[dg.inputs == "original"].set_index(["feature", "dataset"])
+    h = dg[dg.inputs != "original"].set_index(["feature", "dataset"])
+    feats = list(dict.fromkeys(dg[dg.inputs == "original"].feature))
+    for f in feats + ["flatline_fraction_robust"]:
+        src = h if f == "flatline_fraction_robust" else o
+        cells = [f"{100 * src.loc[(f, ds), 'share_beyond_clip']:.1f}% ({src.loc[(f, ds), 'median_abs_z']:.3g})" for ds, _ in _HARM_SETS]
+        name = f"{f} (replaces flatline_fraction; G2)" if f == "flatline_fraction_robust" else f
+        out.append(f"| {name} | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = cinc_frame()
@@ -1256,6 +1316,8 @@ def main():
         ("Table 23", table_23()),
         ("Table 24", table_24()),
         ("Table 25", table_25()),
+        ("Table 26", table_26()),
+        ("Table 27", table_27()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")

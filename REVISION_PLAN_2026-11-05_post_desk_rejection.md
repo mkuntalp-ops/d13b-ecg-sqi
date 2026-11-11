@@ -351,6 +351,33 @@ ile sınırlandırılır, değiştirmezse bu da yazılır. Başka sınır veya t
 ölçülecek: görüntü dosyadan açılmayacak, `render_ecg_image` ile çizilecek. Oturum `latency_all.sh` ile tek başına tekrarlanır; önceki
 çıktılar `latency_before_equal_boundaries_2026-11-11/` altında saklanır.
 
+### 2026-11-11 (gece) — Hakem raporu PAPER-001…012: yapılanlar ve sonuçlar
+
+- **PAPER-002 uyumlaştırılmış boru hattı** (ön tanım commit 999c419; `experiments/harmonised_pipeline.py`, `harmonised_tabpfn.py`,
+  `harmonised_inputs.py`; Tablo S46, S47). CinC 2011 AUROC, özgün → uyumlaştırılmış: LR 0,322 → 0,766; multimodal 0,500 → 0,731
+  (tohumlar 0,706–0,768); MLP 0,675 → 0,761 (0,686–0,776); LightGBM 0,752 → 0,779; TabPFN 0,731 → 0,741; sezgisel 0,678 → 0,738;
+  yalnız sabit-girdi kuralıyla HuBERT 0,562 → 0,787, 1D CNN 0,695 → 0,770, 2D CNN 0,787 → 0,808; d1 probu 0,824 ve sıfır-örnekli
+  0,641 değişmedi. Sıfır-örnekli dışındaki on modelin aralığı 0,322–0,824'ten 0,731–0,824'e daraldı. BUT QDB'de en büyük değişim 0,024,
+  CinC 2017'de 0,058 (multimodal 0,799 → 0,858). Spearman (11 model): BUT–CinC 2011 0,61 → 0,49; BUT–CinC 2017 −0,02 → −0,19;
+  CinC 2011–CinC 2017 0,19 → 0,43. **Yorum (ön tanımdaki kurala göre):** CinC 2011'deki düşük AUROC'ların çoğu girdi boru hattı
+  hatasıydı; alan-içi ile harici sıra arasındaki zayıf ilişki ise uyumlaştırmayla düzelmedi. Model ailelerine ilişkin ifadeler "test
+  edilen boru hatları" ile sınırlandı. Bu karşılaştırmada çoklu test düzeltmesi ve prob–2D CNN eşli testi yok (betimsel).
+- **PAPER-009 gecikme:** sezgisel artık şeridi çiziyor (önbellekten açmıyor). Oturum `latency_all.sh` ile tek başına tekrarlandı
+  (17:23–17:31); önceki çıktılar `latency_before_equal_boundaries_2026-11-11/`. Sezgisel toplam 2,53 → 62,70 ms; diğerleri: 2D CNN
+  63,62 → 65,92; 1D CNN 1,28 → 1,31; d1-3B 894 → 896; HuBERT probu 33,1 → 28,0 ms. Metindeki tüm gecikme sayıları güncellendi ve
+  artık `verify_v2_prose.py` tarafından kontrol ediliyor (önce yalnız bir kez doldurulmuş, kontrolsüzdü). S-M5'teki "25 pencerenin
+  19'unda" önbellek açıklaması yeniden doğrulanmadı.
+- **Metin:** PAPER-003 (prevalans "projeksiyon" olarak yeniden adlandırıldı; %16,0 yorumlanmıyor), PAPER-004 (başlık, özet, giriş,
+  2.1'e heterojenlik paragrafı, tartışma, sonuç: kapsam "incelenen heterojen ortamlar"), PAPER-006 (özette tek aile: 0,003 / 0,833),
+  PAPER-007 (0,736 doğruydu; cümle hangi kayıtların çıkarıldığını söylüyor), PAPER-008, PAPER-010, PAPER-011, PAPER-012, TabPFN yorumu.
+  Özet 245 kelime; PTB-XL ve yerel yeniden ayarlama dışındaki ayrıntılar için yer açmak üzere PTB-XL özetten çıkarıldı (ana metinde 3.6).
+  Başlık değişti; son karar yazarın.
+- **PAPER-005 kaynaklar:** ST-MEM (ICLR 2024), MERL (PMLR 235:31949–31963), K-MERL (Findings of EMNLP 2025, s. 7298–7316,
+  doi:10.18653/v1/2025.findings-emnlp.385) resmi kayıtlardan doğrulanıp değiştirildi. PULSE, ECG-Chat, TabPFN-3 ve HuBERT-ECG için
+  nihai yayın bulunamadı; ön baskı/teknik rapor olarak işaretli. Diğer kaynakların tek tek iddia desteği bu turda yeniden denetlenmedi.
+- **PAPER-001:** dal uzak depoya push edildi (aşağıdaki commit).
+- Kontroller: `verify_v2_prose.py` 145 kontrol, 0 hata; 39 birim testi geçti.
+
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ
 (36 izlenen dosya değişti + yeni dosyalar; `git status` ile görülebilir). v1 = commit 55095ed, `results/`.
