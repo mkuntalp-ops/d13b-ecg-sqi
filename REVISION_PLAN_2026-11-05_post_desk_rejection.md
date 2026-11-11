@@ -318,6 +318,39 @@ CODE-007 (özet ve Bölüm 2.6 metni), yeni tabloların makaleye eklenmesi, `pai
 - Özetten çıkanlar (ana metinde duruyor): d1 probunun "en iyinin anlamlı olarak gerisinde değil" bulgusu, sezgiselin elle ayarlı olduğu notu,
   PTB-XL'in vekil sonuç olduğu notu. Commit yapılmadı.
 
+### 2026-11-11 — Bağımsız bilimsel hakem raporu (PAPER-001…012) ve uyumlaştırılmış boru hattı analizi: ÖN TANIM
+
+Hakem raporu (yazarın ilettiği "Independent scientific review", manuscript v2): 12 bulgu depoyla karşılaştırıldı. PAPER-007 yanlış
+(0,736 doğru: herhangi bir derivasyonu sabit 135 kayıt olmadan HuBERT derivasyon II; cümle belirsiz), diğerleri geçerli veya kısmen
+geçerli. Yazar kararı (2026-11-11): metin düzeltmeleri, kaynak doğrulaması, dalın push edilmesi, gecikmenin eşit sınırlarla tekrarı ve
+uyumlaştırılmış boru hattı karşılaştırması yapılacak.
+
+**PAPER-002 için ön tanım (hiçbir uyumlaştırılmış skor hesaplanmadan önce yazıldı; post hoc, ikincil, birincil sonuçların yerine
+geçmez).** Amaç: bilinen girdi-ölçek/kuantizasyon uyumsuzluğu giderildiğinde model sıralamasının ve sıra uyumunun ne kadar değiştiğini
+göstermek. Üç önlem; hiçbiri hedef veri setlerinin etiketlerine veya başarımına bakılarak ayarlanmaz:
+
+- **G1 Sabit girdi kuralı.** Standart sapması 0 olan pencere, modelden önce "kullanılamaz" (skor 1) sayılır. Gerekçe: değişimi olmayan
+  sinyalde QRS olamaz. 11 modelin tümüne uygulanır (yeniden eğitilmeyenlerde kayıtlı skorlara son-işlem olarak).
+- **G2 Kuantizasyona duyarsız flatline.** `flatline_fraction` yerine 2026-11-06'da önceden tanımlanan `flatline_fraction_robust`
+  (1,0 s, 0,02 mV; değiştirilmeden). Tablosal girdisi olan modeller: LR, LightGBM, SQI MLP, TabPFN, multimodal ağ (SQI kolu) ve
+  elle ayarlı sezgisel (yalnız bu girdi; katsayılar aynı).
+- **G3 Standartlaştırılmış girdilerin kırpılması.** Eğitim katının ortalama ve SS'iyle z-skoru, sonra [−3, 3] aralığına kırpma. Sınır,
+  v1'den beri Tablo S15'teki "Z-clip" ölçekleyicisinin sınırıdır; yeni seçilmedi. LR, LightGBM, SQI MLP, TabPFN ve multimodal ağa
+  uygulanır (sezgisel ham değer ve kendi tavanlarını kullandığı için uygulanmaz).
+
+Diğer her şey birincil analizle aynı: aynı katlar, hiperparametreler, tohum 42; MLP ve multimodal ağ ayrıca tohum 1–4 (yalnız BUT-yalnız
+aktarım). 1D CNN, 2D CNN, sıfır-örnekli d1-3B ve iki prob yeniden eğitilmez (tablosal girdileri yok); yalnız G1 uygulanır.
+Değerlendirme: BUT QDB 5 katlı OOF (988), CinC 2011 derivasyon II (998), CinC 2017 (8.512, kayıt maksimumu).
+Raporlanacak: model ve veri seti başına özgün ve uyumlaştırılmış AUROC, eşli fark ve %95 GA (BUT: denek küme bootstrap; harici: DeLong;
+çoklu karşılaştırma düzeltmesi yok, betimsel), farklı skor sayısı, |z| > 3 olan standartlaştırılmış girdi oranı (veri seti ve özellik
+başına), tohum aralığı, ve uyumlaştırılmış AUROC'larla Spearman sıra uyumu. Eşik, kalibrasyon ve LODO yeniden yapılmaz.
+Yorum kuralı: sonuç ne çıkarsa çıksın raporlanır; uyumlaştırma sıralamayı değiştirirse ana metindeki iddialar "test edilen boru hatları"
+ile sınırlandırılır, değiştirmezse bu da yazılır. Başka sınır veya tanım denenmeyecek.
+
+**PAPER-009 için:** `empirical_latency_benchmark.py` sezgisel dalı, CNN dallarıyla aynı sınırdan (kayıtlı 500 Hz pencere → karar)
+ölçülecek: görüntü dosyadan açılmayacak, `render_ecg_image` ile çizilecek. Oturum `latency_all.sh` ile tek başına tekrarlanır; önceki
+çıktılar `latency_before_equal_boundaries_2026-11-11/` altında saklanır.
+
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ
 (36 izlenen dosya değişti + yeni dosyalar; `git status` ile görülebilir). v1 = commit 55095ed, `results/`.
