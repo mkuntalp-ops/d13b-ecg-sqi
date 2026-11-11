@@ -717,7 +717,7 @@ def table_4c() -> str:
                           "hubert_linear_probe_ms": "HuBERT-ECG: linear probe",
                           "hubert_total_cpu_ms": "HuBERT-ECG probe: total, CPU",
                           "hubert_total_mps_ms": "HuBERT-ECG probe: total, MPS",
-                          "d1_linear_probe_ms": "d1-3B image probe: linear probe (added to the d1-3B forward pass of main-text Table 5)"}),
+                          "d1_linear_probe_ms": "d1-3B image probe: linear probe (added to the d1-3B forward pass of Table S45)"}),
                         (RESULTS / "latency_tabpfn_summary.csv",
                          {"fit_ms": "TabPFN: fit on 988 windows (once per model)",
                           "tabpfn_predict_cpu_ms": "TabPFN: prediction of one window, CPU"})]:
@@ -1178,6 +1178,26 @@ def table_24() -> str:
     return "\n".join(out)
 
 
+def table_25() -> str:
+    """AUROC rank of every model in each evaluation set and Spearman correlations between sets
+    (evaluation/audit_sensitivity.py; descriptive, post hoc)."""
+    path, rho_path = RESULTS / "rank_agreement.csv", RESULTS / "rank_agreement_spearman.csv"
+    if not path.exists() or not rho_path.exists():
+        return _missing(path)
+    s, rho = pd.read_csv(path).set_index("model"), pd.read_csv(rho_path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    fams = [c[len("rank | "):] for c in s.columns if c.startswith("rank | ")]
+    short = {f: f.split(" (")[0].replace("_", " ") for f in fams}
+    out = ["| Model | " + " | ".join(f"{short[f]}: AUROC (rank)" for f in fams) + " |", "| :--- | " + " | ".join([":---:"] * len(fams)) + " |"]
+    for m in s.sort_values(f"rank | {fams[0]}").index:
+        cells = [f"{s.loc[m, 'auroc | ' + f]:.3f} ({s.loc[m, 'rank | ' + f]:g})" for f in fams]
+        out.append(f"| **{labels.get(m, m)}** | " + " | ".join(cells) + " |")
+    out += ["", "| Evaluation sets compared | Models | Spearman ρ of AUROC | p (descriptive) |", "| :--- | :---: | :---: | :---: |"]
+    for r in rho.itertuples():
+        out.append(f"| {short[r.family_a]} vs {short[r.family_b]} | {r.n_models} | {r.spearman_rho:+.2f} | {_p_fmt(r.p)} |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = cinc_frame()
@@ -1235,6 +1255,7 @@ def main():
         ("Table 22", table_22()),
         ("Table 23", table_23()),
         ("Table 24", table_24()),
+        ("Table 25", table_25()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")

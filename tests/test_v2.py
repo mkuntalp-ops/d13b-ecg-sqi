@@ -293,6 +293,16 @@ class TestAuditSensitivity(unittest.TestCase):
         self.assertAlmostEqual(one["max"], one["mean"])
         self.assertAlmostEqual(one["max"], one["first_window"])
 
+    def test_rank_tables(self):
+        cis = pd.DataFrame({"family": ["A"] * 3 + ["B"] * 3, "model": ["x", "y", "z"] * 2, "auroc": [0.9, 0.8, 0.7, 0.6, 0.7, 0.8]})
+        ranks, rho = self.a.rank_tables(cis)
+        r = ranks.set_index("model")
+        self.assertEqual(list(r.loc[["x", "y", "z"], "rank | A"]), [1.0, 2.0, 3.0])
+        self.assertEqual(list(r.loc[["x", "y", "z"], "rank | B"]), [3.0, 2.0, 1.0])
+        self.assertAlmostEqual(rho.spearman_rho.iloc[0], -1.0)
+        with self.assertRaises(ValueError):
+            self.a.rank_tables(cis.iloc[:-1])
+
     def test_patient_check(self):
         sample = pd.DataFrame({"ecg_id": [1, 2, 3], "stratum": ["clean", "clean", "global"]})
         meta = pd.DataFrame({"ecg_id": [1, 2, 3, 4], "patient_id": [10, 10, 11, 12]})

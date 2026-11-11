@@ -135,7 +135,10 @@ def checks() -> list:
     for m, frag in {HEUR: "the rule heuristic (0.887, p_Holm = {})", MLP: "the MLP (0.876, p_Holm = {})", LR: "logistic regression (0.870, p_Holm = {})"}.items():
         c.append((frag.format(f3(holm_best(C17, m))), MAIN))
     # Abstract
-    c += [(f"(0.828 in-domain; {f3(auroc(C11, ZS))} and {f3(auroc(C17, ZS))} externally)", MAIN), (f"highest on CinC 2017 ({f3(auroc(C17, HUB))})", MAIN)]
+    zs = [auroc(f, ZS) for f in (BUT, C11, C17)]
+    c += [(f"zero-shot d1-3B was weak ({f3(min(zs))}–{f3(max(zs))})", MAIN),
+          (f"rose from eighth to first ({f3(auroc(C17, HUB))}) while near chance on CinC 2011 ({f3(auroc(C11, HUB))})", MAIN),
+          (f"fell from second ({f3(auroc(BUT, CNN1))}) to tenth ({f3(auroc(C17, CNN1))})", MAIN)]
     # 12 leads
     t = pd.read_csv(R / "cinc2011_twelve_lead_summary.csv")
     tl = lambda a, m: f3(float(t[(t.aggregation == a) & (t.model == m)].auroc.iloc[0]))  # noqa: E731
@@ -299,12 +302,14 @@ def checks() -> list:
     c.append((f"the d1-3B probe reached {aucf(PROBE, M2, P)} and {aucf(PROBE, ME, P)}, with intervals that included 0.5", MAIN))
     assert all(au(PROBE, a, P).auroc_ci_low < 0.5 < au(PROBE, a, P).auroc_ci_high for a in [M2, ME])
     c.append((f"HuBERT-ECG probe ({aucf(HUB, M2, P)} and {aucf(HUB, ME, P)}) and LightGBM ({aucf(GBM, M2, P)} and {aucf(GBM, ME, P)})", MAIN))
-    c.append((f"(0.579 versus {aucf(CNN2, M2)}; adjusted p = {p1.p_holm:.3f}) but was weak and significantly below HuBERT-ECG ({aucf(HUB, M2)})", MAIN))
+    ptb = pd.read_csv(R / "ptbxl_frozen_summary.csv")
+    ptb_max = float(ptb[(ptb.outcome == "global_vs_clean") & (ptb.aggregation == "max_12")].auroc.max())
+    c += [(f"On PTB-XL no model exceeded {f3(ptb_max)}.", MAIN), (f"Under the maximum rule no model exceeded an AUROC of {f3(ptb_max)} on this outcome.", MAIN)]
     assert aucf(PROBE, M2) == "0.579"
     c.append((f"(AUROC {aucf(PROBE, M2)}–{aucf(PROBE, ME)})", MAIN))
     # 12-lead value in the abstract
     tw = pd.read_csv(R / "d1_probe_twelve_lead_summary.csv").set_index("aggregation")
-    c.append((f"; {tw.auroc['max_12']:.3f} post hoc with 12 leads)", MAIN))
+    assert f"{tw.auroc['max_12']:.3f}" == "0.951"  # quoted in section 3.3 (checked above with its interval)
     # ---- additions after the code audit of 2026-11-11 (evaluation/audit_sensitivity.py)
     # bootstrap p floor: MLP and logistic regression versus the best model on BUT QDB
     hb = [holm_best(BUT, m) for m in (MLP, LR)]
@@ -324,7 +329,8 @@ def checks() -> list:
     assert len(others) == 9
     c.append((f"the other nine models stayed significantly below the probe (all p_Holm ≤ {f3(others.p_holm.max())})", MAIN))
     aw = lambda m: f3(float(x.auroc_a if x.model_a == m else x.auroc_b))  # noqa: E731
-    c.append((f"but not significantly without 73 flat-lead records ({aw(PROBE)} versus {aw(CNN2)}; p = {f3(x.p)})", MAIN))
+    assert (aw(PROBE), aw(CNN2)) == ("0.740", "0.716")
+    c.append((f"(Holm-adjusted p = {f3(pair(C11, CNN2, PROBE).p_holm)} with them; p = {f3(x.p)} without)", MAIN))
     c.append((f"({int(x.n_units)} records, {int(x.n_positive)} unacceptable)", SUPP))
     # BUT QDB per-subject AUROC
     ps = pd.read_csv(R / "butqdb_per_subject_auroc.csv", dtype={"subject": str})
@@ -352,6 +358,27 @@ def checks() -> list:
     c.append((f"subject 105 contributes {int(q.cohort_unusable[105])} unusable window, although {int(q.class3_candidates_inside_official[105])} "
               f"Class 3 windows of that subject lie inside the official intervals", MAIN))
     assert int(q.cohort_unusable.sum()) == 238 and int(q.class3_candidates_inside_official.sum()) == 605
+    # ---- reframing of 2026-11-11: rank agreement, transferred thresholds
+    rk = pd.read_csv(R / "rank_agreement.csv").set_index("model")
+    rho = pd.read_csv(R / "rank_agreement_spearman.csv").set_index(["family_a", "family_b"]).spearman_rho
+    assert set(pd.read_csv(R / "rank_agreement_spearman.csv").n_models) == {11}
+    r11, r17, rx = rho[(BUT, C11)], rho[(BUT, C17)], rho[(C11, C17)]
+    assert r17 < 0
+    c.append((f"was {r11:.2f} on CinC 2011 and −{-r17:.2f} on CinC 2017, and between the two external datasets {rx:.2f}", MAIN))
+    c.append((f"(Spearman ρ = {r11:.2f}) and unrelated on CinC 2017 (ρ = −{-r17:.2f})", MAIN))
+    rank = lambda m, f: int(rk.loc[m, f"rank | {f}"])  # noqa: E731
+    assert [rank(CNN1, f) for f in (BUT, C11, C17)] == [2, 5, 10] and [rank(CNN2, f) for f in (BUT, C11, C17)] == [1, 2, 8]
+    assert [rank(HUB, f) for f in (BUT, C11, C17)] == [8, 9, 1]
+    c.append((f"The 1D CNN was second in-domain ({f3(auroc(BUT, CNN1))}), fifth on CinC 2011 and tenth on CinC 2017 ({f3(auroc(C17, CNN1))})", MAIN))
+    c.append((f"the HuBERT-ECG probe, eighth in-domain ({f3(auroc(BUT, HUB))}), was ninth on CinC 2011 and first on CinC 2017", MAIN))
+    tt = pd.read_csv(R / "threshold_transfer_summary.csv")
+    tt = tt[tt.rule == "target1_fpr5"]
+    f17 = 100 * tt[tt.dataset == "CinC2017 all (record max)"].fpr
+    f11 = 100 * tt[tt.dataset == "CinC2011 all 998 records (lead II)"].fpr
+    assert len(f17) == len(f11) == 11
+    c.append((f"{f17.min():.1f}–{f17.max():.1f}% across the 11 models on CinC 2017 and {f11.min():.1f}–{f11.max():.1f}% on CinC 2011 (Table S4)", MAIN))
+    c.append((f"gave {f17.min():.0f}–{f17.max():.0f}% on CinC 2017", MAIN))
+    c.append((f"the number of windows alone gave AUROC {f3(float(ls[ls.aggregation == 'none'].auroc.iloc[0]))}", MAIN))
     return c
 
 
@@ -360,13 +387,19 @@ def main() -> int:
         fill()
     main_t, supp_t = MAIN.read_text(encoding="utf-8"), SUPP.read_text(encoding="utf-8")
     left = re.findall(TOKEN_RE, main_t) + re.findall(TOKEN_RE, supp_t)
-    fails = 0
+    fails = moved = 0
     items = checks()
     for frag, path in items:
-        if frag not in (main_t if path == MAIN else supp_t):
+        here, other = (main_t, supp_t) if path == MAIN else (supp_t, main_t)
+        if frag not in here:
+            # Reframing of 2026-11-11: several Results paragraphs moved unchanged to the Supplementary Results, so a
+            # fragment is also accepted in the other file; the move is reported, the number is still checked.
+            if frag in other:
+                moved += 1
+                continue
             print("MISSING:", frag)
             fails += 1
-    print(f"{len(items)} prose checks, {fails} failed; placeholders left: {sorted(set(left))}")
+    print(f"{len(items)} prose checks, {fails} failed ({moved} found in the other file); placeholders left: {sorted(set(left))}")
     return 1 if fails or left else 0
 
 

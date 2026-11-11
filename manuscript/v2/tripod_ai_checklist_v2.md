@@ -1,10 +1,10 @@
-# TRIPOD+AI checklist (v2 draft, 2026-11-08; updated 2026-11-11 after the code audit)
+# TRIPOD+AI checklist (v2 draft, 2026-11-08; updated 2026-11-11 after the code audit and the reframing)
 
 **Checklist source.** Collins GS et al., TRIPOD+AI statement, BMJ 2024;385:e078378 (doi:10.1136/bmj-2023-078378), Table 2: 27 items with sub-items. The item topics below are short paraphrases; consult the published checklist for the full wording.
 
 **Study type.** Development (D) and evaluation (E): model development with patient-independent internal validation, and external evaluation on three datasets.
 
-**Locations.** Section numbers refer to the accompanying main manuscript; Tables S1–S43 and Supplementary Methods S-M1 to S-M6 refer to the accompanying supplementary material.
+**Locations.** Section numbers refer to the accompanying main manuscript; Tables S1–S45, Supplementary Methods S-M1 to S-M6 and Supplementary Results S-R1 to S-R7 refer to the accompanying supplementary material.
 
 **Status codes.**
 - Reported: the item is fully addressed.
@@ -14,7 +14,7 @@
 
 | Item | Topic (paraphrase) | Status | Where / note |
 |---|---|---|---|
-| 1 | Title identifies development/evaluation, population, outcome | Partly | The title names the comparison (foundation-model representations versus task-specific classifiers), the task (ECG usability screening), the condition (dataset shift) and the design (patient-independent, multi-dataset benchmark). It does not use the words "development" and "evaluation". |
+| 1 | Title identifies development/evaluation, population, outcome | Partly | The title names the finding (in-domain performance does not identify the models that transfer), the task (ECG usability models) and the design (patient-independent benchmark of eleven approaches across four datasets). It does not use the words "development" and "evaluation". |
 | 2 | Abstract per TRIPOD+AI for Abstracts | Partly | Structured abstract (250 words). Not checked item by item against the 13-item abstract checklist. |
 | 3a | Healthcare context, rationale, existing models | Reported | Section 1 |
 | 3b | Target population, intended purpose, intended users | Reported | Section 1: automatic gate before downstream ECG analysis; output used by developers and operators of analysis pipelines to discard a segment or request a new recording; not a replacement for clinical interpretation. |
@@ -48,7 +48,7 @@
 | 17 | Ethics approval and consent | Reported | Ethics approval and consent section: secondary analysis of public de-identified data; BUT QDB collected under IRB protocol EC:EK:05b/2018; ethical approval not required |
 | 18a | Funding | Reported | Funding section (no specific grant) |
 | 18b | Conflicts of interest | Reported | Conflicts of interest section (none declared) |
-| 18c | Protocol availability | Partly | A dated written analysis plan is kept with the code (Section 2.6). There is no protocol for the original analyses, and post hoc decisions are listed (Section 2.6), including the analyses added after an independent code audit (item 8 there). |
+| 18c | Protocol availability | Partly | A dated written analysis plan is kept with the code (Section 2.6). There is no protocol for the original analyses, and post hoc decisions are listed (Section 2.6), including the analyses added after an independent code audit (item 8 there) and the change of framing after all results were known (item 9 there). |
 | 18d | Registration | Reported | Not registered (stated in Section 2.6) |
 | 18e | Data availability | Reported | Data and code availability (PhysioNet) |
 | 18f | Code availability | Reported | Public repository https://github.com/mkuntalp-ops/d13b-ecg-sqi (MIT licence) with code, saved predictions and table/figure scripts (Data availability statement) |

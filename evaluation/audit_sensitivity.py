@@ -29,6 +29,11 @@ only (no model is fitted, no threshold is chosen) and they do not replace any pr
    Skipped when the BUT QDB annotation files are not in the cache. Counts only.
    -> butqdb_quota_candidates_by_subject.csv
 
+6. Rank agreement between evaluation sets (reframing of 2026-11-11). AUROC rank of each of the 11 models in each
+   primary evaluation set (model_cis.csv) and the Spearman correlation of the AUROCs between sets. Descriptive and
+   post hoc; the unit is the model (n = 11), so the correlations are imprecise and are not tested as hypotheses.
+   -> rank_agreement.csv, rank_agreement_spearman.csv
+
 audit_sensitivity_provenance.json records the commit, whether the working tree was dirty, and package versions.
 
 Usage: ECG_RESULTS_DIR=results/v2_2026-11 python evaluation/audit_sensitivity.py
@@ -61,6 +66,8 @@ OUT_SUBJ = RESULTS / "butqdb_per_subject_auroc.csv"
 OUT_LEN = RESULTS / "cinc2017_length_stratified.csv"
 OUT_PTB = RESULTS / "ptbxl_frozen_sample_patient_check.csv"
 OUT_QUOTA = RESULTS / "butqdb_quota_candidates_by_subject.csv"
+OUT_RANK = RESULTS / "rank_agreement.csv"
+OUT_RHO = RESULTS / "rank_agreement_spearman.csv"
 OUT_PROV = RESULTS / "audit_sensitivity_provenance.json"
 
 
@@ -240,6 +247,33 @@ def butqdb_quota():
     return out
 
 
+# ---------- 6. rank agreement between evaluation sets ----------
+def rank_tables(cis: pd.DataFrame):
+    """(ranks, correlations): per model the AUROC and its rank (1 = highest; ties get the mean rank) in every family,
+    and the Spearman correlation of the AUROCs for every pair of families."""
+    from scipy.stats import spearmanr
+    fams = list(dict.fromkeys(cis.family))
+    auc = cis.pivot(index="model", columns="family", values="auroc")[fams]
+    if auc.isna().any().any():
+        raise ValueError("every model needs an AUROC in every family")
+    rank = auc.rank(ascending=False)
+    ranks = pd.concat([auc.add_prefix("auroc | "), rank.add_prefix("rank | ")], axis=1).rename_axis("model").reset_index()
+    rows = []
+    for a, b in combinations(fams, 2):
+        r = spearmanr(auc[a], auc[b])
+        rows.append({"family_a": a, "family_b": b, "n_models": len(auc), "spearman_rho": float(r.statistic), "p": float(r.pvalue)})
+    return ranks, pd.DataFrame(rows)
+
+
+def rank_agreement():
+    ranks, rho = rank_tables(pd.read_csv(RESULTS / "model_cis.csv"))
+    ranks.to_csv(OUT_RANK, index=False)
+    rho.to_csv(OUT_RHO, index=False)
+    print("[ranks] Spearman correlation of model AUROCs between evaluation sets")
+    print(rho.round(3).to_string(index=False))
+    return ranks, rho
+
+
 # ---------- provenance ----------
 def _git(*args) -> str:
     try:
@@ -266,8 +300,9 @@ def main():
     cinc2017_length()
     ptbxl_patients()
     butqdb_quota()
+    rank_agreement()
     OUT_PROV.write_text(json.dumps(provenance(), indent=2) + "\n")
-    print(f"[Saved] {OUT_C11.name}, {OUT_SUBJ.name}, {OUT_LEN.name}, {OUT_PTB.name}, {OUT_QUOTA.name}, {OUT_PROV.name} in {RESULTS}")
+    print(f"[Saved] {OUT_C11.name}, {OUT_SUBJ.name}, {OUT_LEN.name}, {OUT_PTB.name}, {OUT_QUOTA.name}, {OUT_RANK.name}, {OUT_RHO.name}, {OUT_PROV.name} in {RESULTS}")
 
 
 if __name__ == "__main__":

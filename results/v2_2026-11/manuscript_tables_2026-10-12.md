@@ -489,7 +489,7 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | HuBERT-ECG: linear probe | 0.25 ms | 0.23–0.26 ms | 0.28 ms |
 | HuBERT-ECG probe: total, CPU | 60.17 ms | 59.99–60.50 ms | 62.48 ms |
 | HuBERT-ECG probe: total, MPS | 33.09 ms | 32.53–33.54 ms | 35.23 ms |
-| d1-3B image probe: linear probe (added to the d1-3B forward pass of main-text Table 5) | 0.12 ms | 0.11–0.12 ms | 0.13 ms |
+| d1-3B image probe: linear probe (added to the d1-3B forward pass of Table S45) | 0.12 ms | 0.11–0.12 ms | 0.13 ms |
 | TabPFN: fit on 988 windows (once per model) | 161.62 ms | 117.47–476.28 ms | 161.62 ms |
 | TabPFN: prediction of one window, CPU | 3783.23 ms | 3774.67–3783.49 ms | 3793.67 ms |
 
@@ -849,4 +849,29 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | 122 | 119 | 119 | 60 | 60 |
 | 124 | 31 | 31 | 31 | 31 |
 | **Total** | 5,285 | 605 | 238 | 291 |
+
+## Table 25
+
+| Model | BUT QDB: AUROC (rank) | CinC2011 lead II: AUROC (rank) | CinC2017: AUROC (rank) | CinC2017 balanced subset: AUROC (rank) |
+| :--- | :---: | :---: | :---: | :---: |
+| **2D CNN (Rendered Image)** | 0.985 (1) | 0.787 (2) | 0.850 (8) | 0.862 (7) |
+| **1D CNN (Raw Signal)** | 0.983 (2) | 0.695 (5) | 0.768 (10) | 0.761 (10) |
+| **Rule-Based SQI Heuristic** | 0.971 (3) | 0.678 (6) | 0.887 (4) | 0.876 (4) |
+| **d1-3B image-token probe** | 0.971 (4) | 0.824 (1) | 0.894 (2) | 0.893 (2) |
+| **SinglePass Multimodal Net** | 0.966 (5) | 0.500 (10) | 0.799 (9) | 0.826 (9) |
+| **LightGBM (SQI)** | 0.957 (6) | 0.752 (3) | 0.891 (3) | 0.892 (3) |
+| **TabPFN (SQI)** | 0.956 (7) | 0.731 (4) | 0.853 (7) | 0.853 (8) |
+| **HuBERT-ECG probe** | 0.938 (8) | 0.562 (9) | 0.906 (1) | 0.916 (1) |
+| **Independent SQI MLP** | 0.904 (9) | 0.675 (7) | 0.876 (5) | 0.875 (5) |
+| **Logistic Regression (SQI)** | 0.899 (10) | 0.322 (11) | 0.870 (6) | 0.863 (6) |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.828 (11) | 0.641 (8) | 0.757 (11) | 0.739 (11) |
+
+| Evaluation sets compared | Models | Spearman ρ of AUROC | p (descriptive) |
+| :--- | :---: | :---: | :---: |
+| BUT QDB vs CinC2011 lead II | 11 | +0.61 | 0.047 |
+| BUT QDB vs CinC2017 | 11 | -0.02 | 0.958 |
+| BUT QDB vs CinC2017 balanced subset | 11 | +0.04 | 0.915 |
+| CinC2011 lead II vs CinC2017 | 11 | +0.19 | 0.574 |
+| CinC2011 lead II vs CinC2017 balanced subset | 11 | +0.21 | 0.537 |
+| CinC2017 vs CinC2017 balanced subset | 11 | +0.99 | < 0.001 |
 

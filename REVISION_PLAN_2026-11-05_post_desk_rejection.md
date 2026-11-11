@@ -300,6 +300,24 @@ CODE-007 (özet ve Bölüm 2.6 metni), yeni tabloların makaleye eklenmesi, `pai
   tek fark Tablo 9 ve 9b'deki dört p hücresi.
 - Yapılmadı: TRIPOD+AI kontrol listesi, docx/pdf dışa aktarımı, CODE-002 için yeniden örnekleme, CODE-005 (commit). Commit yapılmadı.
 
+### 2026-11-11 (akşam) — Yeniden çerçeveleme (yazar onayıyla; `manuscript/v2/REFRAMING_PROPOSAL_2026-11-11.md`)
+
+- Birincil soru değişti: "alan-içi başarı, aktarılan modelleri belirliyor mu?" birinci, temel-model sorusu ikinci. Bölüm 2.6'ya madde 9
+  olarak beyan edildi (çerçeve tüm sonuçlar görüldükten sonra değişti). Yeni deney veya yeniden eğitim yok.
+- Yeni başlık ve özet (246 kelime). Yeni betimsel çıktı: `rank_agreement.csv`, `rank_agreement_spearman.csv`
+  (`audit_sensitivity.py` 6. analiz; Tablo S44). Spearman ρ (11 model): BUT QDB–CinC 2011 0,61 (p = 0,047), BUT QDB–CinC 2017 −0,02,
+  CinC 2011–CinC 2017 0,19. n = 11 olduğu için kesinliği düşük; iddia "güvenilir biçimde belirlemiyor" olarak yazıldı.
+- Sonuçlar yeniden sıralandı (3.1 alan-içi, 3.2 sıra uyumu, 3.3 sıralamayı değiştiren etkenler, 3.4 çok kaynaklı eğitim, 3.5 eşikler,
+  3.6 PTB-XL). Yedi paragraf değiştirilmeden eke taşındı (Ek Sonuçlar S-R1–S-R7: Sınıf 2 ve resmi bölünme, HuBERT ince ayarı, keşifsel
+  flatline, sezgisel–LR, NSTDB, hesaplama maliyeti, kalite eleme). Ana metin Tablo 5 (gecikme) → Tablo S45.
+- Tartışma ve sonuç yeni birinci soruyla açılıyor; harici değerlendirme için üç kontrol önerisi eklendi.
+- `verify_v2_prose.py`: taşınan cümleler diğer dosyada da kabul ediliyor (sayı yine kontrol edilir); 129 kontrol, 0 hata, 21'i ekte bulundu.
+  36 birim testi geçti.
+- Uzunluk: ana metin şablonu 10.871 → 10.560 kelime. Öneri dosyasındaki 7.000–8.000 kelime hedefi yazar kararıyla geri çekildi
+  (hedef dergi belli değil); kısaltma dergi seçildiğinde, onun sınırlarına göre yapılacak. Eke taşınan paragraflar odak için taşındı.
+- Özetten çıkanlar (ana metinde duruyor): d1 probunun "en iyinin anlamlı olarak gerisinde değil" bulgusu, sezgiselin elle ayarlı olduğu notu,
+  PTB-XL'in vekil sonuç olduğu notu. Commit yapılmadı.
+
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ
 (36 izlenen dosya değişti + yeni dosyalar; `git status` ile görülebilir). v1 = commit 55095ed, `results/`.

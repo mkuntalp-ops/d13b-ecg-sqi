@@ -1,0 +1,7 @@
+family_a,family_b,n_models,spearman_rho,p
+BUT_QDB (5-fold subject CV),CinC2011 lead II (998 records),11,0.6090909090909091,0.0466957093540989
+BUT_QDB (5-fold subject CV),"CinC2017 (8,512 recordings)",11,-0.018181818181818184,0.9576852410216188
+BUT_QDB (5-fold subject CV),CinC2017 balanced subset (556 recordings),11,0.03636363636363637,0.9154683168905347
+CinC2011 lead II (998 records),"CinC2017 (8,512 recordings)",11,0.19090909090909092,0.5739131682855215
+CinC2011 lead II (998 records),CinC2017 balanced subset (556 recordings),11,0.20909090909090913,0.5372209352113229
+"CinC2017 (8,512 recordings)",CinC2017 balanced subset (556 recordings),11,0.990909090909091,3.762571807085396e-09

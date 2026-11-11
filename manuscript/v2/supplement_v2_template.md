@@ -71,11 +71,43 @@ p_vis = 1 / (1 + exp(−logit_vis))
 
 ### S-M5. Latency measurement (`experiments/latency_all.sh`)
 
-All latency scripts were run in one session by a single entry point with no other computation running. Latency reflects one machine and Python implementations, and TabPFN was timed on the CPU only. Table 5 and Table S8 come from different scripts: in Table 5 (`experiments/empirical_latency_benchmark.py`) the models are timed one after another in one process, whereas the script of Table S8 (`experiments/latency_extended.py`) interleaves CPU and MPS passes per window and excludes the first window. Their MPS forward times of a few milliseconds differ (1D CNN 1.28 vs 2.60 ms; 2D CNN 4.71 vs 2.83 ms). Part of the image-model difference is explained by caching: the image models cache each decoded and resized strip after first use, so decoding and resizing fall inside the timed forward pass for 19 of 25 windows in Table 5, but only in the first of three runs in Table S8. The remaining differences, including the 1D CNN's, are unexplained, so MPS forward times at this scale are treated as harness-dependent; the conclusions rest only on differences of an order of magnitude, namely rendering of about 59 ms versus the forward pass, and 833 ms for d1-3B.
+All latency scripts were run in one session by a single entry point with no other computation running. Latency reflects one machine and Python implementations, and TabPFN was timed on the CPU only. Table S45 and Table S8 come from different scripts: in Table S45 (`experiments/empirical_latency_benchmark.py`) the models are timed one after another in one process, whereas the script of Table S8 (`experiments/latency_extended.py`) interleaves CPU and MPS passes per window and excludes the first window. Their MPS forward times of a few milliseconds differ (1D CNN 1.28 vs 2.60 ms; 2D CNN 4.71 vs 2.83 ms). Part of the image-model difference is explained by caching: the image models cache each decoded and resized strip after first use, so decoding and resizing fall inside the timed forward pass for 19 of 25 windows in Table S45, but only in the first of three runs in Table S8. The remaining differences, including the 1D CNN's, are unexplained, so MPS forward times at this scale are treated as harness-dependent; the conclusions rest only on differences of an order of magnitude, namely rendering of about 59 ms versus the forward pass, and 833 ms for d1-3B.
 
 ### S-M6. Implementation note on HuBERT-ECG preprocessing
 
 The reported HuBERT-ECG results use the preprocessing of the authors' public code (main text, section 2.3). An earlier implementation, run on the superseded 1,047-window BUT QDB cohort and the 565-record CinC 2011 set, used a Butterworth band-pass and max-abs scaling of each 5-s half with absent leads left at 0. It gave AUROC 0.987 (BUT QDB), 0.732 (CinC 2011) and 0.867 (CinC 2017), against 0.972, 0.562 and 0.907 with the authors' preprocessing on those data. It was not re-run on the present cohort and is not a comparison of the present results.
+
+## Supplementary Results
+
+These analyses were part of the main Results in an earlier version and were moved here unchanged when the paper was reframed (main text, section 2.6).
+
+### S-R1. Class 2 relabelled as unusable, and the official BUT QDB partition
+
+Treating Class 2 as unusable as well (431 unusable windows) left the 2D CNN unchanged (0.985) and lowered zero-shot d1-3B to 0.760 and the multimodal net to 0.852 (Table S11). Under the official partition (Table S24), AUROC ranged from 0.723 (zero-shot d1-3B) to 1.000 (1D CNN and HuBERT-ECG probe), and no comparison with the best model was significant (all p_Holm = 1.000). Unusable windows occur in only three of the seven test subjects, mostly two, so this binary task on the official test set is close to ceiling and cannot separate the models.
+
+### S-R2. Partial fine-tuning of HuBERT-ECG
+
+In a single run of partial fine-tuning, HuBERT-ECG reached 0.947 on BUT QDB, 0.655 on CinC 2011 and 0.910 on CinC 2017 (Table S23). These values are descriptive: they were not tested against the probe and were not repeated across seeds.
+
+### S-R3. Quantization-insensitive flatline input (exploratory)
+
+Replacing the flatline input by the quantization-insensitive measure (exploratory; Table S34) changed CinC 2011 AUROC from 0.675 to 0.737 for the MLP, from 0.322 to 0.431 for logistic regression and from 0.752 to 0.759 for LightGBM, with changes of at most 0.012 on BUT QDB and at most 0.011 on CinC 2017 (no confidence intervals or tests were computed). The new measure is 0 in all 988 BUT QDB windows and therefore carries no information in training, so its effect is equivalent to removing the artefact-driven input, and logistic regression remained inverted. The definition does not resolve the transfer failure.
+
+### S-R4. Hand-set heuristic versus its logistic-regression replacement
+
+The hand-set heuristic outperformed its logistic-regression replacement in every evaluation (Table S20): on BUT QDB, 0.971 versus 0.905 (cluster-bootstrap p = 0.001); on CinC 2011, 0.678 versus 0.330 (DeLong p < 0.001); and on CinC 2017, 0.887 versus 0.864 (DeLong p < 0.001). Because the heuristic's coefficients may not be independent of BUT QDB, only the two external comparisons are informative.
+
+### S-R5. Paired noise stress on NSTDB
+
+Under paired electrode-motion stress (Tables S7 and S16), every trained model lowered its usable probability as noise increased. At 0 dB, the mean paired change was −0.94 for logistic regression, −0.90 for LightGBM, −0.84 for the multimodal net, −0.75 for the 2D CNN and −0.59 for the 1D CNN. Zero-shot d1-3B changed by at most 0.09 and did not track the noise.
+
+### S-R6. Computational cost
+
+For the image pipelines, rendering dominated: about 59 ms (93% of the total) against 4.7 ms for the forward pass. This cost belongs to the plotting library rather than to rasterization as such: a direct raster renderer took 0.62 ms (Table S8), and the 2D CNN retrained on such strips kept its discrimination (Table S33; AUROC on BUT QDB 0.980 versus 0.985, Δ −0.005, 95% CI −0.027 to 0.005; CinC 2017 0.852 versus 0.850; on CinC 2011 it improved, 0.798 versus 0.787, Δ +0.012, 95% CI 0.003–0.021, p_Holm = 0.025). The d1-3B probe and the multimodal net were not re-evaluated on raster strips. The 1D CNN, which needs no rendering step, took 1.28 ms on the GPU from the stored 500-Hz window (Table S45). d1-3B took 894 ms per window, dominated by its 833-ms forward pass. Forward-pass times of a few milliseconds on the GPU differ between our two timing scripts (Supplementary Methods S-M5), so only order-of-magnitude differences are interpreted. Among the foundation-model approaches (Table S25), the HuBERT-ECG probe took 33.1 ms per window on MPS (60.2 ms on the CPU), of which 28.7 ms was the forward pass; the linear d1-3B probe adds 0.12 ms to the d1-3B forward pass; and TabPFN, which predicts in context over the 988 training windows, took 3.8 s per window on the CPU.
+
+### S-R7. Quality gating of a downstream rhythm classifier
+
+The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordings without any rejection (out-of-fold; Table S37). Rejecting the 10% of recordings with the highest quality score changed macro-F1, relative to random rejection, by 0.001 to 0.008 across the eleven quality models. The increases were largest for the d1-3B image probe (0.008, 95% CI 0.005–0.013) and the 1D CNN (0.008, 95% CI 0.004–0.013), and the only other model whose interval excluded zero was TabPFN (0.005, 95% CI 0.001–0.009). The d1-3B probe exceeded the 2D CNN by 0.007 (95% CI 0.002–0.011) and the HuBERT-ECG probe by 0.007 (95% CI 0.003–0.012). The change ranged from −0.001 to 0.007 when 5% were rejected and from 0.005 to 0.011 when 20% were rejected, where the intervals for the probe's lead over the 2D CNN and over the HuBERT-ECG probe both included zero. These intervals are not adjusted for the 11 models and three fractions. The d1-3B probe's 10% rejection removed 500 normal, 47 atrial fibrillation and 276 other-rhythm recordings, so it rejected a smaller share of atrial fibrillation (5.7% of rejected recordings against 9.2% of all recordings) and a larger share of other rhythms (33.5% against 29.3%).
 
 ## Table S1. Patient-independent 5-fold cross-validation on BUT QDB (988 windows, 15 subjects), eight approaches of the main analysis; discrimination estimates for all 11 approaches are in Table S28. 95% CIs: subject-level cluster bootstrap.
 
@@ -112,7 +144,7 @@ The reported HuBERT-ECG results use the preprocessing of the authors' public cod
 <!-- source: Table 3b -->
 {{Table 3b}}
 
-## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from main-text Table 5 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. Decoded image tensors are cached after first use, so image decoding and resizing are timed only in the first run; the reported median over runs reflects cached inputs. MPS forward times of a few milliseconds therefore differ from Table 5 (Supplementary Methods S-M5).
+## Table S8. Extended latency profile (Apple M4; `experiments/latency_extended.py`). This is a separate script from Table S45 (`experiments/empirical_latency_benchmark.py`): CPU and MPS passes are interleaved per window, and the first window of each run is excluded. Decoded image tensors are cached after first use, so image decoding and resizing are timed only in the first run; the reported median over runs reflects cached inputs. MPS forward times of a few milliseconds therefore differ from Table S45 (Supplementary Methods S-M5).
 
 <!-- source: Table 4b -->
 {{Table 4b}}
@@ -192,7 +224,7 @@ The reported HuBERT-ECG results use the preprocessing of the authors' public cod
 
 {{Table 13}}
 
-## Table S25. Latency of the foundation-model probes and TabPFN (Apple M4; same 25 windows and three runs as main-text Table 5, harness of Table S8).
+## Table S25. Latency of the foundation-model probes and TabPFN (Apple M4; same 25 windows and three runs as Table S45, harness of Table S8).
 
 {{Table 4c}}
 
@@ -267,3 +299,11 @@ The reported HuBERT-ECG results use the preprocessing of the authors' public cod
 ## Table S43. BUT QDB: Class 3 candidate windows per subject over all annotated intervals and inside the official intervals, and unusable windows in the cohort. The quota of up to 60 unusable windows per subject was drawn over all annotated intervals before the windows outside the official intervals were removed. Subjects without Class 3 windows are omitted.
 
 {{Table 24}}
+
+## Table S44. AUROC of each model in the four evaluation sets with its rank among the 11 models (1 = highest), and Spearman correlations of the AUROCs between sets. Descriptive and post hoc; the unit is the model (n = 11), so the correlations are imprecise. The two CinC 2017 sets are not independent of each other.
+
+{{Table 25}}
+
+## Table S45. Per-window latency on an Apple M4 (median and 95th percentile of three runs of 25 windows), separating preprocessing from the forward pass. (Table 5 of the main text in an earlier version.)
+
+{{Table 4}}
