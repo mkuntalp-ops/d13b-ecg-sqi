@@ -6,7 +6,7 @@ Holm-adjusted within it (all pairwise comparisons, specified before the comparis
 
 - BUT QDB (pooled out-of-fold, 1,047 windows in 15 subjects): windows of a subject are not independent, so the
   AUROC difference is tested with a subject-level cluster bootstrap (2,000 resamples; two-sided percentile p).
-- CinC 2011 (lead II, the 565 records of the transfer analyses) and CinC 2017 (8,512 recordings, recording
+- CinC 2011 (lead II, all 998 labelled Set A records; 565 before v2) and CinC 2017 (8,512 recordings, recording
   maximum; and the balanced 556-recording subset on which d1-3B was run): records are independent, so the
   DeLong test for correlated ROC curves is used (fast midrank algorithm).
 
@@ -28,7 +28,10 @@ from scipy.stats import norm
 from sklearn.metrics import roc_auc_score
 
 ROOT = Path(__file__).resolve().parent.parent
-RESULTS = ROOT / "results"
+import sys  # noqa: E402
+sys.path.insert(0, str(ROOT))
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 OUT = RESULTS / "paired_comparisons.csv"
 MODELS = ["Logistic_Regression_SQI", "LightGBM_SQI", "Independent_SQI_MLP", "1D_CNN_RawECG", "2D_CNN_Image",
           "Multimodal_Fusion", "Rule_Based_SQI_Heuristic", "LiquidAI_d1_3B_Neural"]
@@ -84,7 +87,11 @@ def cluster_bootstrap_paired(y, a, b, cluster, B=2000, seed=SEED):
             d.append(roc_auc_score(y[i], a[i]) - roc_auc_score(y[i], b[i]))
     d = np.array(d)
     lo, hi = np.percentile(d, [2.5, 97.5])
-    return roc_auc_score(y, a) - roc_auc_score(y, b), lo, hi, float(min(1.0, 2 * min((d <= 0).mean(), (d >= 0).mean())))
+    # A resampling p-value cannot be smaller than its resolution: with n valid resamples the smallest value that can
+    # be reported is 1/n (code audit 2026-11-11, CODE-003). Before this floor, p = 0 was returned when no resample
+    # crossed zero. Only those zeros change; every other p-value is as before.
+    p = max(2 * min((d <= 0).mean(), (d >= 0).mean()), 1.0 / len(d))
+    return roc_auc_score(y, a) - roc_auc_score(y, b), lo, hi, float(min(1.0, p))
 
 
 def holm(p: np.ndarray) -> np.ndarray:
@@ -98,6 +105,36 @@ def holm(p: np.ndarray) -> np.ndarray:
 
 
 # ---------- score tables per family ----------
+def cinc2017_windows(tab=None, hub=None):
+    """Window-level scores of every model on CinC 2017 (BUT-only training): (table, model columns).
+
+    One row per 10-s window with segment_id, record_name, label, unit_idx (window index) and one column per model.
+    families() takes the recording maximum of these columns; evaluation/audit_sensitivity.py uses the windows to
+    stratify by the number of windows per recording. tab / hub: already loaded TabPFN and HuBERT-ECG prediction tables
+    (read from RESULTS when None and the files exist).
+    """
+    if tab is None and (RESULTS / "tabpfn_predictions.csv").exists():
+        tab = pd.read_csv(RESULTS / "tabpfn_predictions.csv")
+    if hub is None and (RESULTS / "hubert_probe_predictions.csv").exists():
+        hub = pd.read_csv(RESULTS / "hubert_probe_predictions.csv", low_memory=False)
+    w = pd.read_csv(RESULTS / "external_window_predictions.csv", low_memory=False)
+    w = w[w.dataset == "CinC2017"].copy()
+    if tab is not None:
+        t = tab[(tab.setting == "but_only_external") & (tab.dataset == "CinC2017")].set_index("segment_id")["prob_unusable"]
+        w["TabPFN_SQI"] = t.loc[w.segment_id].values
+    if hub is not None:
+        h = hub[(hub.setting == "but_only_external") & (hub.dataset == "CinC2017")].set_index("segment_id")["prob_unusable"]
+        w["HuBERT_ECG_probe"] = h.loc[w.segment_id].values
+    full17 = RESULTS / "d1_cinc2017_full_predictions.csv"  # analysis plan A2: d1-3B on all CinC 2017 windows
+    if full17.exists():
+        f = pd.read_csv(full17).set_index("segment_id")
+        w["LiquidAI_d1_3B_Neural"] = f.loc[w.segment_id, "prob_unusable"].values
+        w["d1_image_probe"] = f.loc[w.segment_id, "prob_image_probe"].values
+    cols = [m for m in MODELS if m in w.columns] + [c for c in ["TabPFN_SQI", "HuBERT_ECG_probe", "d1_image_probe"]
+                                                    if c in w.columns]
+    return w, cols
+
+
 def families() -> dict:
     fam = {}
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
@@ -118,9 +155,16 @@ def families() -> dict:
         but["HuBERT_ECG_probe"] = h.loc[but.unit].values
     fam["BUT_QDB (5-fold subject CV)"] = ("cluster_bootstrap", but)
 
-    c11 = pd.read_csv(RESULTS / "cinc_random_draws_predictions.csv").drop_duplicates("record_name")
-    lab = pd.read_csv(ROOT / "cache/datasets/cinc2011/cinc2011_random_draws_manifest.csv").drop_duplicates("record_name").set_index("record_name")["label"]
-    cc = pd.DataFrame({"unit": c11.record_name.astype(str), "y": lab.loc[c11.record_name].values})
+    # CinC 2011 Set A lead II, all 998 labelled records (v2): BUT-only models from external_validation.py,
+    # zero-shot d1-3B from d1_linear_probe.py
+    w11 = pd.read_csv(RESULTS / "external_window_predictions.csv", low_memory=False)
+    c11 = w11[w11.dataset == "CinC2011"].reset_index(drop=True)
+    if len(c11) != 998 or c11.record_name.duplicated().any():
+        raise ValueError(f"CinC 2011: expected 998 records, one window each; got {len(c11)}")
+    z11 = pd.read_csv(RESULTS / "d1_external_predictions.csv")
+    z11 = z11[z11.dataset == "CinC2011_leadII"].set_index("segment_id")["prob_unusable"]
+    c11["LiquidAI_d1_3B_Neural"] = z11.loc[c11.segment_id].values
+    cc = pd.DataFrame({"unit": c11.record_name.astype(str), "y": c11.label.astype(int).values})
     for m in MODELS:
         cc[m] = c11[m].values
     tp = pd.read_csv(RESULTS / "d1_probe_transfer_predictions.csv")
@@ -133,23 +177,9 @@ def families() -> dict:
     if hub is not None:
         h = hub[(hub.setting == "but_only_external") & (hub.dataset == "CinC2011")].set_index("segment_id")["prob_unusable"]
         cc["HuBERT_ECG_probe"] = h.loc[c11.segment_id].values
-    fam["CinC2011 lead II (565 records)"] = ("delong", cc)
+    fam["CinC2011 lead II (998 records)"] = ("delong", cc)
 
-    w = pd.read_csv(RESULTS / "external_window_predictions.csv", low_memory=False)
-    w = w[w.dataset == "CinC2017"].copy()
-    if tab is not None:
-        t = tab[(tab.setting == "but_only_external") & (tab.dataset == "CinC2017")].set_index("segment_id")["prob_unusable"]
-        w["TabPFN_SQI"] = t.loc[w.segment_id].values
-    if hub is not None:
-        h = hub[(hub.setting == "but_only_external") & (hub.dataset == "CinC2017")].set_index("segment_id")["prob_unusable"]
-        w["HuBERT_ECG_probe"] = h.loc[w.segment_id].values
-    full17 = RESULTS / "d1_cinc2017_full_predictions.csv"  # analysis plan A2: d1-3B on all CinC 2017 windows
-    if full17.exists():
-        f = pd.read_csv(full17).set_index("segment_id")
-        w["LiquidAI_d1_3B_Neural"] = f.loc[w.segment_id, "prob_unusable"].values
-        w["d1_image_probe"] = f.loc[w.segment_id, "prob_image_probe"].values
-    cols = [m for m in MODELS if m in w.columns] + [c for c in ["TabPFN_SQI", "HuBERT_ECG_probe", "d1_image_probe"]
-                                                    if c in w.columns]
+    w, cols = cinc2017_windows(tab, hub)
     r = w.groupby("record_name").agg({**{m: "max" for m in cols}, "label": "first"}).reset_index()
     r = r.rename(columns={"label": "y", "record_name": "unit"})
     fam["CinC2017 (8,512 recordings)"] = ("delong", r)

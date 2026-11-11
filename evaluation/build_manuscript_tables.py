@@ -7,7 +7,10 @@ the OOF / transfer / NSTDB prediction files and the scaling-sensitivity CSV.
 Operating-point rules (Tables 1b and 2b), with deterministic tie-breaking:
 - Target 1: maximise sensitivity subject to FPR <= limit; ties -> minimum FPR
 - Target 2: minimise FPR subject to sensitivity >= 80%; ties -> maximum sensitivity
-Limits: FPR <= 5% on BUT QDB (Table 1b), FPR <= 4% on CinC (Table 2b; 3 of 75 usable records).
+Limit: FPR <= 5% on BUT QDB (Table 1b) and on CinC 2011 (Table 2b).
+
+v2 (revision of 2026-11-05): CinC 2011 tables use all 998 labelled lead II records (evaluation/paired_comparisons.families);
+the first-N and random-subset tables (2d, 6) are not generated. v1 is reproduced by commit 55095ed.
 
 Usage:
     python evaluation/build_manuscript_tables.py
@@ -28,7 +31,8 @@ from features.sqi_extractor import SQI_FEATURE_NAMES
 from models.rule_heuristic_baseline import RuleBasedSQIHeuristic
 from PIL import Image
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 OUT = RESULTS / "manuscript_tables_2026-10-12.md"
 
 MODELS = [
@@ -136,6 +140,14 @@ def table_1b(oof: pd.DataFrame) -> str:
     return "\n".join(out)
 
 
+def cinc_frame() -> pd.DataFrame:
+    """CinC 2011 lead II, all 998 records: one row per record, columns label and prob_<model>."""
+    sys.path.insert(0, str(PROJECT_ROOT / "evaluation"))
+    from paired_comparisons import families
+    f = families()["CinC2011 lead II (998 records)"][1]
+    return f.rename(columns={c: f"prob_{c}" for c in f.columns if c not in ("unit", "y")}).rename(columns={"y": "label"})
+
+
 def table_2(cinc: pd.DataFrame) -> str:
     rows = []
     y = cinc["label"].values.astype(int)
@@ -159,7 +171,7 @@ def table_2b(cinc: pd.DataFrame) -> str:
            "| :--- | :---: | :---: | :---: | :---: |"]
     for name, col in MODELS:
         p = cinc[col].values.astype(float)
-        s1, f1, t1 = operating_point(y, p, target=1, fpr_limit=3 / 75)
+        s1, f1, t1 = operating_point(y, p, target=1, fpr_limit=0.05)
         s2, f2, t2 = operating_point(y, p, target=2)
         out.append(f"| **{name}** | {op_cell(s1, f1, 'sens')} | {op_thr(t1)} | {op_cell(f2, s2, 'fpr')} | {op_thr(t2)} |")
     return "\n".join(out)
@@ -175,7 +187,8 @@ def table_2c(scal: pd.DataFrame) -> str:
                               ("Independent_SQI_MLP", "internal StandardScaler")]:
             r = scal[(scal["features"] == v) & (scal["model"] == model) & (scal["scaler"] == scaler)]
             cells.append(f"{r.transfer_auroc.iloc[0]:.3f} / {r.transfer_ap.iloc[0]:.3f}" if len(r) else "—")
-        out.append(f"| {v} | " + " | ".join(cells) + " |")
+        # v2 inputs have no constant columns, so the ", constants" part of the stored variant name is not meaningful
+        out.append(f"| {v.replace(', constants', '')} | " + " | ".join(cells) + " |")
     return "\n".join(out)
 
 
@@ -255,16 +268,21 @@ def table_1e() -> str:
     if not path.exists():
         return _missing(path)
     d = pd.read_csv(path)
-    out = ["| Model Architecture | AP, quota (28.4%) | AP, natural (16.0%) | AP, natural excl. 105001 (2.8%) | PPV at τ = 0.50, 16.0% | PPV at τ = 0.50, 2.8% | NPV at τ = 0.50, 2.8% | False rejections per hour of usable signal |",
+    q0 = d.groupby("prevalence_scope").prevalence.first()
+    pc = lambda s, nd=1: f"{100 * q0[s]:.{nd}f}%"
+    o_s, a_s, q_s = "natural, official intervals", "natural, all records", "quota cohort"
+    out = [f"| Model Architecture | AP, quota cohort ({pc(q_s)}) | AP, natural, all records ({pc(a_s)}) | AP, natural, official intervals ({pc(o_s, 2)}) | "
+           f"PPV at τ = 0.50, {pc(a_s)} | PPV at τ = 0.50, {pc(o_s, 2)} | NPV at τ = 0.50, {pc(o_s, 2)} | False rejections per hour of usable signal |",
            "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
     for m, label in MODEL_LABELS.items():
         g = d[d.model == m].set_index("prevalence_scope")
         if g.empty:
             continue
-        q, a, e = g.loc["quota cohort"], g.loc["natural, all records"], g.loc["natural, excl. 105001"]
+        q, a, e = g.loc[q_s], g.loc[a_s], g.loc[o_s]
         out.append(f"| **{label}** | {q.ap_reweighted:.3f} | {a.ap_reweighted:.3f} | {e.ap_reweighted:.3f} | {a['ppv_at_0.5']:.3f} | "
                    f"{e['ppv_at_0.5']:.3f} | {e['npv_at_0.5']:.3f} | {e.false_rejections_per_hour_usable:.1f} |")
     return "\n".join(out)
+
 
 
 def table_1f() -> str:
@@ -290,21 +308,126 @@ def table_2e() -> str:
     if not path.exists():
         return _missing(path)
     t = pd.read_csv(path)
-    first = t[t.draw == "first_N_original"].pivot_table(index="model", columns="aggregation", values="auroc")
-    rnd = t[t.draw.str.startswith("random")].groupby(["model", "aggregation"]).auroc
-    out = ["| Model Architecture | Reported subset: lead II | Reported subset: max over 12 leads | Reported subset: mean over 12 leads | Random subsets: lead II, mean (min–max) | Random subsets: max over 12, mean (min–max) | Random subsets: mean over 12, mean (min–max) |",
-           "| :--- | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    t = t[t.draw == "all_998"]
+    aggs = [("lead_II", "Lead II"), ("max_12", "Maximum over 12 leads"), ("mean_12", "Mean over 12 leads")]
+    out = ["| Model Architecture | " + " | ".join(f"{n}: AUROC [95% CI]" for _, n in aggs) + " |",
+           "| :--- | :---: | :---: | :---: |"]
     for m, label in MODEL_LABELS.items():
-        if m not in first.index:
-            continue
-        cells = [f"{first.loc[m, a]:.3f}" for a in ["lead_II", "max_12", "mean_12"]]
-        for a in ["lead_II", "max_12", "mean_12"]:
-            try:
-                v = rnd.get_group((m, a))
-                cells.append(f"{v.mean():.3f} ({v.min():.3f}–{v.max():.3f})")
-            except KeyError:
-                cells.append("—")
+        cells = []
+        for a, _ in aggs:
+            r = t[(t.model == m) & (t.aggregation == a)]
+            cells.append(f"{r.auroc.iloc[0]:.3f} [{r.auroc_ci_low.iloc[0]:.3f}–{r.auroc_ci_high.iloc[0]:.3f}]" if len(r) else "—")
         out.append(f"| **{label}** | " + " | ".join(cells) + " |")
+    probe_path = RESULTS / "d1_probe_twelve_lead_summary.csv"
+    if not probe_path.exists():
+        return _missing(probe_path)
+    p = pd.read_csv(probe_path).set_index("aggregation")
+    out.append("| **d1-3B image-token probe** | "
+               + " | ".join(f"{p.auroc[a]:.3f} [{p.auroc_ci_low[a]:.3f}–{p.auroc_ci_high[a]:.3f}]" for a, _ in aggs) + " |")
+    hub_path = RESULTS / "hubert_probe_twelve_lead_summary.csv"
+    if not hub_path.exists():
+        return _missing(hub_path)
+    h = pd.read_csv(hub_path).set_index("aggregation")
+    out.append("| **HuBERT-ECG probe (each lead in the lead II slot)** | "
+               + " | ".join(f"{h.auroc[a]:.3f} [{h.auroc_ci_low[a]:.3f}–{h.auroc_ci_high[a]:.3f}]" for a, _ in aggs) + " |")
+    n = "native_12"
+    out.append(f"\nHuBERT-ECG probe with the record's real 12 leads as one input (one score per record; the probe was fitted on single-lead inputs): "
+               f"AUROC {h.auroc[n]:.3f} [{h.auroc_ci_low[n]:.3f}–{h.auroc_ci_high[n]:.3f}].")
+    return "\n".join(out)
+
+
+def table_16() -> str:
+    """12-lead AUROC without the records that have a constant lead (experiments/d1_probe_twelve_lead.py --constant-leads)."""
+    path = RESULTS / "d1_probe_twelve_lead_constant_leads.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    aggs = [("max_12", "Maximum"), ("mean_12", "Mean")]
+    out = ["| Model Architecture | " + " | ".join(f"{n}: all 998 | {n}: without constant-lead records" for _, n in aggs) + " |",
+           "| :--- | :---: | :---: | :---: | :---: |"]
+    for m, label in {**MODEL_LABELS, "d1_image_probe": "d1-3B image-token probe"}.items():
+        cells = []
+        for a, _ in aggs:
+            r = d[(d.model == m) & (d.aggregation == a)].iloc[0]
+            cells += [f"{r.auroc_all:.3f}", f"{r.auroc_without_constant:.3f}"]
+        out.append(f"| **{label}** | " + " | ".join(cells) + " |")
+    hub_path = RESULTS / "hubert_probe_twelve_lead_constant_leads.csv"
+    if not hub_path.exists():
+        return _missing(hub_path)
+    h = pd.read_csv(hub_path).set_index("aggregation")
+    out.append("| **HuBERT-ECG probe** | " + " | ".join(f"{h.auroc_all[a]:.3f} | {h.auroc_without_constant[a]:.3f}" for a, _ in aggs) + " |")
+    return "\n".join(out)
+
+
+
+def table_17() -> str:
+    """Multimodal-net saturation on CinC 2011 (experiments/multimodal_saturation_diagnosis.py)."""
+    inp, sc = RESULTS / "multimodal_saturation_inputs.csv", RESULTS / "multimodal_saturation_scores.csv"
+    if not inp.exists() or not sc.exists():
+        return _missing(inp)
+    d = pd.read_csv(inp)
+    out = ["| Input | BUT QDB mean | BUT QDB SD | CinC 2011 median z | CinC 2011 max abs z | Records with abs z > 10 |", "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    for r in d.itertuples():
+        out.append(f"| {r.feature} | {r.but_mean:.4g} | {r.but_sd:.4g} | {r.cinc2011_median_z:.2f} | {r.cinc2011_max_abs_z:.2f} | {100 * r.frac_records_abs_z_gt_10:.1f}% |")
+    names = {"original": "Original inputs", "image_only": "Image stream only", "sqi_only": "SQI stream only", "flatline_robust": "Flatline input replaced by quantization-insensitive measure"}
+    out += ["", "| Variant | Records | Distinct scores | AUROC |", "| :--- | :---: | :---: | :---: |"]
+    for r in pd.read_csv(sc).itertuples():
+        out.append(f"| {names[r.variant]} | {r.n} | {r.n_distinct} | {r.auroc:.3f} |")
+    return "\n".join(out)
+
+
+def table_18() -> str:
+    """Quality gating and rhythm classification on CinC 2017 (experiments/cinc2017_quality_gating.py)."""
+    s_path, d_path = RESULTS / "cinc2017_gating_summary.csv", RESULTS / "cinc2017_gating_differences.csv"
+    if not s_path.exists() or not d_path.exists():
+        return _missing(s_path)
+    s = pd.read_csv(s_path)
+    fr = [0.05, 0.10, 0.20]
+    out = ["| Quality model | Reject 5% | Reject 10% (primary) | Reject 20% | Rejected at 10%: N / A / O |", "| :--- | :---: | :---: | :---: | :---: |"]
+    for m, label in {**MODEL_LABELS, **EXTRA_LABELS}.items():
+        g = s[s.model == m].set_index("fraction")
+        cells = [f"{g.change_minus_random[f]:+.4f} ({g.ci_low[f]:+.4f} to {g.ci_high[f]:+.4f})" for f in fr]
+        out.append(f"| **{label}** | " + " | ".join(cells) + f" | {g.rejected_N[0.10]} / {g.rejected_A[0.10]} / {g.rejected_O[0.10]} |")
+    out += ["", "| Comparison | Reject 5% | Reject 10% | Reject 20% |", "| :--- | :---: | :---: | :---: |"]
+    d = pd.read_csv(d_path)
+    for other, label in [("2D_CNN_Image", "d1-3B image-token probe minus 2D CNN"), ("HuBERT_ECG_probe", "d1-3B image-token probe minus HuBERT-ECG probe")]:
+        g = d[d.comparison == f"d1_image_probe minus {other}"].set_index("fraction")
+        out.append(f"| {label} | " + " | ".join(f"{g.difference[f]:+.4f} ({g.ci_low[f]:+.4f} to {g.ci_high[f]:+.4f})" for f in fr) + " |")
+    return "\n".join(out)
+
+
+def table_19() -> str:
+    """PTB-XL AUROCs (experiments/ptbxl_frozen_test.py)."""
+    path = RESULTS / "ptbxl_frozen_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    cols = [("global_vs_clean", "lead_II", "Global, lead II"), ("global_vs_clean", "max_12", "Global, maximum"), ("global_vs_clean", "mean_12", "Global, mean"),
+            ("partial_vs_clean", "max_12", "Partial, maximum"), ("partial_vs_clean", "mean_12", "Partial, mean")]
+    out = ["| Model Architecture | " + " | ".join(c[2] for c in cols) + " |", "| :--- | " + " | ".join(":---:" for _ in cols) + " |"]
+    for m, label in {**MODEL_LABELS, "d1_image_probe": "d1-3B image-token probe", "HuBERT_ECG_probe": "HuBERT-ECG probe"}.items():
+        cells = []
+        for o, a, _ in cols:
+            r = d[(d.model == m) & (d.outcome == o) & (d.aggregation == a)].iloc[0]
+            cells.append(f"{r.auroc:.3f} ({r.auroc_ci_low:.3f}–{r.auroc_ci_high:.3f})")
+        out.append(f"| **{label}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_20() -> str:
+    """PTB-XL paired comparisons (experiments/ptbxl_frozen_test.py)."""
+    path = RESULTS / "ptbxl_frozen_comparisons.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, "HuBERT_ECG_probe": "HuBERT-ECG probe"}
+    out = ["| Family | Comparator | Rule | AUROC probe | AUROC comparator | Difference (95% CI) | p | p_Holm |", "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    fmt = lambda p: "<0.001" if p < 0.001 else f"{p:.3f}"
+    for r in d.itertuples():
+        comp, agg = r.comparison.removeprefix("probe vs ").rsplit(" (", 1)
+        comp = labels.get(comp, "2D CNN (Rendered Image)" if comp == "2D CNN" else comp)
+        rule = {"max_12)": "Maximum", "mean_12)": "Mean"}[agg]
+        out.append(f"| {r.family} | {comp} | {rule} | {r.auroc_a:.3f} | {r.auroc_b:.3f} | {r.delta:+.3f} ({r.ci_low:+.3f} to {r.ci_high:+.3f}) | {fmt(r.p)} | {fmt(r.p_holm)} |")
     return "\n".join(out)
 
 
@@ -314,21 +437,20 @@ def table_2f() -> str:
     if not path.exists():
         return _missing(path)
     d = pd.read_csv(path)
-    out = ["| Model Architecture | Rule | Threshold (from BUT QDB) | BUT QDB Sens. / FPR | CinC 2011 reported Sens. / FPR | CinC 2011 random subsets Sens. range | CinC 2017 Sens. / FPR |",
-           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: |"]
-    for m, label in MODEL_LABELS.items():
+    out = ["| Model Architecture | Rule | Threshold (from BUT QDB) | BUT QDB Sens. / FPR | CinC 2011 (998 records) Sens. / FPR | CinC 2017 (8,512 recordings) Sens. / FPR |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: |"]
+    for m, label in {**MODEL_LABELS, **EXTRA_LABELS}.items():
         for rule, rname in [("target1_fpr5", "Target 1 (FPR ≤ 5%)"), ("target2_sens80", "Target 2 (Sens. ≥ 80%)")]:
             g = d[(d.model == m) & (d.rule == rule)]
             if g.empty:
                 continue
             b = g[g.dataset.str.startswith("BUT")].iloc[0]
-            c = g[g.dataset == "CinC2011 first-N (lead II)"].iloc[0]
-            rr = g[g.dataset.str.contains("random")]
+            c = g[g.dataset == "CinC2011 all 998 records (lead II)"].iloc[0]
             s7 = g[g.dataset.str.startswith("CinC2017")].iloc[0]
             out.append(f"| **{label}** | {rname} | {b.threshold:.4g} | {100 * b.sens:.1f}% / {100 * b.fpr:.1f}% | "
-                       f"{100 * c.sens:.1f}% / {100 * c.fpr:.1f}% | {100 * rr.sens.min():.1f}–{100 * rr.sens.max():.1f}% | "
-                       f"{100 * s7.sens:.1f}% / {100 * s7.fpr:.1f}%{' †' if 'balanced' in s7.dataset else ''} |")
+                       f"{100 * c.sens:.1f}% / {100 * c.fpr:.1f}% | {100 * s7.sens:.1f}% / {100 * s7.fpr:.1f}% |")
     return "\n".join(out)
+
 
 
 def table_2g() -> str:
@@ -336,7 +458,8 @@ def table_2g() -> str:
     path = RESULTS / "feature_shift_univariate_auroc.csv"
     if not path.exists():
         return _missing(path)
-    d = pd.read_csv(path).dropna(subset=["BUT QDB (1,047 windows)"])
+    d = pd.read_csv(path)
+    d = d.dropna(subset=[d.columns[1]])
     cols = [c for c in d.columns if c != "feature"]
     out = ["| SQI feature | " + " | ".join(cols) + " |", "| :--- | " + " | ".join([":---:"] * len(cols)) + " |"]
     for _, r in d.iterrows():
@@ -370,18 +493,16 @@ def table_7b() -> str:
     if not path.exists():
         return _missing(path)
     d = pd.read_csv(path)
-    out = ["| d1-3B representation | BUT QDB AUROC [95% CI] (5-fold subject CV) | CinC 2011 reported subset AUROC | CinC 2011 random subsets AUROC, mean (min–max) | CinC 2017 balanced subset AUROC (recording max) |",
-           "| :--- | :---: | :---: | :---: | :---: |"]
+    out = ["| d1-3B representation | BUT QDB AUROC [95% CI] (5-fold subject CV) | CinC 2011 lead II, 998 records AUROC | CinC 2017 balanced subset AUROC (recording max) |",
+           "| :--- | :---: | :---: | :---: |"]
     for f, name in [("zero-shot d1 (primary)", "Zero-shot choice probability (primary configuration)"),
                     ("state", "Linear probe on the decision state (final norm, answer position)"),
                     ("image", "Linear probe on image tokens (projector output, mean)")]:
         g = d[d.features == f]
         b = g[g.dataset.str.startswith("BUT")].iloc[0]
-        c = g[g.dataset == "CinC2011 first_N_original"].iloc[0]
-        r = g[g.dataset.str.contains("random")].auroc
+        c = g[g.dataset == "CinC2011 lead II (all labelled records)"].iloc[0]
         s = g[g.dataset.str.startswith("CinC2017")].iloc[0]
-        out.append(f"| **{name}** | {b.auroc:.3f} [{b.auroc_ci_low:.3f} – {b.auroc_ci_high:.3f}] | {c.auroc:.3f} | "
-                   f"{r.mean():.3f} ({r.min():.3f}–{r.max():.3f}) | {s.auroc:.3f} |")
+        out.append(f"| **{name}** | {b.auroc:.3f} [{b.auroc_ci_low:.3f} – {b.auroc_ci_high:.3f}] | {c.auroc:.3f} | {s.auroc:.3f} |")
     return "\n".join(out)
 
 
@@ -541,9 +662,8 @@ def table_11b() -> str:
 
 
 def table_12() -> str:
-    """HuBERT-ECG: preprocessing sensitivity (plan A4) and partial fine-tuning (plan F2)."""
+    """HuBERT-ECG: linear probe and partial fine-tuning (plan F2); authors' preprocessing."""
     variants = [("Probe, authors' preprocessing (primary)", RESULTS / "hubert_probe_summary.csv"),
-                ("Probe, our first preprocessing (sensitivity)", RESULTS / "hubert_probe_summary_ourpreproc.csv"),
                 ("Fine-tuned (last 4 layers + head), authors' preprocessing", RESULTS / "hubert_finetune_summary.csv")]
     cols = [("butqdb_cv", "BUT_QDB", "BUT QDB (5-fold subject CV)"), ("but_only_external", "CinC2011", "CinC 2011 (BUT-only)"),
             ("but_only_external", "CinC2017", "CinC 2017 (BUT-only)"), ("lodo_test_BUT_QDB", "BUT_QDB", "LODO: BUT QDB"),
@@ -569,23 +689,22 @@ def table_13() -> str:
         return _missing(path)
     s = pd.read_csv(path)
     labels = {**MODEL_LABELS, **EXTRA_LABELS}
-    a, b = [g.set_index("model") for _, g in s.groupby("analysis", sort=False)]
-    head = lambda g: f"{g.n_windows.iloc[0]:,} windows, {g.n_unusable.iloc[0]} unusable, {g.n_subjects.iloc[0]} subjects"
-    out = [f"| Model | F1a: 5-fold CV without the excluded 105001 stretch ({head(a)}) | "
-           f"F1b: official train/test split, test set ({head(b)}) |", "| :--- | :---: | :---: |"]
-
-    def cell(g, m):
-        if m not in g.index:
-            return "not run"
-        r = g.loc[m]
+    b = s.set_index("model")
+    head = f"{b.n_windows.iloc[0]:,} windows, {b.n_unusable.iloc[0]} unusable, {b.n_subjects.iloc[0]} subjects"
+    out = [f"| Model | Official train/test split, test set ({head}): AUROC [95% CI] | Δ vs best | p (Holm) vs best |",
+           "| :--- | :---: | :---: | :---: |"]
+    for m in labels:
+        if m not in b.index:
+            continue
+        r = b.loc[m]
         txt = f"{r.auroc:.3f} [{r.auroc_lo:.3f}–{r.auroc_hi:.3f}]"
         if r.best:
-            return f"**{txt}** (best)"
-        return txt + (f"; p_Holm < 0.001" if r.p_holm_vs_best < 0.001 else f"; p_Holm = {r.p_holm_vs_best:.3f}")
-    for m in labels:
-        if m in a.index or m in b.index:
-            out.append(f"| **{labels[m]}** | {cell(a, m)} | {cell(b, m)} |")
+            out.append(f"| **{labels[m]}** | **{txt}** (best) | — | — |")
+        else:
+            p = "< 0.001" if r.p_holm_vs_best < 0.001 else f"{r.p_holm_vs_best:.3f}"
+            out.append(f"| **{labels[m]}** | {txt} | {r.delta_vs_best:+.3f} | {p} |")
     return "\n".join(out)
+
 
 
 def table_4c() -> str:
@@ -600,7 +719,7 @@ def table_4c() -> str:
                           "hubert_total_mps_ms": "HuBERT-ECG probe: total, MPS",
                           "d1_linear_probe_ms": "d1-3B image probe: linear probe (added to the d1-3B forward pass of main-text Table 5)"}),
                         (RESULTS / "latency_tabpfn_summary.csv",
-                         {"fit_ms": "TabPFN: fit on 1,047 windows (once per model)",
+                         {"fit_ms": "TabPFN: fit on 988 windows (once per model)",
                           "tabpfn_predict_cpu_ms": "TabPFN: prediction of one window, CPU"})]:
         if not path.exists():
             return _missing(path)
@@ -653,7 +772,8 @@ def table_2h() -> str:
         return _missing(path)
     s = pd.read_csv(path).set_index("model")
     labels = {**MODEL_LABELS, **EXTRA_LABELS}
-    out = ["| Model | Constant-lead records flagged at τ = 0.50 | AUROC, all 565 records | AUROC without the 65 constant-lead records |",
+    n_c = int(s.n_constant.iloc[0])
+    out = [f"| Model | Constant-lead records flagged at τ = 0.50 | AUROC, all 998 records | AUROC without the {n_c} constant-lead records |",
            "| :--- | :---: | :---: | :---: |"]
     for m in labels:
         if m in s.index:
@@ -711,7 +831,7 @@ def table_2j() -> str:
     if not path.exists():
         return _missing(path)
     s = pd.read_csv(path)
-    out = ["| SQI feature | BUT QDB (1,047 windows) | CinC 2011 lead II, all 565 records | CinC 2011 lead II, without the 65 constant-lead records (500) |",
+    out = ["| SQI feature | BUT QDB (988 windows) | CinC 2011 lead II, all 998 records | CinC 2011 lead II, without the 73 constant-lead records (925) |",
            "| :--- | :---: | :---: | :---: |"]
     for r in s.itertuples():
         out.append(f"| `{r.feature}` | {r.but_qdb:.3f} | {r.cinc2011_all:.3f} | {r.cinc2011_without_constant:.3f} |")
@@ -735,23 +855,28 @@ def table_9b() -> str:
 
 
 def table_7() -> str:
-    """Prompt sensitivity of d1-3B (experiments/d1_prompt_variants.py). The AUROC CI on BUT QDB is the subject-level
-    bootstrap used for Table 1 (seed 42); CinC has no subject identifiers and is reported as a point estimate."""
-    summary_path = RESULTS / "d1_prompt_variants_summary.csv"
+    """Prompt sensitivity of d1-3B (experiments/d1_prompt_variants.py). d1-3B is not trained, so the v1 scores remain valid:
+    BUT QDB columns are recomputed on the 988 v2 windows; the CinC column stays on the balanced 150-record subset of v1
+    (not extended to 998 records); NSTDB is unchanged. CI: subject-level bootstrap (seed 42)."""
+    v1 = PROJECT_ROOT / "results"
+    summary_path = v1 / "d1_prompt_variants_summary.csv"
     if not summary_path.exists():
         return "(prompt variants not yet available)"
     s = pd.read_csv(summary_path)
-    p = pd.read_csv(RESULTS / "d1_prompt_variants_predictions.csv")
+    p = pd.read_csv(v1 / "d1_prompt_variants_predictions.csv")
     subj = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")[["segment_id", "subject_id"]]
     names = {"primary": "Primary (SQI text + image)", "image_only": "Image only (no SQI text)",
              "alt_wording": "Reworded question (SQI text + image)"}
-    out = ["| Configuration | BUT QDB AUROC [95% CI] | BUT QDB Sens. / FR at τ = 0.50 | CinC AUROC | CinC Sens. / FR at τ = 0.50 | NSTDB clean P(usable) | NSTDB paired change, +24 dB | NSTDB paired change, 0 dB |",
+    out = ["| Configuration | BUT QDB AUROC [95% CI] | BUT QDB Sens. / FR at τ = 0.50 | CinC 2011 (150-record subset) AUROC | CinC 2011 (150-record subset) Sens. / FR at τ = 0.50 | NSTDB clean P(usable) | NSTDB paired change, +24 dB | NSTDB paired change, 0 dB |",
            "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
     for variant, name in names.items():
         b = p[(p["dataset"] == "BUT_QDB") & (p["variant"] == variant)].merge(subj, on="segment_id")
         ci = compute_subject_level_bootstrap_ci(b, pred_col="prob_unusable", target_col="label",
                                                 subject_col="subject_id", n_bootstraps=1000, seed=42)["auroc"]
-        bs = s[(s["dataset"] == "BUT_QDB") & (s["variant"] == variant)].iloc[0]
+        if len(b) != 988:
+            raise ValueError(f"{variant}: expected 988 BUT QDB windows, got {len(b)}")
+        yb, pb = b["label"].values.astype(int), b["prob_unusable"].values.astype(float)
+        bs = {"auroc": roc_auc_score(yb, pb), "sens_at_0.5": float((pb[yb == 1] >= 0.5).mean()), "fr_at_0.5": float((pb[yb == 0] >= 0.5).mean())}
         cs = s[(s["dataset"] == "CinC_2011_SetA") & (s["variant"] == variant)].iloc[0]
         nst = s[(s["dataset"] == "NSTDB_paired") & (s["variant"] == variant)]
         clean = nst[nst["condition"] == "clean_reference"].iloc[0]
@@ -818,7 +943,7 @@ def table_5() -> str:
         return "(seed stability results not yet available)"
     st = pd.read_csv(seeds_csv)
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
-    cinc = pd.read_csv(RESULTS / "cinc2011_expanded_predictions.csv")
+    cinc = cinc_frame()
     y_b = oof["label"].values.astype(int)
     y_c = cinc["label"].values.astype(int)
     defs = [("1D CNN (Raw Signal)", "1D_CNN", "prob_1D_CNN_RawECG"),
@@ -859,23 +984,18 @@ def table_1d() -> str:
     d = pd.read_csv(path)
     o = d[d.scheme == "original"].set_index("model")
     c = d[d.scheme == "class2_unusable"].set_index("model")
-    bys = RESULTS / "butqdb_class2_by_seed.csv"
-    seeds = pd.read_csv(bys) if bys.exists() else None
-    out = ["| Model | AUROC, class 3 unusable (297) [95% CI] | AUROC, classes 2–3 unusable (490), seed 42 [95% CI] | AUROC, classes 2–3 unusable, seeds 1–4 (range) | Sens. / FR at τ = 0.50, class 3 unusable | Sens. / FR at τ = 0.50, classes 2–3 unusable |",
-           "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    n1, n2 = int(o.n_unusable.iloc[0]), int(c.n_unusable.iloc[0])
+    out = [f"| Model | AUROC, class 3 unusable ({n1}) [95% CI] | AUROC, classes 2–3 unusable ({n2}), seed 42 [95% CI] | Sens. / FR at τ = 0.50, class 3 unusable | Sens. / FR at τ = 0.50, classes 2–3 unusable |",
+           "| :--- | :---: | :---: | :---: | :---: |"]
     for m in MODEL_LABELS:
         if m not in o.index:
             continue
         r1, r2 = o.loc[m], c.loc[m]
-        if seeds is not None and m in set(seeds.model):
-            a = seeds[(seeds.model == m) & (seeds.seed != 42)]["auroc"].values
-            rng = f"{a.min():.3f}–{a.max():.3f}"
-        else:
-            rng = "—"
         out.append(f"| **{MODEL_LABELS[m]}** | {r1.auroc:.3f} [{r1.auroc_ci_low:.3f} – {r1.auroc_ci_high:.3f}] | "
-                   f"{r2.auroc:.3f} [{r2.auroc_ci_low:.3f} – {r2.auroc_ci_high:.3f}] | {rng} | "
+                   f"{r2.auroc:.3f} [{r2.auroc_ci_low:.3f} – {r2.auroc_ci_high:.3f}] | "
                    f"{pct(r1['sens_at_0.5'])} / {pct(r1['fr_at_0.5'])} | {pct(r2['sens_at_0.5'])} / {pct(r2['fr_at_0.5'])} |")
     return "\n".join(out)
+
 
 
 def table_2d() -> str:
@@ -918,10 +1038,152 @@ def table_6() -> str:
         out.append(f"| **{MODEL_LABELS[m]}** | {r.auroc.min():.3f}–{r.auroc.max():.3f} | {across_seeds:.3f} | {across_subsets:.3f} |")
     return "\n".join(out)
 
+def table_1h() -> str:
+    """Decision metrics at tau = 0.5 with bootstrap CIs and calibration (plan 4.1a, 4.2; evaluation/decision_calibration.py)."""
+    path = RESULTS / "decision_calibration.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    ci = lambda r, k, s=100, nd=1: f"{s * r[k]:.{nd}f} [{s * r[k + '_lo']:.{nd}f}–{s * r[k + '_hi']:.{nd}f}]"
+    out = ["| Dataset | Model | Units (positive) | Sensitivity, % [95% CI] | False reject, % [95% CI] | PPV, % [95% CI] | NPV, % [95% CI] | Calibration intercept [95% CI] | Calibration slope [95% CI] |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    for fam, g in d.groupby("family", sort=False):
+        for m in labels:
+            r = g[g.model == m]
+            if r.empty:
+                continue
+            r = r.iloc[0]
+            fmt_nd = lambda k: ci(r, k, 1, 2) if np.isfinite(r[k]) else "not estimable"
+            ppv = ci(r, "ppv") if np.isfinite(r["ppv"]) else "—"
+            npv = ci(r, "npv") if np.isfinite(r["npv"]) else "—"
+            out.append(f"| {fam} | **{labels[m]}** | {int(r.n_units):,} ({int(r.n_positive):,}) | {ci(r, 'sensitivity')} | {ci(r, 'false_reject_rate')} | "
+                       f"{ppv} | {npv} | {fmt_nd('calibration_intercept')} | {fmt_nd('calibration_slope')} |")
+    return "\n".join(out)
+
+
+def table_14() -> str:
+    """2D CNN retrained on raster strips (plan 3.5; experiments/pil_raster_2dcnn.py)."""
+    path = RESULTS / "raster_2dcnn_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    out = ["| Evaluation set | Units (positive) | Matplotlib strips AUROC | Raster strips AUROC | Δ (raster − Matplotlib) [95% CI] | p (Holm) |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    for r in pd.read_csv(path).itertuples():
+        p = "< 0.001" if r.p_holm < 0.001 else f"{r.p_holm:.3f}"
+        out.append(f"| {r.dataset} | {r.n_units:,} ({r.n_pos:,}) | {r.auroc_matplotlib:.3f} | {r.auroc_raster:.3f} | "
+                   f"{r.delta_raster_minus_mpl:+.3f} [{r.delta_ci_low:+.3f} to {r.delta_ci_high:+.3f}] | {p} |")
+    return "\n".join(out)
+
+
+def table_15() -> str:
+    """Exploratory: quantisation-robust flatline measure (plan 3.3b; experiments/flatline_robust_exploratory.py)."""
+    path = RESULTS / "flatline_robust_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    d = d[d.model.isin(MODEL_LABELS)]
+    out = ["| Dataset | Model | Units | AUROC, original flatline | AUROC, robust flatline | Distinct scores, original | Distinct scores, robust |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: |"]
+    for r in d.itertuples():
+        out.append(f"| {r.dataset} | {MODEL_LABELS[r.model]} | {int(r.n_units):,} | {r.auroc_original_flatline:.3f} | {r.auroc_robust_flatline:.3f} | "
+                   f"{int(r.n_unique_scores_original):,} | {int(r.n_unique_scores_robust):,} |")
+    return "\n".join(out)
+
+
+def _p_fmt(p: float) -> str:
+    return "< 0.001" if p < 0.001 else f"{p:.3f}"
+
+
+def table_21() -> str:
+    """CinC 2011 lead II without the constant-lead records: comparisons with the best model (evaluation/audit_sensitivity.py;
+    post hoc, code audit of 2026-11-11)."""
+    path = RESULTS / "cinc2011_nonconstant_paired.csv"
+    if not path.exists():
+        return _missing(path)
+    c = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    best = c.best_model.iloc[0]
+    v = c[(c.model_a == best) | (c.model_b == best)]
+    out = ["| Model | AUROC | Difference from the best [95% CI] | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    rows = []
+    for r in v.itertuples():
+        a_is_best = r.model_a == best
+        other, auc = (r.model_b, r.auroc_b) if a_is_best else (r.model_a, r.auroc_a)
+        d, lo, hi = (-r.delta, -r.ci_hi, -r.ci_lo) if a_is_best else (r.delta, r.ci_lo, r.ci_hi)
+        rows.append((auc, f"| **{labels.get(other, other)}** | {auc:.3f} | {d:+.3f} [{lo:+.3f} to {hi:+.3f}] | {_p_fmt(r.p)} | "
+                          f"{_p_fmt(r.p_holm)} | {_p_fmt(r.p_holm_vs_best)} |"))
+    best_auc = float(v.auroc_a[v.model_a == best].iloc[0]) if (v.model_a == best).any() else float(v.auroc_b[v.model_b == best].iloc[0])
+    out.append(f"| **{labels.get(best, best)}** (best) | {best_auc:.3f} | — | — | — | — |")
+    out += [line for _, line in sorted(rows, reverse=True)]
+    return "\n".join(out)
+
+
+def table_22() -> str:
+    """BUT QDB: AUROC inside each subject that has both classes (evaluation/audit_sensitivity.py; descriptive)."""
+    path = RESULTS / "butqdb_per_subject_auroc.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path, dtype={"subject": str})
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    first = s[s.model == s.model.iloc[0]].set_index("subject")
+    subjects = [x for x in first.index if x not in ("pooled_mixed_subjects", "all_subjects")]
+    head = [f"Subject {x} ({int(first.n_unusable[x])} / {int(first.n_windows[x])})" for x in subjects]
+    head += [f"These subjects pooled ({int(first.n_unusable['pooled_mixed_subjects'])} / {int(first.n_windows['pooled_mixed_subjects'])})",
+             f"All 15 subjects ({int(first.n_unusable['all_subjects'])} / {int(first.n_windows['all_subjects'])})"]
+    out = ["| Model | " + " | ".join(head) + " |", "| :--- | " + " | ".join([":---:"] * len(head)) + " |"]
+    piv = s.pivot(index="model", columns="subject", values="auroc")
+    for m in sorted(piv.index, key=lambda k: -piv.loc[k, "all_subjects"]):
+        cells = [f"{piv.loc[m, x]:.3f}" for x in subjects + ["pooled_mixed_subjects", "all_subjects"]]
+        out.append(f"| **{labels.get(m, m)}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_23() -> str:
+    """CinC 2017: AUROC by number of 10-s windows per recording (evaluation/audit_sensitivity.py; descriptive)."""
+    path = RESULTS / "cinc2017_length_stratified.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    n = s.drop_duplicates("stratum").set_index("stratum")
+    names = {"all": "All recordings", "1_window": "1 window", "2_windows": "2 windows", "3_windows": "3 windows"}
+    cols = [(st, ag) for st in names if st in n.index for ag in (["max"] if st == "1_window" else ["max", "mean"])]
+    head = [f"{names[st]} ({int(n.n_noisy[st])} / {int(n.n_recordings[st])}), {'maximum' if ag == 'max' else 'mean'}"
+            if st != "1_window" else f"{names[st]} ({int(n.n_noisy[st])} / {int(n.n_recordings[st])})" for st, ag in cols]
+    out = ["| Model | " + " | ".join(head) + " |", "| :--- | " + " | ".join([":---:"] * len(head)) + " |"]
+    m_rows = s[s.aggregation.isin(["max", "mean"])].set_index(["model", "stratum", "aggregation"]).auroc
+    models = sorted({m for m, _, _ in m_rows.index}, key=lambda k: -m_rows[(k, "all", "max")])
+    for m in models:
+        out.append(f"| **{labels.get(m, m)}** | " + " | ".join(f"{m_rows[(m, st, ag)]:.3f}" for st, ag in cols) + " |")
+    wc = s[s.aggregation == "none"].iloc[0]
+    out.append(f"| Number of windows alone (fewer windows scored higher) | {wc.auroc:.3f} | " + " | ".join(["—"] * (len(cols) - 1)) + " |")
+    return "\n".join(out)
+
+
+def table_24() -> str:
+    """BUT QDB quota versus the official intervals, per subject (evaluation/audit_sensitivity.py; counts)."""
+    path = RESULTS / "butqdb_quota_candidates_by_subject.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    s = s[s.class3_candidates_all_intervals > 0]
+    out = ["| Subject | Class 3 candidate windows, all annotated intervals | Class 3 candidate windows, inside the official intervals | Unusable windows in the cohort | Unusable windows a quota drawn inside the official intervals would give |",
+           "| :--- | :---: | :---: | :---: | :---: |"]
+    for r in s.itertuples():
+        out.append(f"| {r.subject_id} | {r.class3_candidates_all_intervals:,} | {r.class3_candidates_inside_official:,} | {r.cohort_unusable} | {r.quota_if_drawn_inside_official} |")
+    out.append(f"| **Total** | {int(s.class3_candidates_all_intervals.sum()):,} | {int(s.class3_candidates_inside_official.sum()):,} | "
+               f"{int(s.cohort_unusable.sum())} | {int(s.quota_if_drawn_inside_official.sum())} |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
-    cinc = pd.read_csv(RESULTS / "cinc2011_expanded_predictions.csv")
-    scal = pd.read_csv(RESULTS / "cinc2011_scaling_sensitivity.csv")
+    cinc = cinc_frame()
+    if len(cinc) != 998 or len(oof) != 988:
+        raise ValueError(f"expected 988 BUT QDB windows and 998 CinC 2011 records, got {len(oof)} and {len(cinc)}")
+    scal_path = RESULTS / "cinc2011_scaling_sensitivity.csv"
     nstdb = pd.read_csv(RESULTS / "exp4_revised_nstdb_predictions.csv")
     t3, n_clean, n_active = table_3(nstdb)
 
@@ -930,14 +1192,12 @@ def main():
         ("Table 1b", table_1b(oof)),
         ("Table 2", table_2(cinc)),
         ("Table 2b", table_2b(cinc)),
-        ("Table 2c", table_2c(scal)),
+        ("Table 2c", table_2c(pd.read_csv(scal_path)) if scal_path.exists() else _missing(scal_path)),
         ("Table 3", t3),
         ("Table 3b", table_3b(nstdb)),
         ("Table 4", table_4()),
         ("Table 5", table_5()),
         ("Table 1d", table_1d()),
-        ("Table 2d", table_2d()),
-        ("Table 6", table_6()),
         ("Table 7", table_7()),
         ("Table 1c", table_1c()),
         ("Table 1e", table_1e()),
@@ -963,9 +1223,21 @@ def main():
         ("Table 2i", table_2i()),
         ("Table 2j", table_2j()),
         ("Table 9b", table_9b()),
+        ("Table 1h", table_1h()),
+        ("Table 14", table_14()),
+        ("Table 15", table_15()),
+        ("Table 16", table_16()),
+        ("Table 17", table_17()),
+        ("Table 18", table_18()),
+        ("Table 19", table_19()),
+        ("Table 20", table_20()),
+        ("Table 21", table_21()),
+        ("Table 22", table_22()),
+        ("Table 23", table_23()),
+        ("Table 24", table_24()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
-        f.write("# Manuscript tables regenerated 2026-10-12\n\n")
+        f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")
         f.write(f"NSTDB windows: clean control = {n_clean}, active noise = {n_active}\n\n")
         for title, body in sections:
             f.write(f"## {title}\n\n{body}\n\n")

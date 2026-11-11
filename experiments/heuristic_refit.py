@@ -8,7 +8,7 @@ When those coefficients were chosen is not documented, so they may have been inf
 seven inputs feed a standardized L2 logistic regression fitted on the training subjects of each fold only
 (fixed C = 1, no tuning). Its out-of-fold AUROC is an honest in-domain estimate for this feature set; the gap to
 the hand-set rule bounds how much the hand-set coefficients could have profited from BUT QDB. The model fitted on
-all of BUT QDB is also applied to CinC 2011 (lead II, 565 records) and CinC 2017 (recording maximum).
+all of BUT QDB is also applied to CinC 2011 (lead II, all 998 labelled records; 565 before v2) and CinC 2017 (recording maximum).
 
 Output: results/heuristic_refit_predictions.csv, results/heuristic_refit_summary.csv
 """
@@ -30,7 +30,8 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "evaluation"))
 from paired_comparisons import cluster_bootstrap_paired, delong_paired  # noqa: E402
 
-RESULTS = ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 OUT_PRED = RESULTS / "heuristic_refit_predictions.csv"
 OUT_SUM = RESULTS / "heuristic_refit_summary.csv"
 INPUTS = ["bsqi", "bw3", "hf3", "sat", "flat", "ink", "spread"]
@@ -67,9 +68,7 @@ def main():
     coefs = dict(zip(INPUTS, full[-1].coef_[0].round(3)))
     print("[refit] standardized coefficients on all BUT QDB:", coefs, flush=True)
 
-    c11 = pd.read_csv(ROOT / "cache/datasets/cinc2011/cinc2011_random_draws_records.csv").drop_duplicates("segment_id")
-    lab = pd.read_csv(ROOT / "cache/datasets/cinc2011/cinc2011_random_draws_manifest.csv").drop_duplicates("record_name").set_index("record_name")["label"]
-    c11["label"] = lab.loc[c11["record_name"].astype(int)].values
+    c11 = pd.read_csv(ROOT / "cache/datasets/cinc2011/cinc2011_setA_leadII_full.csv")  # all 998 labelled records (v2)
     p11 = full.predict_proba(design(c11))[:, 1]
     c17 = pd.read_csv(ROOT / "cache/datasets/cinc2017/cinc2017_windows.csv")
     p17 = full.predict_proba(design(c17))[:, 1]
@@ -81,15 +80,15 @@ def main():
 
     # paired comparison with the hand-set rule on the same units
     hand_b = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv").set_index("segment_id").loc[but.segment_id, "prob_Rule_Based_SQI_Heuristic"].values
-    hand_11 = pd.read_csv(RESULTS / "cinc_random_draws_predictions.csv").drop_duplicates("segment_id").set_index("segment_id").loc[c11.segment_id, "Rule_Based_SQI_Heuristic"].values
     w = pd.read_csv(RESULTS / "external_window_predictions.csv", low_memory=False)
+    hand_11 = w[w.dataset == "CinC2011"].set_index("segment_id").loc[c11.segment_id, "Rule_Based_SQI_Heuristic"].values
     w = w[w.dataset == "CinC2017"].set_index("segment_id")
     r17 = pd.DataFrame({"record": c17.record_name.values, "y": c17.label.values, "refit": p17,
                         "hand": w.loc[c17.segment_id, "Rule_Based_SQI_Heuristic"].values}).groupby("record").agg(
         y=("y", "first"), refit=("refit", "max"), hand=("hand", "max"))
     rows = []
     for name, y, a, b, cl in [("BUT_QDB (5-fold subject CV)", yb, oof, hand_b, but.subject_id.values),
-                              ("CinC2011 lead II (565)", c11.label.values, p11, hand_11, None),
+                              ("CinC2011 lead II (998)", c11.label.values, p11, hand_11, None),
                               ("CinC2017 (8,512, recording max)", r17.y.values, r17.refit.values, r17.hand.values, None)]:
         d, lo, hi, p = cluster_bootstrap_paired(y, a, b, cl) if cl is not None else delong_paired(y, a, b)
         rows.append({"dataset": name, "auroc_refit": roc_auc_score(y, a), "auroc_handset": roc_auc_score(y, b),

@@ -27,7 +27,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from config import RESULTS_DIR, TARGET_FS
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 from data.cinc2011_dataset import CinC2011Manager
 from models.tabular_baselines import SQILogisticRegression, SQIGradientBoosting
 from models.cnn1d import ECG1DCNNClassifier
@@ -50,7 +50,7 @@ def run_cinc_transfer_evaluation(cohort_manifest_path: Path = None):
 
     print(f"Loading development set from: {cohort_manifest_path}")
     but_df = pd.read_csv(cohort_manifest_path)
-    X_train_sqi = np.nan_to_num(but_df[SQI_FEATURE_NAMES].values, nan=0.0)
+    X_train_sqi = np.nan_to_num(but_df[MODEL_INPUT_FEATURE_NAMES].values, nan=0.0)
     y_train = but_df["label"].values
     train_sigs = [np.load(p) for p in but_df["signal_path"]]
     train_imgs = but_df["image_path"].tolist()
@@ -58,7 +58,7 @@ def run_cinc_transfer_evaluation(cohort_manifest_path: Path = None):
     # 2. Load CinC 2011 Set A Data
     cinc_mgr = CinC2011Manager()
     cinc_df = cinc_mgr.extract_segments(max_records=150, verbose=True)
-    X_test_sqi = np.nan_to_num(cinc_df[SQI_FEATURE_NAMES].values, nan=0.0)
+    X_test_sqi = np.nan_to_num(cinc_df[MODEL_INPUT_FEATURE_NAMES].values, nan=0.0)
     y_test = cinc_df["label"].values
     test_sigs = [np.load(p) for p in cinc_df["signal_path"]]
     test_imgs = cinc_df["image_path"].tolist()

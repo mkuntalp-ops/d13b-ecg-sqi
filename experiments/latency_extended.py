@@ -35,13 +35,14 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from config import LOCAL_DATASETS_DIR
 from data.ecg_rendering import render_ecg_image
 from data.units import to_millivolts
-from features.sqi_extractor import SQI_FEATURE_NAMES, extract_sqi_features
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES, extract_sqi_features
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
 from models.multimodal_fusion import SinglePassMultimodalClassifier
 
 BUT_SRC = LOCAL_DATASETS_DIR / "butqdb" / "brno-university-of-technology-ecg-quality-database-but-qdb-1.0.0"
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 N_WINDOWS, N_RUNS = 25, 3
 
 
@@ -107,7 +108,7 @@ def main():
         c1 = ECG1DCNNClassifier(epochs=1, device=dev).fit(cached[:6], y0)
         c2 = ECG2DCNNClassifier(epochs=1, device=dev).fit(sel["image_path"][:6].tolist(), y0)
         mm = SinglePassMultimodalClassifier(epochs=1, device=dev).fit(sel["image_path"][:6].tolist(),
-                                                                      np.nan_to_num(sel[SQI_FEATURE_NAMES].values[:6]), y0)
+                                                                      np.nan_to_num(sel[MODEL_INPUT_FEATURE_NAMES].values[:6]), y0)
         nets[dev] = (c1, c2, mm)
     rows = []
     for run in range(1, N_RUNS + 1):
@@ -124,7 +125,7 @@ def main():
                 c1, c2, mm = nets[dev]
                 rec[f"cnn1d_forward_{dev}_ms"] = timed(lambda: c1.predict_proba([x500]), dev)[0]
                 rec[f"cnn2d_forward_{dev}_ms"] = timed(lambda: c2.predict_proba([r["image_path"]]), dev)[0]
-                xs = np.nan_to_num(np.array([[sqis[k] for k in SQI_FEATURE_NAMES]]))
+                xs = np.nan_to_num(np.array([[sqis[k] for k in MODEL_INPUT_FEATURE_NAMES]]))
                 rec[f"mm_forward_{dev}_ms"] = timed(lambda: mm.predict_proba([r["image_path"]], xs), dev)[0]
                 rec[f"cnn1d_raw_to_decision_{dev}_ms"] = rec["convert_ms"] + rec["resample_ms"] + rec[f"cnn1d_forward_{dev}_ms"]
             rows.append(rec)

@@ -3,7 +3,9 @@ Seed stability of the CNN and multimodal models (seeds 1-4; seed 42 is the repor
 
 For each seed:
   (a) 5-fold subject-independent CV on BUT QDB, pooled out-of-fold predictions;
-  (b) zero-shot transfer to CinC 2011 Set A after training on the full 1,047-window cohort.
+  (b) zero-shot transfer to CinC 2011 Set A after training on the full cohort (1,047 windows in v1, 988 in v2).
+v2 (revision of 2026-11-05): CinC 2011 is all 998 labelled Set A records, lead II (config.CINC2011_LEADII_FULL);
+v1 used the reported 150-record subset.
 Thresholds are fixed at 0.5. The models read their seed from their module-level RANDOM_SEED,
 so setting it per run reproduces the seeded construction without editing the model code.
 
@@ -20,7 +22,7 @@ from sklearn.metrics import average_precision_score, brier_score_loss, confusion
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 import models.cnn1d as cnn1d_mod
 import models.cnn2d as cnn2d_mod
 import models.multimodal_fusion as mm_mod
@@ -29,9 +31,10 @@ from models.cnn2d import ECG2DCNNClassifier
 from models.multimodal_fusion import SinglePassMultimodalClassifier
 
 SEEDS = [1, 2, 3, 4]
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 COHORT = RESULTS / "manifest_butqdb_1000_cohort.csv"
-CINC = PROJECT_ROOT / "cache" / "datasets" / "cinc2011" / "cinc2011_segments_lead1_max150.csv"
+from config import CINC2011_LEADII_FULL as CINC  # noqa: E402  (all 998 labelled records, one lead II window each)
 OUT = RESULTS / "seed_stability_2026-10-12.csv"
 MODELS = ["1D_CNN", "2D_CNN", "Multimodal"]
 
@@ -85,7 +88,7 @@ def run_transfer(seed, df, sigs, imgs, X, cinc_df):
     y = df["label"].values
     cinc_sigs = [np.load(p) for p in cinc_df["signal_path"]]
     cinc_imgs = cinc_df["image_path"].tolist()
-    X_cinc = np.nan_to_num(cinc_df[SQI_FEATURE_NAMES].values.astype(float))
+    X_cinc = np.nan_to_num(cinc_df[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
     preds = {}
     set_seed(seed)
     c1 = ECG1DCNNClassifier(epochs=25, lr=1e-3)
@@ -109,7 +112,7 @@ def main():
     transfer_only = "--transfer-only" in sys.argv
     df = pd.read_csv(COHORT)
     cinc_df = pd.read_csv(CINC)
-    X = np.nan_to_num(df[SQI_FEATURE_NAMES].values.astype(float))
+    X = np.nan_to_num(df[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
     sigs = [np.load(p) for p in df["signal_path"]]
     imgs = df["image_path"].tolist()
     stored_cv = pd.read_csv(OUT).query("setting == 'BUT_QDB_CV_pooled'") if transfer_only else None

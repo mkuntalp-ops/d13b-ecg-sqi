@@ -14,7 +14,15 @@ from sklearn.pipeline import Pipeline
 import lightgbm as lgb
 
 from sklearn.impute import SimpleImputer
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES
+
+
+def _check_width(X: np.ndarray) -> np.ndarray:
+    X = np.asarray(X, dtype=float)
+    if X.ndim != 2 or X.shape[1] != len(MODEL_INPUT_FEATURE_NAMES):
+        raise ValueError(f"expected a 2-D matrix with {len(MODEL_INPUT_FEATURE_NAMES)} columns "
+                         f"(MODEL_INPUT_FEATURE_NAMES), got shape {X.shape}")
+    return np.nan_to_num(X, nan=0.0)
 
 class SQILogisticRegression:
     def __init__(self, c_param: float = 1.0, random_state: int = 42):
@@ -28,16 +36,16 @@ class SQILogisticRegression:
                 max_iter=1000
             ))
         ])
-        self.feature_names = SQI_FEATURE_NAMES
+        self.feature_names = MODEL_INPUT_FEATURE_NAMES
         
     def fit(self, X: np.ndarray, y: np.ndarray):
-        X = np.nan_to_num(X, nan=0.0)
+        X = _check_width(X)
         self.model.fit(X, y)
         return self
         
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         """Returns P(unusable), i.e. column 1."""
-        X = np.nan_to_num(X, nan=0.0)
+        X = _check_width(X)
         probs = self.model.predict_proba(X)
         if probs.shape[1] == 2:
             return probs[:, 1]
@@ -62,15 +70,15 @@ class SQIGradientBoosting:
             subsample=0.8,
             colsample_bytree=0.8
         )
-        self.feature_names = SQI_FEATURE_NAMES
+        self.feature_names = MODEL_INPUT_FEATURE_NAMES
         
     def fit(self, X: np.ndarray, y: np.ndarray):
-        X = np.nan_to_num(X, nan=0.0)
+        X = _check_width(X)
         self.model.fit(X, y)
         return self
         
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        X = np.nan_to_num(X, nan=0.0)
+        X = _check_width(X)
         probs = self.model.predict_proba(X)
         if probs.shape[1] == 2:
             return probs[:, 1]

@@ -17,8 +17,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_ROOT / "cache" / "datasets"
 CACHE_DIR = PROJECT_ROOT / "cache"
-RESULTS_DIR = PROJECT_ROOT / "results"
-FIGURES_DIR = PROJECT_ROOT / "figures"
+# Results directory. Override with ECG_RESULTS_DIR to write a separate analysis version (for example
+# results/v2_2026-11) without touching earlier outputs.
+RESULTS_DIR = Path(os.environ.get("ECG_RESULTS_DIR", PROJECT_ROOT / "results")).resolve()
+# Figures directory; ECG_FIGURES_DIR overrides it (v2 writes to results/v2_2026-11/figures, so v1 figures are kept)
+FIGURES_DIR = Path(os.environ.get("ECG_FIGURES_DIR", PROJECT_ROOT / "figures")).resolve()
 
 # Local copies of the PhysioNet datasets and the d1-3B weights (override with environment variables)
 LOCAL_DATASETS_DIR = Path(os.environ.get("ECG_DATASETS_ROOT", "/Volumes/KIOXIA/Datasets"))
@@ -56,6 +59,11 @@ def get_subject_id(record_name: str) -> str:
 # CinC 2011 Details
 CINC2011_URL = "https://physionet.org/files/challenge-2011/1.0.0/set-a/"
 CINC2011_DEFAULT_LEAD = 1  # Lead II (index 1 in standard 12-lead layout)
+# All 998 labelled Set A records, lead II (experiments/cinc2011_full_extraction.py); the external CinC 2011 set
+# from the v2 analysis on (earlier analyses used a 565-record union of balanced draws).
+CINC2011_LEADII_FULL = DATA_DIR / "cinc2011" / "cinc2011_setA_leadII_full.csv"
+# All 12 leads of the same 998 records (11,976 lead windows; experiments/cinc2011_twelve_lead_extraction.py)
+CINC2011_TWELVE_LEAD_FULL = DATA_DIR / "cinc2011" / "twelve_lead" / "cinc2011_twelve_lead_windows_full.csv"
 
 # NSTDB Details
 NSTDB_URL = "https://physionet.org/files/nstdb/1.0.0/"

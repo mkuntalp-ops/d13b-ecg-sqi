@@ -3,7 +3,7 @@ TabPFN latency (Q1 revision, 2026-10-26). Runs in the TabPFN environment, on the
     /Volumes/KIOXIA/AI/tabpfn_env/bin/python experiments/latency_tabpfn.py
 
 TabPFN predicts in context: every prediction is a forward pass over the training set (1,047 BUT QDB windows, 13 SQIs)
-together with the query. The fit (preprocessing of the training set) is timed once per run; prediction is timed for one
+together with the query (v2: 988 windows, 11 SQIs). The fit (preprocessing of the training set) is timed once per run; prediction is timed for one
 window at a time on the same 25 windows and three runs as the other latency scripts (first window of each run is a
 warm-up and excluded). SQI extraction is not included (Table 4b reports it separately).
 
@@ -19,11 +19,14 @@ import pandas as pd
 from tabpfn import TabPFNClassifier
 
 ROOT = Path(__file__).resolve().parent.parent
-RESULTS = ROOT / "results"
+import sys  # noqa: E402
+sys.path.insert(0, str(ROOT))
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 CKPT = os.environ.get("TABPFN_CKPT", "/Volumes/KIOXIA/AI Models/tabpfn/tabpfn-v3-classifier-v3_default.ckpt")
 FEATURES = ["bsqi_detector_agreement", "baseline_wander_ratio", "high_frequency_noise_ratio", "saturation_fraction",
             "flatline_fraction", "qrs_energy_ratio", "kurtosis_ksqi", "skewness_ssqi", "zero_crossing_rate",
-            "powerline_noise_ratio", "signal_std", "duration_sec", "sampling_rate"]
+            "powerline_noise_ratio", "signal_std"]  # the 11 model inputs (as in experiments/tabpfn_runner.py)
 N_WINDOWS, N_RUNS = 25, 3  # as in experiments/latency_extended.py
 
 

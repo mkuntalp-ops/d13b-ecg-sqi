@@ -13,9 +13,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paired_comparisons import holm  # noqa: E402
-
-RESULTS = Path(__file__).resolve().parent.parent / "results"
+from paired_comparisons import RESULTS, holm  # noqa: E402  (config.RESULTS_DIR; ECG_RESULTS_DIR overrides)
 
 
 def main():

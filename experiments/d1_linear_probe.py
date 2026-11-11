@@ -42,12 +42,15 @@ from sklearn.preprocessing import StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(PROJECT_ROOT / "experiments"))
 
 from evaluation.metrics import compute_subject_level_bootstrap_ci
 from features.sqi_extractor import SQI_FEATURE_NAMES
 from models.d1_real_neural_model import RealD1DecisionModel
 
-RESULTS = PROJECT_ROOT / "results"
+from config import CINC2011_LEADII_FULL, RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+from feature_cache import load_features, missing_ids, save_set  # noqa: E402
+RESULTS = _CFG_RESULTS
 FEAT_DIR = PROJECT_ROOT / "cache" / "d1_probe"
 CINC11 = PROJECT_ROOT / "cache" / "datasets" / "cinc2011"
 CINC17 = PROJECT_ROOT / "cache" / "datasets" / "cinc2017" / "cinc2017_windows.csv"
@@ -57,14 +60,13 @@ OOF_OUT = RESULTS / "d1_probe_oof_predictions.csv"
 TRANSFER_OUT = RESULTS / "d1_probe_transfer_predictions.csv"
 SUM_OUT = RESULTS / "d1_probe_summary.csv"
 C_GRID = {"logisticregression__C": [1e-3, 1e-2, 1e-1, 1.0]}
+V1_PRED = PROJECT_ROOT / "results" / "d1_external_predictions.csv"  # zero-shot d1 scores of the v1 extraction
 
 
 def window_sets() -> dict:
     but = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")
-    c11 = pd.read_csv(CINC11 / "cinc2011_random_draws_records.csv").drop_duplicates("segment_id")
+    c11 = pd.read_csv(CINC2011_LEADII_FULL)  # all 998 labelled records (v2)
     mem = pd.read_csv(CINC11 / "cinc2011_random_draws_manifest.csv")
-    lab = mem.drop_duplicates("record_name").set_index("record_name")["label"]
-    c11["label"] = lab.loc[c11["record_name"].astype(int)].values
     c17 = pd.read_csv(CINC17)
     rec = c17.drop_duplicates("record_name")[["record_name", "label"]]
     noisy = rec[rec.label == 1]
@@ -101,8 +103,19 @@ def extract():
     FEAT_DIR.mkdir(parents=True, exist_ok=True)
     d1 = RealD1DecisionModel(device="mps")
     cap = Capture(d1.model)
+    v1 = pd.read_csv(V1_PRED) if V1_PRED.exists() else pd.DataFrame(columns=["dataset", "segment_id"])
     preds = []
     for name, df in window_sets().items():
+        todo = set(missing_ids(FEAT_DIR, "image", df.segment_id)) | set(missing_ids(FEAT_DIR, "state", df.segment_id))
+        old = v1[(v1.dataset == name) & v1.segment_id.isin(df.segment_id) & ~v1.segment_id.isin(todo)]
+        if len(old) + len(todo) != len(df):
+            raise ValueError(f"[{name}] {len(df) - len(todo)} cached windows but {len(old)} stored zero-shot scores")
+        preds.extend(old.to_dict("records"))
+        df = df[df.segment_id.isin(todo)]
+        print(f"[{name}] {len(old)} windows cached, {len(df)} to extract", flush=True)
+        if df.empty:
+            pd.DataFrame(preds).to_csv(PRED_OUT, index=False)
+            continue
         st, im = [], []
         for i, (_, r) in enumerate(df.iterrows()):
             sqi = dict(zip(SQI_FEATURE_NAMES, np.nan_to_num(r[SQI_FEATURE_NAMES].values.astype(float), nan=0.0)))
@@ -117,9 +130,8 @@ def extract():
                           "label": int(r["label"]), "prob_unusable": dec["prob_unusable"]})
             if i % 200 == 0:
                 print(f"[{name}] {i}/{len(df)}", flush=True)
-        np.save(FEAT_DIR / f"{name}_state.npy", np.stack(st).astype(np.float32))
-        np.save(FEAT_DIR / f"{name}_image.npy", np.stack(im).astype(np.float32))
-        pd.Series(df["segment_id"].values).to_csv(FEAT_DIR / f"{name}_ids.csv", index=False, header=["segment_id"])
+        save_set(FEAT_DIR, f"{name}_add_v2", df["segment_id"].tolist(),
+                 {"state": np.stack(st), "image": np.stack(im)})
         pd.DataFrame(preds).to_csv(PRED_OUT, index=False)
         print(f"[{name}] done ({len(df)} windows)", flush=True)
 
@@ -140,7 +152,7 @@ def analyse():
     rows, oof_rows, transfer_rows = [], [], []
     y = but["label"].values
     for feat in ["state", "image"]:
-        X = np.load(FEAT_DIR / f"BUT_QDB_{feat}.npy")
+        X = load_features(FEAT_DIR, feat, but.segment_id)
         oof = np.zeros(len(y))
         for k in range(5):
             tr, te = but.fold_id.values != k, but.fold_id.values == k
@@ -154,18 +166,15 @@ def analyse():
         full = probe(groups=True).fit(X, y, groups=but.subject_id.values)
         # CinC 2011 lead II: reported subset and the five random subsets
         c11 = sets["CinC2011_leadII"].reset_index(drop=True)
-        p11 = pd.Series(full.predict_proba(np.load(FEAT_DIR / f"CinC2011_leadII_{feat}.npy"))[:, 1], index=c11.record_name.astype(int).values)
-        transfer_rows.append(pd.DataFrame({"features": feat, "dataset": "CinC2011", "record_name": p11.index.astype(str),
-                                           "label": c11.label.values, "prob_unusable": p11.values}))
-        mem = pd.read_csv(CINC11 / "cinc2011_random_draws_manifest.csv")
-        for draw, m in mem.groupby("draw"):
-            rows.append({"features": feat, "dataset": f"CinC2011 {draw}", "n": len(m),
-                         "auroc": roc_auc_score(m.label, p11.loc[m.record_name].values),
-                         "ap": average_precision_score(m.label, p11.loc[m.record_name].values)})
+        p11 = full.predict_proba(load_features(FEAT_DIR, feat, c11.segment_id))[:, 1]
+        transfer_rows.append(pd.DataFrame({"features": feat, "dataset": "CinC2011", "record_name": c11.record_name.astype(str),
+                                           "label": c11.label.values, "prob_unusable": p11}))
+        rows.append({"features": feat, "dataset": "CinC2011 lead II (all labelled records)", "n": len(c11),
+                     "auroc": roc_auc_score(c11.label, p11), "ap": average_precision_score(c11.label, p11)})
         # CinC 2017 subset: record-level maximum over windows
         c17 = sets["CinC2017_subset"].reset_index(drop=True)
         p17 = pd.DataFrame({"record_name": c17.record_name, "label": c17.label,
-                            "p": full.predict_proba(np.load(FEAT_DIR / f"CinC2017_subset_{feat}.npy"))[:, 1]})
+                            "p": full.predict_proba(load_features(FEAT_DIR, feat, c17.segment_id))[:, 1]})
         r17 = p17.groupby("record_name").agg(label=("label", "first"), p=("p", "max"))
         transfer_rows.append(pd.DataFrame({"features": feat, "dataset": "CinC2017", "record_name": r17.index.astype(str),
                                            "label": r17.label.values, "prob_unusable": r17.p.values}))
@@ -177,13 +186,10 @@ def analyse():
     rows.append({"features": "zero-shot d1 (primary)", "dataset": "BUT_QDB (5-fold subject CV)", "n": len(y),
                  "auroc": roc_auc_score(y, d1_but.loc[but.segment_id]), "auroc_ci_low": ci["ci_low"], "auroc_ci_high": ci["ci_high"],
                  "ap": average_precision_score(y, d1_but.loc[but.segment_id])})
-    # zero-shot CinC 2011 scores from the same file as Table 2d: d1 scores are coarse (bf16) and tie-heavy, so
-    # rounding differences of ~5e-7 between stored copies move the AUROC by up to 0.004
-    z11 = pd.read_csv(RESULTS / "cinc_random_draws_predictions.csv").set_index("record_name")["LiquidAI_d1_3B_Neural"]
-    for draw, m in pd.read_csv(CINC11 / "cinc2011_random_draws_manifest.csv").groupby("draw"):
-        rows.append({"features": "zero-shot d1 (primary)", "dataset": f"CinC2011 {draw}", "n": len(m),
-                     "auroc": roc_auc_score(m.label, z11.loc[m.record_name].values),
-                     "ap": average_precision_score(m.label, z11.loc[m.record_name].values)})
+    c11 = sets["CinC2011_leadII"]
+    z11 = preds[preds.dataset == "CinC2011_leadII"].set_index("segment_id")["prob_unusable"].loc[c11.segment_id].values
+    rows.append({"features": "zero-shot d1 (primary)", "dataset": "CinC2011 lead II (all labelled records)", "n": len(c11),
+                 "auroc": roc_auc_score(c11.label, z11), "ap": average_precision_score(c11.label, z11)})
     z17 = preds[preds.dataset == "CinC2017_subset"].groupby("record_name").agg(label=("label", "first"), p=("prob_unusable", "max"))
     rows.append({"features": "zero-shot d1 (primary)", "dataset": "CinC2017 subset (record max)", "n": len(z17),
                  "auroc": roc_auc_score(z17.label, z17.p), "ap": average_precision_score(z17.label, z17.p)})

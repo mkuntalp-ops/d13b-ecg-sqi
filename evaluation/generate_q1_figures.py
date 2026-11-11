@@ -26,7 +26,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from paired_comparisons import holm  # noqa: E402
 
-RESULTS, FIG = ROOT / "results", ROOT / "figures"
+sys.path.insert(0, str(ROOT))
+from config import FIGURES_DIR as FIG, RESULTS_DIR as RESULTS  # noqa: E402  (ECG_RESULTS_DIR / ECG_FIGURES_DIR override)
 INK, INK2, MUTED, GRID, AXIS = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
 BLUE, ORANGE = "#2a78d6", "#eb6834"
 ORDER = [("Logistic_Regression_SQI", "Logistic regression (SQI)"), ("LightGBM_SQI", "LightGBM (SQI)"),
@@ -59,10 +60,56 @@ def save(fig, name):
     print(f"[Saved] figures/{name}.png/.pdf")
 
 
+def figure_flow():
+    """Study flow and model families (plan 4.5). Counts are read from the saved outputs, not typed."""
+    from matplotlib.patches import FancyBboxPatch
+    man = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")
+    w = pd.read_csv(RESULTS / "external_window_predictions.csv", low_memory=False, usecols=["dataset", "record_name", "label"])
+    c11, c17 = w[w.dataset == "CinC2011"], w[w.dataset == "CinC2017"]
+    r17 = c17.groupby("record_name").label.first()
+    nst = pd.read_csv(RESULTS / "exp4_revised_nstdb_predictions.csv")
+    fig, ax = plt.subplots(figsize=(7.2, 4.1))
+    ax.set_xlim(0, 100), ax.set_ylim(0, 100), ax.axis("off")
+
+    def box(x, y, w_, h, text, face="white", edge=AXIS, size=5.6):
+        ax.add_patch(FancyBboxPatch((x, y), w_, h, boxstyle="round,pad=0.2,rounding_size=1.0", fc=face, ec=edge, lw=0.9))
+        ax.text(x + w_ / 2, y + h / 2, text, ha="center", va="center", fontsize=size, color=INK, linespacing=1.25)
+
+    def arrow(x0, y0, x1, y1):
+        ax.annotate("", xy=(x1, y1), xytext=(x0, y0), arrowprops=dict(arrowstyle="-|>", color=INK2, lw=0.9, shrinkA=0, shrinkB=0))
+
+    def bus(x, ys):
+        ax.plot([x, x], [min(ys), max(ys)], color=INK2, lw=0.9)
+    for x, label in [(1, "Datasets"), (35, "Inputs"), (55, "Models"), (80, "Evaluation")]:
+        ax.text(x, 97, label, fontsize=8.5, color=INK2, weight="bold")
+    ds = [(74, f"BUT QDB (development)\n{man.subject_id.nunique()} subjects, {len(man):,} windows\n{int(man.label.sum())} unusable; official intervals"),
+          (50, f"CinC 2011 Set A (external)\n{c11.record_name.nunique():,} records, lead II or 12 leads\n{int(c11.label.sum())} unacceptable (12-lead label)"),
+          (26, f"CinC 2017 (external)\n{len(r17):,} recordings, {len(c17):,} windows\n{int(r17.sum())} noisy (rhythm unclassifiable)"),
+          (3, f"NSTDB (stress test)\n{len(nst)} windows, electrode-motion noise\n+24 to −6 dB, paired with clean")]
+    for k, (y, txt) in enumerate(ds):
+        box(1, y, 27, 19, txt, face="#eaf2fb" if k == 0 else "white", edge=BLUE if k == 0 else AXIS)
+        ax.plot([28.4, 31], [y + 9.5] * 2, color=INK2, lw=0.9)
+    rows = [(76, "11 SQIs", "Logistic regression,\nLightGBM, MLP, TabPFN"), (55, "Raw signal\n(10-s window)", "1D CNN;\nHuBERT-ECG probe"),
+            (34, "Rendered strip\n(SQIs where used)", "2D CNN; multimodal net;\nrule heuristic"), (13, "Strip, SQI text,\nusability question", "d1-3B zero-shot;\nd1-3B image-token probe")]
+    bus(31, [ds[0][0] + 9.5, ds[-1][0] + 9.5])
+    for y, inp, mod in rows:
+        box(35, y, 15, 15, inp)
+        box(55, y, 20, 15, mod)
+        arrow(31, y + 7.5, 34.6, y + 7.5)
+        arrow(50.4, y + 7.5, 54.6, y + 7.5)
+        ax.plot([75.4, 77.5], [y + 7.5] * 2, color=INK2, lw=0.9)
+    bus(77.5, [rows[0][0] + 7.5, rows[-1][0] + 7.5])
+    ev = [(76, "5-fold subject-grouped CV\n(BUT QDB)"), (55, "BUT-only transfer, frozen\n(CinC 2011, CinC 2017)"), (34, "Leave-one-dataset-out\nmulti-source training"), (13, "Operating points,\nrecalibration, noise, latency")]
+    for y, txt in ev:
+        box(80.5, y, 19, 15, txt, size=5.2)
+        arrow(77.5, y + 7.5, 80.1, y + 7.5)
+    save(fig, "q1_figure0_flow")
+
+
 def figure1():
     c = pd.read_csv(RESULTS / "paired_comparisons.csv")
-    fams = [("BUT_QDB (5-fold subject CV)", "BUT QDB, subject CV\n(1,047 windows)"),
-            ("CinC2011 lead II (565 records)", "CinC 2011, lead II\n(565 records)"),
+    fams = [("BUT_QDB (5-fold subject CV)", "BUT QDB, subject CV\n(988 windows)"),
+            ("CinC2011 lead II (998 records)", "CinC 2011, lead II\n(998 records)"),
             ("CinC2017 (8,512 recordings)", "CinC 2017\n(8,512 recordings)"),
             ("CinC2017 balanced subset (556 recordings)", "CinC 2017 subset\n(556 recordings)")]
     fig, axes = plt.subplots(1, 4, figsize=(7.2, 3.6), sharey=True)
@@ -134,7 +181,7 @@ def figure2():
 def figure3():
     s = pd.read_csv(RESULTS / "local_recalibration_summary.csv")
     fig, axes = plt.subplots(2, 2, figsize=(6.4, 4.6), sharex=True)
-    for row, (ds, name) in enumerate([("CinC2011", "CinC 2011 (34.9% unacceptable)"), ("CinC2017", "CinC 2017 (3.3% noisy)")]):
+    for row, (ds, name) in enumerate([("CinC2011", "CinC 2011 (22.5% unacceptable)"), ("CinC2017", "CinC 2017 (3.3% noisy)")]):
         g = s[s.dataset == ds]
         for col, (k, lab, top) in enumerate([("fpr_local_median", "False reject rate (median)", 0.12),
                                              ("sens_local_median", "Sensitivity (median)", 1.0)]):
@@ -167,6 +214,7 @@ def figure3():
 
 
 if __name__ == "__main__":
+    figure_flow()
     figure1()
     figure2()
     figure3()

@@ -1,0 +1,13 @@
+{
+  "script": "evaluation/audit_sensitivity.py",
+  "run_utc": "2026-11-11T06:29:01+00:00",
+  "results_dir": "results/v2_2026-11",
+  "git_commit": "55095ed7fa44e654a0242246979314e3de6cff6d",
+  "git_dirty": true,
+  "git_changed_or_untracked_paths": 83,
+  "python": "3.12.13",
+  "numpy": "2.5.3",
+  "pandas": "3.0.6",
+  "scipy": "1.18.1",
+  "scikit_learn": "1.9.1"
+}

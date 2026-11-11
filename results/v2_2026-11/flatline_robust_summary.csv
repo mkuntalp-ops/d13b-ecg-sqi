@@ -1,0 +1,16 @@
+dataset,model,n_units,auroc_original_flatline,auroc_robust_flatline,n_unique_scores_original,n_unique_scores_robust,auroc_univariate,median_usable,median_unusable
+BUT_QDB,Independent_SQI_MLP,988,0.9042128851540616,0.9164873949579831,931.0,931.0,,,
+BUT_QDB,LightGBM_SQI,988,0.9566274509803921,0.9558767507002801,697.0,683.0,,,
+BUT_QDB,Logistic_Regression_SQI,988,0.89890756302521,0.9027675070028012,929.0,931.0,,,
+CinC2011,Independent_SQI_MLP,998,0.6747908581285036,0.7367083513008481,15.0,909.0,,,
+CinC2011,LightGBM_SQI,998,0.7524421446025586,0.7585942216472619,900.0,884.0,,,
+CinC2011,Logistic_Regression_SQI,998,0.32247807963202535,0.4305821474773609,28.0,925.0,,,
+CinC2017,Independent_SQI_MLP,8512,0.87616445585334,0.8867282176202201,8510.0,8504.0,,,
+CinC2017,LightGBM_SQI,8512,0.891452662499585,0.8891423174309714,6573.0,6042.0,,,
+CinC2017,Logistic_Regression_SQI,8512,0.8704616583633749,0.8790486192537348,8510.0,8510.0,,,
+BUT_QDB,univariate flatline_fraction,988,,,,,0.4218571428571428,0.0,0.0
+BUT_QDB,univariate flatline_fraction_robust,988,,,,,0.5,0.0,0.0
+CinC2011,univariate flatline_fraction,998,,,,,0.6344257582291217,0.2866,0.3478
+CinC2011,univariate flatline_fraction_robust,998,,,,,0.6911111111111111,0.0,0.0
+CinC2017,univariate flatline_fraction,8512,,,,,0.1945394862152542,0.0008,0.0002
+CinC2017,univariate flatline_fraction_robust,8512,,,,,0.5071335207762864,0.0,0.0

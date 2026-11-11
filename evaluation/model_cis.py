@@ -19,7 +19,8 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from paired_comparisons import families  # noqa: E402
 
-OUT = Path(__file__).resolve().parent.parent / "results" / "model_cis.csv"
+from paired_comparisons import RESULTS  # noqa: E402  (config.RESULTS_DIR; ECG_RESULTS_DIR overrides)
+OUT = RESULTS / "model_cis.csv"
 B, SEED = 2000, 42
 
 

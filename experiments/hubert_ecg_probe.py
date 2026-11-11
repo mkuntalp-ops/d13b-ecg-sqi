@@ -45,13 +45,15 @@ from sklearn.preprocessing import StandardScaler
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "experiments"))
+from feature_cache import load_features, missing_ids, save_set  # noqa: E402
 from lodo_multisource import cinc17_training_subset, load_sources  # noqa: E402
 
 MODEL_DIR = Path(os.environ.get("HUBERT_ECG_PATH", "/Volumes/KIOXIA/AI Models/hubert-ecg-base"))
 PREPROC = "ours" if "--preproc=ours" in sys.argv else "authors"
 SUFFIX = "_ourpreproc" if PREPROC == "ours" else ""
 FEAT = ROOT / "cache" / ("hubert_ecg" if PREPROC == "ours" else "hubert_ecg_authors")
-RESULTS = ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 PRED_OUT = RESULTS / f"hubert_probe_predictions{SUFFIX}.csv"
 SUM_OUT = RESULTS / f"hubert_probe_summary{SUFFIX}.csv"
 FS, HALF = 500, 2500
@@ -109,11 +111,13 @@ def extract():
     device = "mps" if torch.backends.mps.is_available() else "cpu"
     model = load_model(device)
     for name, df in load_sources().items():
-        if (FEAT / f"{name}.npy").exists():
+        todo = set(missing_ids(FEAT, None, df.segment_id))  # windows cached under any set name are reused
+        df = df[df.segment_id.isin(todo)]
+        print(f"[hubert] {name}: {len(df)} windows to embed", flush=True)
+        if df.empty:
             continue
         E = embed(model, df["signal_path"].tolist(), device)
-        np.save(FEAT / f"{name}.npy", E.astype(np.float32))
-        df[["segment_id"]].to_csv(FEAT / f"{name}_ids.csv", index=False)
+        save_set(FEAT, f"{name}_add_v2", df["segment_id"].tolist(), {None: E})
         print(f"[hubert] {name}: {E.shape}", flush=True)
 
 
@@ -124,9 +128,7 @@ def probe():
 
 def analyse():
     src = load_sources()
-    F = {k: np.load(FEAT / f"{k}.npy") for k in src}
-    for k in src:
-        assert (pd.read_csv(FEAT / f"{k}_ids.csv").segment_id.values == src[k].segment_id.values).all()
+    F = {k: load_features(FEAT, None, src[k].segment_id) for k in src}
     rows, preds = [], []
     but = src["BUT_QDB"]
     oof = np.zeros(len(but))

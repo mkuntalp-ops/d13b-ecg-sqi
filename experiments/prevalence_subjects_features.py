@@ -11,6 +11,11 @@ Analyses from stored predictions and annotations (second review, 2026-10-13). No
    (lead II, the 565 records of the transfer analyses and the reported 150) and CinC 2017 (first window of each
    recording). Values below 0.5 mean the feature is higher in usable recordings.
 
+v2 (revision of 2026-11-05): the quota cohort row is computed from the manifest (988 windows inside the official
+intervals); the natural prevalence is also given for the candidate windows inside the official intervals
+(experiments/butqdb_official_split.official_mask), the pool from which the v2 cohort is drawn; CinC 2011 in the
+feature-shift table is all 998 labelled records (config.CINC2011_LEADII_FULL).
+
 Outputs: results/natural_prevalence_summary.csv, results/butqdb_natural_prevalence_metrics.csv,
          results/butqdb_subject_heterogeneity.csv, results/feature_shift_univariate_auroc.csv
 """
@@ -26,9 +31,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from data.extract_butqdb_1000_cohort import build_candidate_windows
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 
-RESULTS = PROJECT_ROOT / "results"
+from config import CINC2011_LEADII_FULL  # noqa: E402
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 CINC11 = PROJECT_ROOT / "cache" / "datasets" / "cinc2011"
 CINC17 = PROJECT_ROOT / "cache" / "datasets" / "cinc2017" / "cinc2017_windows.csv"
 MODELS = ["Logistic_Regression_SQI", "LightGBM_SQI", "Independent_SQI_MLP", "1D_CNN_RawECG", "2D_CNN_Image",
@@ -44,16 +51,24 @@ def natural_prevalence():
             {"scope": "excluding record 105001", "windows": int((w.record_name != "105001_ECG").sum()),
              "unusable": int(w[w.record_name != "105001_ECG"].unusable.sum()),
              "prevalence": w[w.record_name != "105001_ECG"].unusable.mean()},
-            {"scope": "median over records", "windows": np.nan, "unusable": np.nan, "prevalence": per_rec.prevalence.median()},
-            {"scope": "quota cohort (reported)", "windows": 1047, "unusable": 297, "prevalence": 297 / 1047}]
+            {"scope": "median over records", "windows": np.nan, "unusable": np.nan, "prevalence": per_rec.prevalence.median()}]
+    sys.path.insert(0, str(PROJECT_ROOT / "experiments"))
+    from butqdb_official_split import official_mask  # noqa: E402
+    inside = official_mask(w)
+    rows.append({"scope": "inside the official intervals", "windows": int(inside.sum()),
+                 "unusable": int(w.unusable[inside].sum()), "prevalence": w.unusable[inside].mean()})
+    man = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")
+    rows.append({"scope": "quota cohort (reported)", "windows": len(man), "unusable": int(man.label.sum()),
+                 "prevalence": man.label.mean()})
     out = pd.DataFrame(rows)
     out.to_csv(RESULTS / "natural_prevalence_summary.csv", index=False)
     print(out.round(4).to_string(index=False))
     print(per_rec.round(3).to_string())
-    return float(w.unusable.mean()), float(w[w.record_name != "105001_ECG"].unusable.mean())
+    return (float(w.unusable.mean()), float(w[w.record_name != "105001_ECG"].unusable.mean()),
+            float(w.unusable[inside].mean()))
 
 
-def reweighted_metrics(pi_all, pi_ex):
+def reweighted_metrics(pi_all, pi_ex, pi_off):
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     y = oof["label"].values
     rows = []
@@ -61,7 +76,8 @@ def reweighted_metrics(pi_all, pi_ex):
         p = oof[f"prob_{m}"].values
         pred = p >= 0.5
         sens, spec = pred[y == 1].mean(), 1 - pred[y == 0].mean()
-        for scope, pi in [("quota cohort", y.mean()), ("natural, all records", pi_all), ("natural, excl. 105001", pi_ex)]:
+        for scope, pi in [("quota cohort", y.mean()), ("natural, all records", pi_all), ("natural, excl. 105001", pi_ex),
+                          ("natural, official intervals", pi_off)]:
             w = np.where(y == 1, 1.0, (y.sum() * (1 - pi) / pi) / (y == 0).sum())
             ppv = sens * pi / (sens * pi + (1 - spec) * (1 - pi))
             npv = spec * (1 - pi) / (spec * (1 - pi) + (1 - sens) * pi)
@@ -95,19 +111,16 @@ def subject_heterogeneity():
 def feature_shift():
     sets = {}
     but = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")
-    sets["BUT QDB (1,047 windows)"] = but
-    c11 = pd.read_csv(CINC11 / "cinc2011_random_draws_records.csv").drop_duplicates("record_name")
-    mem = pd.read_csv(CINC11 / "cinc2011_random_draws_manifest.csv")
-    lab = mem.drop_duplicates("record_name").set_index("record_name")["label"]
-    c11["label"] = lab.loc[c11["record_name"].astype(int)].values
-    first = mem[mem.draw == "first_N_original"].record_name
-    sets["CinC 2011 lead II (565 records)"] = c11
-    sets["CinC 2011 lead II (reported 150)"] = c11[c11.record_name.astype(int).isin(first)]
+    sets[f"BUT QDB ({len(but):,} windows)"] = but
+    c11 = pd.read_csv(CINC2011_LEADII_FULL)
+    if len(c11) != 998 or c11.record_name.duplicated().any():
+        raise ValueError(f"CinC 2011: expected 998 records, one window each; got {len(c11)}")
+    sets["CinC 2011 lead II (998 records)"] = c11
     if CINC17.exists():
         c17 = pd.read_csv(CINC17)
         sets["CinC 2017 (first window, all recordings)"] = c17[c17.window_idx == 0]
     rows = []
-    for f in SQI_FEATURE_NAMES:
+    for f in MODEL_INPUT_FEATURE_NAMES:
         r = {"feature": f}
         for name, d in sets.items():
             x = np.nan_to_num(d[f].values.astype(float))
@@ -119,7 +132,7 @@ def feature_shift():
 
 
 if __name__ == "__main__":
-    pi_all, pi_ex = natural_prevalence()
-    reweighted_metrics(pi_all, pi_ex)
+    pi_all, pi_ex, pi_off = natural_prevalence()
+    reweighted_metrics(pi_all, pi_ex, pi_off)
     subject_heterogeneity()
     feature_shift()

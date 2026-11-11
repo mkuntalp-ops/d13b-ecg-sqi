@@ -25,17 +25,19 @@ sys.path.insert(0, str(ROOT / "experiments"))
 sys.argv = [a for a in sys.argv if not a.startswith("--preproc")]
 
 import hubert_ecg_probe as hp  # noqa: E402
+from feature_cache import load_features  # noqa: E402
 from latency_extended import N_RUNS, select_windows, timed  # noqa: E402
 
-RESULTS = ROOT / "results"
-
-
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 def main():
     assert hp.PREPROC == "authors"
     sel = select_windows()
     man = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")
     pos = pd.Series(np.arange(len(man)), index=man.segment_id).loc[sel.segment_id].values
-    Hb, Db = np.load(ROOT / "cache" / "hubert_ecg_authors" / "BUT_QDB.npy"), np.load(ROOT / "cache" / "d1_probe" / "BUT_QDB_image.npy")
+    # by segment id: the cached BUT_QDB sets hold the 1,047 windows of v1 (a positional read would be misaligned)
+    Hb = load_features(ROOT / "cache" / "hubert_ecg_authors", None, man.segment_id)
+    Db = load_features(ROOT / "cache" / "d1_probe", "image", man.segment_id)
     y, g = man.label.values, man.subject_id.values
     hub_probe = hp.probe().fit(Hb, y, groups=g).best_estimator_
     d1_probe = hp.probe().fit(Db, y, groups=g).best_estimator_

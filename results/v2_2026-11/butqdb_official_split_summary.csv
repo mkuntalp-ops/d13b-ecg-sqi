@@ -1,0 +1,12 @@
+analysis,model,n_windows,n_unusable,n_subjects,auroc,auroc_lo,auroc_hi,best,delta_vs_best,p_holm_vs_best
+F1b: official train/test split,Logistic_Regression_SQI,442,92,7,0.9799068322981366,0.957287669944903,1.0,False,-0.0198757763975157,1.0
+F1b: official train/test split,LightGBM_SQI,442,92,7,0.9917080745341614,0.9397264437689969,1.0,False,-0.008074534161490843,1.0
+F1b: official train/test split,Independent_SQI_MLP,442,92,7,0.9730745341614906,0.9512541918175722,1.0,False,-0.026708074534161685,1.0
+F1b: official train/test split,1D_CNN_RawECG,442,92,7,0.9997826086956523,0.9995171026156943,1.0,True,,
+F1b: official train/test split,2D_CNN_Image,442,92,7,0.9611801242236024,0.9332496075353218,1.0,False,-0.038602484472049836,1.0
+F1b: official train/test split,Multimodal_Fusion,442,92,7,0.9346583850931676,0.8825998645903859,1.0,False,-0.06512422360248471,1.0
+F1b: official train/test split,Rule_Based_SQI_Heuristic,442,92,7,0.993167701863354,0.9714589665653496,1.0,False,-0.006614906832298262,1.0
+F1b: official train/test split,LiquidAI_d1_3B_Neural,442,92,7,0.7228571428571429,0.5757142857142857,1.0,False,-0.2769254658385094,1.0
+F1b: official train/test split,d1_image_probe,442,92,7,0.9911490683229813,0.9840749414519906,1.0,False,-0.008633540372670945,1.0
+F1b: official train/test split,TabPFN_SQI,442,92,7,0.994968944099379,0.9601519756838907,1.0,False,-0.004813664596273304,1.0
+F1b: official train/test split,HuBERT_ECG_probe,442,92,7,0.9997826086956522,0.9995296210031868,1.0,False,-1.1102230246251565e-16,1.0

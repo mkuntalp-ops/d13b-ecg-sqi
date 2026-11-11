@@ -13,6 +13,10 @@ This script runs in a separate environment that has TabPFN installed (no downloa
     /Volumes/KIOXIA/AI/tabpfn_env/bin/python experiments/tabpfn_runner.py
 Checkpoint: $TABPFN_CKPT (default: /Volumes/KIOXIA/AI Models/tabpfn/tabpfn-v3-classifier-v3_default.ckpt)
 Output: results/tabpfn_predictions.csv (setting, dataset, segment_id, label, prob_unusable)
+
+--official-split (v2, plan item 3.1, analysis F1b): fit on the BUT QDB windows of the official train records and score
+those of the official test records, as listed in results/butqdb_official_split_assignment.csv (written by
+experiments/butqdb_official_split.py --split-only). Output: results/tabpfn_official_split_predictions.csv.
 """
 
 import os
@@ -23,13 +27,16 @@ import pandas as pd
 from tabpfn import TabPFNClassifier
 
 ROOT = Path(__file__).resolve().parent.parent
-RESULTS = ROOT / "results"
+import sys  # noqa: E402
+sys.path.insert(0, str(ROOT))
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 CKPT = os.environ.get("TABPFN_CKPT", "/Volumes/KIOXIA/AI Models/tabpfn/tabpfn-v3-classifier-v3_default.ckpt")
 OUT = RESULTS / "tabpfn_predictions.csv"
-# identical to features.sqi_extractor.SQI_FEATURE_NAMES (this environment does not import the project package)
+# identical to features.sqi_extractor.MODEL_INPUT_FEATURE_NAMES (this environment does not import the project package)
 FEATURES = ["bsqi_detector_agreement", "baseline_wander_ratio", "high_frequency_noise_ratio", "saturation_fraction",
             "flatline_fraction", "qrs_energy_ratio", "kurtosis_ksqi", "skewness_ssqi", "zero_crossing_rate",
-            "powerline_noise_ratio", "signal_std", "duration_sec", "sampling_rate"]
+            "powerline_noise_ratio", "signal_std"]
 SEED = 42
 
 
@@ -43,9 +50,8 @@ def X(df):
 
 def sources():
     but = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv").assign(dataset="BUT_QDB")
-    c11 = pd.read_csv(ROOT / "cache/datasets/cinc2011/cinc2011_random_draws_records.csv").drop_duplicates("segment_id")
-    lab = pd.read_csv(ROOT / "cache/datasets/cinc2011/cinc2011_random_draws_manifest.csv").drop_duplicates("record_name").set_index("record_name")["label"]
-    c11 = c11.assign(dataset="CinC2011", label=lab.loc[c11["record_name"].astype(int)].values, record=c11["record_name"].astype(str))
+    c11 = pd.read_csv(ROOT / "cache/datasets/cinc2011/cinc2011_setA_leadII_full.csv")  # all 998 labelled records (v2)
+    c11 = c11.assign(dataset="CinC2011", record=c11["record_name"].astype(str))
     c17 = pd.read_csv(ROOT / "cache/datasets/cinc2017/cinc2017_windows.csv").assign(dataset="CinC2017")
     c17["record"] = c17["record_name"].astype(str)
     nst = pd.read_csv(ROOT / "cache/datasets/nstdb/nstdb_paired_windows.csv").assign(dataset="NSTDB", label=np.nan)
@@ -62,6 +68,18 @@ def cinc17_training_subset(c17):
 def rows(setting, df, p):
     return pd.DataFrame({"setting": setting, "dataset": df["dataset"].values, "segment_id": df["segment_id"].values,
                          "label": df["label"].values, "prob_unusable": p})
+
+
+def official_split():
+    split = pd.read_csv(RESULTS / "butqdb_official_split_assignment.csv")
+    but = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv").assign(dataset="BUT_QDB")
+    if list(split.segment_id) != list(but.segment_id) or (split.label.values != but.label.values).any():
+        raise ValueError("assignment file does not match the cohort manifest; rerun butqdb_official_split.py --split-only")
+    tr, te = split.split.values == "train", split.split.values == "test"
+    p = model().fit(X(but[tr]), but.label.values[tr]).predict_proba(X(but[te]))[:, 1]
+    out = RESULTS / "tabpfn_official_split_predictions.csv"
+    rows("butqdb_official_split", but[te], p).to_csv(out, index=False)
+    print(f"[tabpfn] official split: train {tr.sum()}, test {te.sum()} windows. [Saved] {out}")
 
 
 def main():
@@ -94,4 +112,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "--official-split" in sys.argv:
+        official_split()
+    else:
+        main()

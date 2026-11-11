@@ -1,7 +1,8 @@
 """
 CinC 2011 records with a constant lead II (post hoc, descriptive; analysis plan amendment of 2026-10-26).
 
-65 of the 197 unacceptable CinC 2011 records have a constant lead II (signal SD 0). For every model trained on BUT QDB
+In the v1 565-record set, 65 of the 197 unacceptable CinC 2011 records had a constant lead II (signal SD 0); v2 uses all
+998 labelled records (the counts are printed at run time). For every model trained on BUT QDB
 only, this script counts how many of them are scored >= 0.5 and recomputes the AUROC without them. It also gives the
 univariate AUROC of every SQI on BUT QDB and on CinC 2011 lead II with and without these records (fourth-review
 request to explain the SQI reversals mechanistically). No tests.
@@ -22,14 +23,17 @@ from features.sqi_extractor import SQI_FEATURE_NAMES  # noqa: E402
 from lodo_multisource import load_sources  # noqa: E402
 from paired_comparisons import families  # noqa: E402
 
-OUT = ROOT / "results" / "cinc2011_constant_lead_check.csv"
-UNI_OUT = ROOT / "results" / "cinc2011_constant_lead_univariate.csv"
+from config import RESULTS_DIR  # noqa: E402  (ECG_RESULTS_DIR overrides)
+OUT = RESULTS_DIR / "cinc2011_constant_lead_check.csv"
+UNI_OUT = RESULTS_DIR / "cinc2011_constant_lead_univariate.csv"
 
 
 def main():
     c11 = load_sources()["CinC2011"]
     constant = set(c11.record[c11.signal_std == 0])
-    scores = families()["CinC2011 lead II (565 records)"][1]
+    scores = families()["CinC2011 lead II (998 records)"][1]
+    print(f"[constant] {len(constant)} records with constant lead II, "
+          f"{int(c11.label[c11.signal_std == 0].sum())} of them unacceptable; {int(c11.label.sum())} unacceptable in all", flush=True)
     is_const = scores.unit.isin(constant).values
     assert is_const.sum() == len(constant) and scores.y[is_const].eq(1).all()
     rows = []

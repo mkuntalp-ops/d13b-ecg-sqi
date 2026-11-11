@@ -1,0 +1,51 @@
+satija: Satija U, Ramkumar B, Manikandan MS. A review of signal processing techniques for electrocardiogram signal quality assessment. IEEE Rev Biomed Eng. 2018;11:36–52. doi:10.1109/RBME.2018.2810957
+clifford2012: Clifford GD, Behar J, Li Q, Rezek I. Signal quality indices and data fusion for determining clinical acceptability of electrocardiograms. Physiol Meas. 2012;33(9):1419–1433. doi:10.1088/0967-3334/33/9/1419
+orphanidou: Orphanidou C, Bonnici T, Charlton P, Clifton D, Vallance D, Tarassenko L. Signal-quality indices for the electrocardiogram and photoplethysmogram: derivation and applications to wireless monitoring. IEEE J Biomed Health Inform. 2015;19(3):832–838. doi:10.1109/JBHI.2014.2338351
+li2008: Li Q, Mark RG, Clifford GD. Robust heart rate estimation from multiple asynchronous noisy sources using signal quality indices and a Kalman filter. Physiol Meas. 2008;29(1):15–32. doi:10.1088/0967-3334/29/1/002
+liu2022: Liu F, Xia S, Wei S, Chen L, Ren Y, et al. Wearable electrocardiogram quality assessment using wavelet scattering and LSTM. Front Physiol. 2022;13:905447. doi:10.3389/fphys.2022.905447
+hu2025: Hu Y, Liu Q, Zhou Z, Xu W, Tang H. A paralleled multi-task learning-based framework for single-lead ECG fine-grained noise localization, denoising and signal quality assessment. Sensors. 2025;25(23):7152. doi:10.3390/s25237152
+huang2024: Huang X, Zhang F, Fan H, Chang H, Zhou B, Li Z. Pseudo anomalies enhanced deep support vector data description for electrocardiogram quality assessment. Comput Biol Med. 2024;170:107928. doi:10.1016/j.compbiomed.2024.107928
+herraiz: Herraiz ÁH, et al. A deep learning approach for featureless robust quality assessment of intermittent atrial fibrillation recordings from portable and wearable devices. Entropy. 2020;22(7):733. doi:10.3390/e22070733
+d13b: Liquid AI. LiquidAI/d1-3B: open-weight edge multimodal decision model. Hugging Face; 2026. Revision 051bcc464b01b9f92942b364d9586b0ef5912432. https://huggingface.co/LiquidAI/d1-3B
+smital2020: Smital L, Haider CR, Vitek M, et al. Real-time quality assessment of long-term ECG signals recorded by wearables in free-living conditions. IEEE Trans Biomed Eng. 2020;67(10):2721–2734. doi:10.1109/TBME.2020.2969719
+silva2011: Silva I, Moody GB, Celi L. Improving the quality of ECGs collected using mobile phones: the PhysioNet/Computing in Cardiology Challenge 2011. Comput Cardiol. 2011;38:273–276.
+cinc2011protocol: PhysioNet/Computing in Cardiology Challenge 2011: challenge protocol. https://moody-challenge.physionet.org/2011/
+subbaswamy: Subbaswamy A, Saria S. From development to deployment: dataset shift, causality, and shift-stable models in health AI. Biostatistics. 2020;21(2):345–352. doi:10.1093/biostatistics/kxz041
+guo2022: Guo LL, et al. Evaluation of domain generalization and adaptation on improving model robustness to temporal dataset shift in clinical medicine. Sci Rep. 2022;12:2726. doi:10.1038/s41598-022-06484-1
+moeyersons: Moeyersons J, Smets E, Morales J, et al. Artefact detection and quality assessment of ambulatory ECG signals. Comput Methods Programs Biomed. 2019;182:105050. doi:10.1016/j.cmpb.2019.105050
+tabpfn: Hollmann N, Müller S, Purucker L, et al. Accurate predictions on small data with a tabular foundation model. Nature. 2025;637(8045):319–326. doi:10.1038/s41586-024-08328-6
+hubert: Coppola E, Savardi M, Massussi M, Adamo M, Metra M, Signoroni A. HuBERT-ECG as a self-supervised foundation model for broad and scalable cardiac applications. medRxiv. 2024. doi:10.1101/2024.11.14.24317328 (preprint)
+ecgfm: McKeen K, Masood S, Toma A, Rubin B, Wang B. ECG-FM: an open electrocardiogram foundation model. JAMIA Open. 2025;8(5):ooaf122. doi:10.1093/jamiaopen/ooaf122
+butqdb: Nemcova A, Smisek R, Opravilová K, Vitek M, Smital L, Maršánová L. Brno University of Technology ECG Quality Database (BUT QDB), version 1.0.0. PhysioNet; 2020. doi:10.13026/kah4-0w24
+smital2026: Smital L, Nemcova A, Saclova L, Smisek R, Opravilova K, Filipenska M, Vitek M. Real-world 24h+ ECG dataset with quality annotations and motion context. Sci Data. 2026. doi:10.1038/s41597-026-07905-w
+clifford2017: Clifford GD, Liu C, Moody B, Lehman LH, Silva I, Li Q, Johnson AE, Mark RG. AF classification from a short single lead ECG recording: the PhysioNet/Computing in Cardiology Challenge 2017. Comput Cardiol. 2017;44. doi:10.22489/CinC.2017.065-469
+nstdb: Moody GB, Muldrow WE, Mark RG. A noise stress test for arrhythmia detectors. Comput Cardiol. 1984;11:381–384.
+pantompkins: Pan J, Tompkins WJ. A real-time QRS detection algorithm. IEEE Trans Biomed Eng. 1985;BME-32(3):230–236. doi:10.1109/TBME.1985.325532
+delong: DeLong ER, DeLong DM, Clarke-Pearson DL. Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach. Biometrics. 1988;44(3):837–845.
+holm: Holm S. A simple sequentially rejective multiple test procedure. Scand J Stat. 1979;6(2):65–70.
+tabpfn3: Grinsztajn L, Flöge K, Key O, et al. TabPFN-3: technical report. arXiv:2605.13986. 2026.
+tripod: Collins GS, Moons KGM, Dhiman P, et al. TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378. doi:10.1136/bmj-2023-078378
+hayn: Hayn D, Jammerbund B, Schreier G. QRS detection based ECG quality assessment. Physiol Meas. 2012;33(9):1449–1461. doi:10.1088/0967-3334/33/9/1449
+johannesen: Johannesen L, Galeotti L. Automatic ECG quality scoring methodology: mimicking human annotators. Physiol Meas. 2012;33(9):1479–1489. doi:10.1088/0967-3334/33/9/1479
+jekova: Jekova I, Krasteva V, Christov I, Abächerli R. Threshold-based system for noise detection in multilead ECG recordings. Physiol Meas. 2012;33(9):1463–1477. doi:10.1088/0967-3334/33/9/1463
+chen2012: Chen Y, Yang H. Self-organized neural network for the quality control of 12-lead ECG signals. Physiol Meas. 2012;33(9):1399–1418. doi:10.1088/0967-3334/33/9/1399
+zhu2020: Zhu Z, Li J, Zhang S, Geng N, Xu L, Greenwald SE. Quality evaluation of signals collected by portable ECG devices using dimensionality reduction and flexible model integration. Physiol Meas. 2020;41(10):105001. doi:10.1088/1361-6579/abba0b
+siamquality: Ding C, Guo Z, Chen Z, Lee RJ, Rudin C, Hu X. SiamQuality: a ConvNet-based foundation model for photoplethysmography signals. Physiol Meas. 2024;45(8):085004. doi:10.1088/1361-6579/ad6747
+cmaecg: Nguyen HD, Phan DT. CMA-ECG: cross-modal attention for enhanced ECG quality assessment and denoising. Physiol Meas. 2025;46(11):115001. doi:10.1088/1361-6579/ae15e4
+behar: Behar J, Oster J, Li Q, Clifford GD. ECG signal quality during arrhythmia and its application to false alarm reduction. IEEE Trans Biomed Eng. 2013;60(6):1660–1666. doi:10.1109/TBME.2013.2240452
+zhao2018: Zhao Z, Zhang Y. SQI quality evaluation mechanism of single-lead ECG signal based on simple heuristic fusion and fuzzy comprehensive evaluation. Front Physiol. 2018;9:727. doi:10.3389/fphys.2018.00727
+morgado: Morgado E, Alonso-Atienza F, Santiago-Mozos R, et al. Quality estimation of the electrocardiogram using cross-correlation among leads. Biomed Eng Online. 2015;14:59. doi:10.1186/s12938-015-0053-1
+shahriari: Shahriari Y, Fidler R, Pelter MM, Bai Y, Villaroman A, Hu X. Electrocardiogram signal quality assessment based on structural image similarity metric. IEEE Trans Biomed Eng. 2018;65(4):745–753. doi:10.1109/TBME.2017.2717876
+liu2021: Liu G, Han X, Tian L, Zhou W, Liu H. ECG quality assessment based on hand-crafted statistics and deep-learned S-transform spectrogram features. Comput Methods Programs Biomed. 2021;208:106269. doi:10.1016/j.cmpb.2021.106269
+heartbeit: Vaid A, Jiang J, Sawant A, et al. A foundational vision transformer improves diagnostic performance for electrocardiograms. NPJ Digit Med. 2023;6:108. doi:10.1038/s41746-023-00840-9
+stmem: Na Y, Park M, Tae Y, Joo S. Guiding masked representation learning to capture spatio-temporal relationship of electrocardiogram. arXiv:2402.09450. 2024.
+ecgfounder: Li J, Aguirre AD, Junior VM, et al. An electrocardiogram foundation model built on over 10 million recordings. NEJM AI. 2025;2(7). doi:10.1056/AIoa2401033
+merl: Liu C, Wan Z, Ouyang C, et al. Zero-shot ECG classification with multimodal learning and test-time clinical knowledge enhancement. arXiv:2403.06659. 2024.
+pulse: Liu R, Bai Y, Yue X, Zhang P. Teach multimodal LLMs to comprehend electrocardiographic images. arXiv:2410.19008. 2024.
+kmerl: Liu C, Ouyang C, Wan Z, et al. Knowledge-enhanced multimodal ECG representation learning with arbitrary-lead inputs. arXiv:2502.17900. 2025.
+ecgchat: Zhao Y, Kang J, Zhang T, et al. ECG-Chat: a large ECG-language model for cardiac disease diagnosis. arXiv:2408.08849. 2024.
+vancalster: Van Calster B, McLernon DJ, van Smeden M, Wynants L, Steyerberg EW. Calibration: the Achilles heel of predictive analytics. BMC Med. 2019;17:230. doi:10.1186/s12916-019-1466-7
+ribeiro: Ribeiro AH, Ribeiro MH, Paixão GMM, et al. Automatic diagnosis of the 12-lead ECG using a deep neural network. Nat Commun. 2020;11:1760. doi:10.1038/s41467-020-15432-4
+hannun: Hannun AY, Rajpurkar P, Haghpanahi M, et al. Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network. Nat Med. 2019;25(1):65–69. doi:10.1038/s41591-018-0268-3
+drew: Drew BJ, Harris P, Zègre-Hemsey JK, et al. Insights into the problem of alarm fatigue with physiologic monitor devices: a comprehensive observational study of consecutive intensive care unit patients. PLoS One. 2014;9(10):e110274. doi:10.1371/journal.pone.0110274
+ptbxl: Wagner P, Strodthoff N, Bousseljot RD, Kreiseler D, Lunze FI, Samek W, Schaeffter T. PTB-XL, a large publicly available electrocardiography dataset. Sci Data. 2020;7(1):154. doi:10.1038/s41597-020-0495-6

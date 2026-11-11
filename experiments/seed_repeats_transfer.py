@@ -3,7 +3,7 @@ Seed repetition of single-source transfer and LODO (analysis plan A1, 2026-10-25
 
 For training seeds 1-4 (seed 42 is the stored main run), the models of experiments/lodo_multisource.py are retrained
 with the module-level RANDOM_SEED set as in experiments/cinc_draws_by_seed.py:
-- BUT-only: trained on the full BUT QDB cohort, scored on CinC 2011 (565 records, lead II) and all CinC 2017 windows;
+- BUT-only: trained on the full BUT QDB cohort, scored on CinC 2011 (lead II; all 998 labelled records in v2, 565 in v1) and all CinC 2017 windows;
 - LODO: the three leave-one-dataset-out splits, with the same CinC 2017 training subset (seed 42).
 Logistic regression and LightGBM use a fixed random_state, so they are identical across seeds; they are retrained
 anyway (seconds) and stored for completeness, but only the SQI MLP, 1D CNN, 2D CNN and multimodal net are
@@ -34,7 +34,8 @@ import models.multimodal_fusion as mm_mod  # noqa: E402
 from lodo_multisource import (PRED_OUT as LODO_PRED, TRAINED, cinc17_training_subset, load_sources,  # noqa: E402
                               single_source_predictions, train_and_score)
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 OUT = RESULTS / "seed_repeats_predictions.csv"
 SUM_OUT = RESULTS / "seed_repeats_summary.csv"
 NEW_SEEDS = [1, 2, 3, 4]

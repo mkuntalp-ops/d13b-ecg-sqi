@@ -1,0 +1,5 @@
+stratum,n_records,n_patients,patients_with_more_than_one_record
+clean,300,300,0
+global,300,300,0
+partial,300,300,0
+all,900,900,0

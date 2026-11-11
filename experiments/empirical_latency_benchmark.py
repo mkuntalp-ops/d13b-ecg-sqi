@@ -30,7 +30,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from config import RESULTS_DIR, TARGET_FS, DEFAULT_WINDOW_SEC
-from features.sqi_extractor import SQI_FEATURE_NAMES, extract_sqi_features
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES, extract_sqi_features
 from data.ecg_rendering import render_ecg_image
 from data.units import to_millivolts
 from models.tabular_baselines import SQILogisticRegression, SQIGradientBoosting
@@ -117,7 +117,7 @@ def run_empirical_profiling(n_samples: int = 25):
     print("[2/7] Profiling Logistic Regression (SQI)...")
     lr = SQILogisticRegression()
     # Fit dummy on first 10
-    X_init = np.nan_to_num(eval_df[SQI_FEATURE_NAMES].values[:10])
+    X_init = np.nan_to_num(eval_df[MODEL_INPUT_FEATURE_NAMES].values[:10])
     y_init = eval_df["label"].values[:10]
     lr.fit(X_init, y_init)
 
@@ -126,7 +126,7 @@ def run_empirical_profiling(n_samples: int = 25):
         raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
-        x_vec = np.array([[sqis[k] for k in SQI_FEATURE_NAMES]])
+        x_vec = np.array([[sqis[k] for k in MODEL_INPUT_FEATURE_NAMES]])
         t_pre_ms = (time.perf_counter() - t0_pre) * 1000.0
 
         t0_fwd = time.perf_counter()
@@ -149,7 +149,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     summary_stats.append({
         "Model": "Logistic Regression (SQI)",
-        "Parameters": 14,
+        "Parameters": len(MODEL_INPUT_FEATURE_NAMES) + 1,  # coefficients + intercept
         "Weights_MiB": 0.01,
         "Loaded_MPS_Tensor_MiB": "N/A (CPU)",
         "Post_Infer_MPS_Tensor_MiB": "N/A (CPU)",
@@ -172,7 +172,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     # Parameter count and weight size from the cohort-fitted model (the 10-sample fit above is latency-only)
     cohort_df = pd.read_csv(manifest_path)
-    lgb_full = SQIGradientBoosting().fit(np.nan_to_num(cohort_df[SQI_FEATURE_NAMES].values), cohort_df["label"].values)
+    lgb_full = SQIGradientBoosting().fit(np.nan_to_num(cohort_df[MODEL_INPUT_FEATURE_NAMES].values), cohort_df["label"].values)
     tdf = lgb_full.model.booster_.trees_to_dataframe()
     lgb_split_nodes = int(tdf["split_feature"].notna().sum())
     import pickle
@@ -183,7 +183,7 @@ def run_empirical_profiling(n_samples: int = 25):
         raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
-        x_vec = np.array([[sqis[k] for k in SQI_FEATURE_NAMES]])
+        x_vec = np.array([[sqis[k] for k in MODEL_INPUT_FEATURE_NAMES]])
         t_pre_ms = (time.perf_counter() - t0_pre) * 1000.0
 
         t0_fwd = time.perf_counter()
@@ -232,7 +232,7 @@ def run_empirical_profiling(n_samples: int = 25):
         raw_sig = to_millivolts(np.load(row["signal_path"]), "uV").astype(np.float32)  # BUT QDB cache is in uV
         t0_pre = time.perf_counter()
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
-        x_vec = np.array([[sqis[k] for k in SQI_FEATURE_NAMES]])
+        x_vec = np.array([[sqis[k] for k in MODEL_INPUT_FEATURE_NAMES]])
         t_pre_ms = (time.perf_counter() - t0_pre) * 1000.0
 
         if torch.backends.mps.is_available():
@@ -259,7 +259,7 @@ def run_empirical_profiling(n_samples: int = 25):
 
     summary_stats.append({
         "Model": "Independent SQI MLP",
-        "Parameters": 3201,
+        "Parameters": sum(p.numel() for p in mlp.net.parameters()),
         "Weights_MiB": 0.01,
         "Loaded_MPS_Tensor_MiB": "N/A",
         "Post_Infer_MPS_Tensor_MiB": "N/A",
@@ -392,7 +392,7 @@ def run_empirical_profiling(n_samples: int = 25):
         t0_pre = time.perf_counter()
         img = render_ecg_image(raw_sig, TARGET_FS, dpi=100)
         sqis = extract_sqi_features(raw_sig, TARGET_FS)
-        x_vec = np.array([[sqis[k] for k in SQI_FEATURE_NAMES]])
+        x_vec = np.array([[sqis[k] for k in MODEL_INPUT_FEATURE_NAMES]])
         t_pre_ms = (time.perf_counter() - t0_pre) * 1000.0
 
         if torch.backends.mps.is_available():

@@ -88,6 +88,8 @@ Outputs:
 - `figures/`: Figures 1–4.
 - `manuscript/final_manuscript.md`: the manuscript; `.docx` and `.pdf` are exported from it with pandoc and headless Chrome.
 
+**v2 revision (2026-11, not yet committed at the time of writing).** Outputs: `results/v2_2026-11/` (figures in its `figures/` folder); the v1 submission stays in `results/` and commit 55095ed. Set `ECG_RESULTS_DIR=results/v2_2026-11` and `ECG_FIGURES_DIR=results/v2_2026-11/figures`, then run `experiments/v2_setup.py`, `experiments/v2_queue.sh` and `experiments/v2_queue_part2.sh` to `part5.sh` in order. Cohort: BUT QDB 988 windows, CinC 2011 998 records, 11 tabular inputs. Latency has a single entry point, `experiments/latency_all.sh`, and must run alone. Manuscript: edit `manuscript/v2/main_v2_template.md`, `manuscript/v2/supplement_v2_template.md`, `manuscript/v2/references_v2.md`; run `python evaluation/build_manuscript_tables.py`, `python evaluation/assemble_q1_manuscript.py`, then `python evaluation/verify_v2_prose.py` (checks prose numbers against the saved outputs). Plan and progress: `REVISION_PLAN_2026-11-05_post_desk_rejection.md`.
+
 Superseded material (v1 and 124-window pilot experiments, earlier audit outputs, the stale manuscript builders) is in `experiments/_superseded/`, `evaluation/_superseded/` and `results/_superseded_2026-10-12/`. Do not cite it.
 
 Additional analyses (run directly; see REVIEW_2026-10-12.md section 7):
@@ -102,6 +104,12 @@ Additional analyses (run directly; see REVIEW_2026-10-12.md section 7):
   - `python experiments/cinc2017_extraction.py`, `python experiments/cinc2011_twelve_lead_extraction.py`: external windows (local copies of the PhysioNet datasets under /Volumes/KIOXIA/Datasets)
   - `python experiments/d1_linear_probe.py`: d1-3B probes and external d1 predictions (Table 7b)
   - `python experiments/external_validation.py`: CinC 2017 and CinC 2011 12-lead (Tables 8, 8b, 2e)
+  - `ECG_RESULTS_DIR=results/v2_2026-11 python experiments/d1_probe_twelve_lead.py [--constant-leads]`: d1-3B image-token probe on 12 leads of CinC 2011 (v2; Tables S5 and S35)
+  - `ECG_RESULTS_DIR=results/v2_2026-11 python experiments/hubert_probe_twelve_lead.py`: HuBERT-ECG probe on 12 leads of CinC 2011 (v2; Tables S5 and S35)
+  - `ECG_RESULTS_DIR=results/v2_2026-11 python experiments/multimodal_saturation_diagnosis.py`: why the multimodal net gives one score on CinC 2011 (v2; Table S36)
+  - `ECG_RESULTS_DIR=results/v2_2026-11 python evaluation/audit_sensitivity.py`: post hoc sensitivity analyses asked for by the code audit of 2026-11-11 (`REVIEW_2026-11-11_code_audit_v2.md`), from saved predictions only: CinC 2011 paired tests without the 73 constant lead II records, BUT QDB per-subject AUROC, CinC 2017 AUROC by number of windows per recording, the patient check of the PTB-XL sample, and the BUT QDB quota versus the official intervals (Tables S40–S43). Run it before `evaluation/build_manuscript_tables.py`
+  - `ECG_RESULTS_DIR=results/v2_2026-11 python experiments/cinc2017_quality_gating.py [--analysis-only]`: effect of quality gating on rhythm classification, CinC 2017 (v2; Table S37)
+  - `ECG_RESULTS_DIR=results/v2_2026-11 python experiments/ptbxl_frozen_test.py --sample`, then `--extract`, `--score-d1`, `--score-others`, `--analyse` (once): frozen test on PTB-XL (v2; plan in `ANALYSIS_PLAN_2026-11-09_additional_analyses.md`)
   - `python experiments/nested_thresholds.py`: nested and transferred thresholds (Tables 1c, 2f)
   - `python experiments/prevalence_subjects_features.py`: natural prevalence, subject heterogeneity, feature shift (Tables 1e, 1f, 2g)
   - `python experiments/latency_extended.py`: extended latency (Table 4b; run alone)

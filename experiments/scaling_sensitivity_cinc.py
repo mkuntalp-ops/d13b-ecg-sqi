@@ -1,8 +1,8 @@
 """
 Table 2c: scaling and feature sensitivity of the SQI models under BUT QDB -> CinC 2011 transfer.
 
-Train on the 1,047-window BUT QDB cohort (fit scalers on BUT QDB only), evaluate frozen on the
-150 CinC 2011 Set A records (Lead II). Reports AUROC / AP for:
+Train on the 988-window BUT QDB cohort (1,047 in v1; fit scalers on BUT QDB only), evaluate frozen on the
+998 labelled CinC 2011 Set A records (lead II; 150 in v1). Reports AUROC / AP for:
 - Logistic Regression under three scalers (StandardScaler, RobustScaler, z-score clipped to [-3, 3])
 - Logistic Regression and Independent SQI MLP under feature-subset variants
 
@@ -23,17 +23,18 @@ from sklearn.preprocessing import RobustScaler, StandardScaler
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from features.sqi_extractor import SQI_FEATURE_NAMES as F
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES as F
 from models.multimodal_fusion import IndependentSQIClassifier
 
-RESULTS_DIR = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS_DIR = _CFG_RESULTS
 COHORT = RESULTS_DIR / "manifest_butqdb_1000_cohort.csv"
-CINC = PROJECT_ROOT / "cache" / "datasets" / "cinc2011" / "cinc2011_segments_lead1_max150.csv"
+from config import CINC2011_LEADII_FULL as CINC  # noqa: E402  (all 998 labelled records, v2)
 OUT = RESULTS_DIR / "cinc2011_scaling_sensitivity.csv"
 
 SAT_FLAT_CONST = ["saturation_fraction", "flatline_fraction", "duration_sec", "sampling_rate"]
 VARIANTS = {
-    "All 13 features": F,
+    "All 11 model features": F,
     "Drop signal_std": [f for f in F if f != "signal_std"],
     "Drop saturation, flatline, constants": [f for f in F if f not in SAT_FLAT_CONST],
     "Drop signal_std, saturation, flatline, constants": [f for f in F if f not in SAT_FLAT_CONST + ["signal_std"]],

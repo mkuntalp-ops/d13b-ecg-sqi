@@ -19,7 +19,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from torchvision import transforms
 
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES
 
 _MM_IMAGE_CACHE = {}
 
@@ -49,7 +49,7 @@ class MultimodalECGDataset(Dataset):
 
 
 class MultimodalDecisionNet(nn.Module):
-    def __init__(self, num_sqi_features: int = len(SQI_FEATURE_NAMES), embed_dim: int = 64):
+    def __init__(self, num_sqi_features: int = len(MODEL_INPUT_FEATURE_NAMES), embed_dim: int = 64):
         super().__init__()
         self.embed_dim = embed_dim
         
@@ -224,7 +224,7 @@ class SinglePassMultimodalClassifier:
 
 
 class IndependentSQINet(nn.Module):
-    def __init__(self, in_features: int = len(SQI_FEATURE_NAMES), hidden_dim: int = 64):
+    def __init__(self, in_features: int = len(MODEL_INPUT_FEATURE_NAMES), hidden_dim: int = 64):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(in_features, hidden_dim),
@@ -242,7 +242,7 @@ class IndependentSQINet(nn.Module):
 
 
 class IndependentSQIClassifier:
-    def __init__(self, in_features: int = len(SQI_FEATURE_NAMES), epochs: int = 35, lr: float = 1e-3,
+    def __init__(self, in_features: int = len(MODEL_INPUT_FEATURE_NAMES), epochs: int = 35, lr: float = 1e-3,
                  batch_size: int = 64, device: Optional[str] = None):
         self.epochs = epochs
         self.lr = lr

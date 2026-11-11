@@ -27,6 +27,13 @@ SQI_FEATURE_NAMES = [
     "sampling_rate"
 ]
 
+# Inputs of the trained models (tabular models, SQI MLP, multimodal net, TabPFN). duration_sec and
+# sampling_rate are constant (10 s, 500 Hz) in every dataset after resampling, so they carry no information
+# and are excluded (revision of 2026-11-05). SQI_FEATURE_NAMES keeps all 13 names because the zero-shot d1-3B
+# prompt (sqi_to_text) and the rule heuristic read them from a dictionary; the d1-3B prompt is unchanged.
+MODEL_INPUT_FEATURE_NAMES = SQI_FEATURE_NAMES[:11]
+assert "duration_sec" not in MODEL_INPUT_FEATURE_NAMES and "sampling_rate" not in MODEL_INPUT_FEATURE_NAMES
+
 def compute_spectral_powers(ecg: np.ndarray, fs: float) -> Dict[str, float]:
     """
     Computes Welch power spectral density and relative power bands:
@@ -96,6 +103,54 @@ def compute_flatline_and_saturation(ecg: np.ndarray) -> Tuple[float, float]:
     sat_fraction = float((min_count + max_count) / len(ecg))
     
     return flatline_fraction, sat_fraction
+
+
+ROBUST_FLAT_WINDOW_S = 1.0       # pre-stated 2026-11-06 (REVISION_PLAN, 3.3b); not tuned on any dataset
+ROBUST_FLAT_PTP_MV = 0.02
+ROBUST_SAT_MIN_RUN_S = 0.05
+ROBUST_SAT_BAND = 0.005
+
+
+def robust_flatline_and_saturation(ecg_mv: np.ndarray, fs: float) -> Tuple[float, float]:
+    """
+    Quantization-insensitive flatline and saturation fractions (exploratory analysis 3.3b, revision of 2026-11-06).
+
+    flatline: fraction of samples inside at least one window of ROBUST_FLAT_WINDOW_S seconds whose peak-to-peak
+      amplitude is <= ROBUST_FLAT_PTP_MV (signal in mV). Unlike flatline_fraction (consecutive equal samples), it does
+      not count the repeats produced by a coarse ADC step.
+    saturation: fraction of samples in uninterrupted runs of at least ROBUST_SAT_MIN_RUN_S seconds within
+      ROBUST_SAT_BAND of the span from the minimum or the maximum (a plateau at the rail).
+    """
+    x = np.asarray(ecg_mv, dtype=float)
+    n = len(x)
+    w = int(round(ROBUST_FLAT_WINDOW_S * fs))
+    if n < 2 or w < 2:
+        return 1.0, 1.0
+    if n < w:
+        flat = 1.0 if np.ptp(x) <= ROBUST_FLAT_PTP_MV else 0.0
+    else:
+        from numpy.lib.stride_tricks import sliding_window_view
+        win = sliding_window_view(x, w)
+        is_flat = (win.max(axis=1) - win.min(axis=1)) <= ROBUST_FLAT_PTP_MV
+        cover = np.zeros(n + 1, dtype=int)            # mark every sample covered by a flat window
+        starts = np.where(is_flat)[0]
+        np.add.at(cover, starts, 1)
+        np.add.at(cover, starts + w, -1)
+        flat = float((np.cumsum(cover)[:n] > 0).mean())
+    span = np.ptp(x)
+    if span <= ROBUST_FLAT_PTP_MV:
+        return flat, 0.0                               # no rail to clip against; reported as flat, not saturated
+    at_rail = (x <= x.min() + ROBUST_SAT_BAND * span) | (x >= x.max() - ROBUST_SAT_BAND * span)
+    min_run = int(round(ROBUST_SAT_MIN_RUN_S * fs))
+    sat_samples, run = 0, 0
+    for v in np.r_[at_rail, False]:
+        if v:
+            run += 1
+        else:
+            if run >= min_run:
+                sat_samples += run
+            run = 0
+    return flat, float(sat_samples / n)
 
 
 def extract_sqi_features(ecg: np.ndarray, fs: float) -> Dict[str, float]:

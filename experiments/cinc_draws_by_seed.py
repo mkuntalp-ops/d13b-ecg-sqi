@@ -25,9 +25,10 @@ import models.cnn1d as cnn1d_mod
 import models.cnn2d as cnn2d_mod
 import models.multimodal_fusion as mm_mod
 from cinc_random_draws import CINC_DIR, MANIFEST_OUT, fit_models, metrics
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 SEEDS = [42, 1, 2, 3, 4]
 OUT = RESULTS / "cinc_draws_by_seed_summary.csv"
 TRAINED = ["Logistic_Regression_SQI", "LightGBM_SQI", "Independent_SQI_MLP", "1D_CNN_RawECG", "2D_CNN_Image", "Multimodal_Fusion"]
@@ -46,7 +47,7 @@ def main():
         set_seed(seed)
         models = fit_models()  # trains LR, LightGBM, MLP, 1D CNN, 2D CNN, multimodal with the current seed
         lr, lgb, mlp, c1, c2, mm = models
-        X = np.nan_to_num(records[SQI_FEATURE_NAMES].values.astype(float))
+        X = np.nan_to_num(records[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
         imgs = records["image_path"].tolist()
         sigs = [np.load(p) for p in records["signal_path"]]
         pred = pd.DataFrame({"record_name": records["record_name"].values})

@@ -1,7 +1,7 @@
 """
 Local recalibration with a small labelled target sample (analysis plan A3, 2026-10-25).
 
-How many labelled target recordings are needed to set an operating point on a new dataset? For CinC 2011 (565
+How many labelled target recordings are needed to set an operating point on a new dataset? For CinC 2011 (998
 records) and CinC 2017 (8,512 recordings), and every model with BUT-only scores on the full set (the score tables of
 evaluation/paired_comparisons.py), n target records are drawn by simple random sampling (n = 25, 50, 100, 200;
 500 repetitions; seed 42). Evaluation is always on the records not drawn.
@@ -34,14 +34,15 @@ sys.path.insert(0, str(PROJECT_ROOT / "experiments"))
 from nested_thresholds import pick  # noqa: E402
 from paired_comparisons import families  # noqa: E402
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 DRAWS_OUT = RESULTS / "local_recalibration_draws.csv"
 SUM_OUT = RESULTS / "local_recalibration_summary.csv"
 SAMPLE_SIZES = [25, 50, 100, 200]
 REPS = 500
 SEED = 42
 FPR_TARGET, FPR_TOLERANCE = 0.05, 0.075
-TARGETS = {"CinC2011 lead II (565 records)": "CinC2011", "CinC2017 (8,512 recordings)": "CinC2017"}
+TARGETS = {"CinC2011 lead II (998 records)": "CinC2011", "CinC2017 (8,512 recordings)": "CinC2017"}
 
 
 def logit(p):

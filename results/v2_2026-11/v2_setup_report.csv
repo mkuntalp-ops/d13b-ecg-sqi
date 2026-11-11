@@ -1,0 +1,4 @@
+set,windows,unusable,usable,subjects,windows_by_fold
+v1,1047,297,750,15,"{0: np.int64(214), 1: np.int64(210), 2: np.int64(210), 3: np.int64(210), 4: np.int64(203)}"
+v2,988,238,750,15,"{0: np.int64(214), 1: np.int64(210), 2: np.int64(210), 3: np.int64(151), 4: np.int64(203)}"
+excluded,59,59,0,1,{3: np.int64(59)}

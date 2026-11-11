@@ -3,8 +3,8 @@ Sensitivity analysis: relabel BUT QDB class-2 windows as unusable.
 
 Two label schemes are trained with identical folds, settings and seed (42), in the same run, so the
 comparison isolates the effect of the labels:
-- original:        class 3 = unusable (main analysis; 297 unusable windows)
-- class2_unusable: classes 2 and 3 = unusable (490 unusable windows)
+- original:        class 3 = unusable (main analysis; 297 unusable windows in v1, 238 in v2)
+- class2_unusable: classes 2 and 3 = unusable (490 unusable windows in v1; v2 count printed at run time)
 
 The rule heuristic and the zero-shot d1-3B do not use training labels, so their scores are taken from
 the main consolidated predictions and only the evaluation labels change.
@@ -25,13 +25,14 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from evaluation.metrics import compute_subject_level_bootstrap_ci
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
 from models.multimodal_fusion import IndependentSQIClassifier, SinglePassMultimodalClassifier
 from models.tabular_baselines import SQIGradientBoosting, SQILogisticRegression
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 MANIFEST = RESULTS / "manifest_butqdb_1000_cohort.csv"
 OOF_OUT = RESULTS / "butqdb_class2_oof_predictions.csv"
 SUMMARY_OUT = RESULTS / "butqdb_class2_sensitivity.csv"
@@ -43,7 +44,7 @@ SCHEMES = {"original": lambda c: (c == 3).astype(int), "class2_unusable": lambda
 
 def train_oof(df: pd.DataFrame, y: np.ndarray) -> dict:
     """5-fold subject-independent OOF predictions with fixed threshold 0.5 (no threshold tuning needed)."""
-    X = np.nan_to_num(df[SQI_FEATURE_NAMES].values.astype(float))
+    X = np.nan_to_num(df[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
     sigs = [np.load(p) for p in df["signal_path"]]
     imgs = df["image_path"].tolist()
     fold = df["fold_id"].values

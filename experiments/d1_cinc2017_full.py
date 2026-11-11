@@ -14,6 +14,7 @@ the probe's recording maxima on the 556 subset recordings must equal results/d1_
 
 Usage: python experiments/d1_cinc2017_full.py            (extract remaining chunks, then merge)
        python experiments/d1_cinc2017_full.py --merge
+       python experiments/d1_cinc2017_full.py --rescore  (v2: refit the BUT-only probe; run after d1_linear_probe.py)
 """
 
 import sys
@@ -31,7 +32,7 @@ from d1_linear_probe import CINC17, FEAT_DIR, PRED_OUT, RESULTS, Capture, probe 
 from features.sqi_extractor import SQI_FEATURE_NAMES  # noqa: E402
 
 PART_DIR = FEAT_DIR / "CinC2017_rest"
-FULL_PRED = PROJECT_ROOT / "results" / "d1_cinc2017_full_predictions.csv"
+FULL_PRED = RESULTS / "d1_cinc2017_full_predictions.csv"  # config.RESULTS_DIR (ECG_RESULTS_DIR overrides)
 CHUNK = 1000
 
 
@@ -102,7 +103,34 @@ def merge():
     print(f"[Saved] {FULL_PRED} ({len(meta)} windows, {meta.record_name.nunique()} recordings)")
 
 
+def rescore():
+    """v2: refit the BUT-only image-token probe on the v2 BUT QDB windows and rescore all CinC 2017 windows.
+    Reads cached features by segment id and the v1 zero-shot scores; writes only into RESULTS (no cache files)."""
+    from feature_cache import load_features
+    c17 = pd.read_csv(CINC17)
+    v1 = pd.read_csv(PROJECT_ROOT / "results" / "d1_cinc2017_full_predictions.csv").set_index("segment_id")
+    if set(v1.index) != set(c17.segment_id):
+        raise ValueError("v1 zero-shot CinC 2017 scores do not cover the CinC 2017 windows")
+    meta = c17[["segment_id", "record_name", "label"]].copy()
+    meta["prob_unusable"] = v1.loc[meta.segment_id, "prob_unusable"].values
+    but = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")
+    full = probe(groups=True).fit(load_features(FEAT_DIR, "image", but.segment_id), but.label.values,
+                                  groups=but.subject_id.values)
+    meta["prob_image_probe"] = full.predict_proba(load_features(FEAT_DIR, "image", meta.segment_id))[:, 1]
+    stored = pd.read_csv(RESULTS / "d1_probe_transfer_predictions.csv")
+    stored = stored[(stored.features == "image") & (stored.dataset == "CinC2017")].set_index("record_name").prob_unusable
+    mx = meta.groupby(meta.record_name.astype(str)).prob_image_probe.max().loc[stored.index.astype(str)]
+    diff = float(np.abs(mx.values - stored.values).max())
+    print(f"[check] max |probe rescored - d1_linear_probe| on the subset recordings = {diff:.2e} (BUT C={full.best_params_})")
+    assert diff < 1e-6
+    meta.to_csv(FULL_PRED, index=False)
+    print(f"[Saved] {FULL_PRED} ({len(meta)} windows, {meta.record_name.nunique()} recordings)")
+
+
 if __name__ == "__main__":
+    if "--rescore" in sys.argv:
+        rescore()
+        sys.exit(0)
     if "--merge" not in sys.argv:
         extract()
     merge()

@@ -11,7 +11,9 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-GEN = PROJECT_ROOT / "results" / "manuscript_tables_2026-10-12.md"
+sys.path.insert(0, str(PROJECT_ROOT))
+from config import RESULTS_DIR  # noqa: E402  (ECG_RESULTS_DIR overrides)
+GEN = RESULTS_DIR / "manuscript_tables_2026-10-12.md"
 MAN = PROJECT_ROOT / "manuscript" / "final_manuscript.md"
 
 

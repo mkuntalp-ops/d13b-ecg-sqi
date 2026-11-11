@@ -40,13 +40,15 @@ from sklearn.preprocessing import StandardScaler
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
 from models.multimodal_fusion import IndependentSQIClassifier, SinglePassMultimodalClassifier
 from models.tabular_baselines import SQIGradientBoosting, SQILogisticRegression
 
-RESULTS = PROJECT_ROOT / "results"
+from feature_cache import load_features, missing_ids  # noqa: E402
+from config import CINC2011_LEADII_FULL, RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 CINC11 = PROJECT_ROOT / "cache" / "datasets" / "cinc2011"
 CINC17 = PROJECT_ROOT / "cache" / "datasets" / "cinc2017" / "cinc2017_windows.csv"
 FEAT = PROJECT_ROOT / "cache" / "d1_probe"
@@ -61,10 +63,8 @@ SEED = 42
 def load_sources() -> dict:
     but = pd.read_csv(RESULTS / "manifest_butqdb_1000_cohort.csv")
     but = but.assign(dataset="BUT_QDB", unit=but["subject_id"].astype(str), record=but["record_name"].astype(str))
-    c11 = pd.read_csv(CINC11 / "cinc2011_random_draws_records.csv").drop_duplicates("segment_id")
-    lab = pd.read_csv(CINC11 / "cinc2011_random_draws_manifest.csv").drop_duplicates("record_name").set_index("record_name")["label"]
-    c11 = c11.assign(dataset="CinC2011", label=lab.loc[c11["record_name"].astype(int)].values,
-                     unit=c11["record_name"].astype(str), record=c11["record_name"].astype(str))
+    c11 = pd.read_csv(CINC2011_LEADII_FULL)  # all 998 labelled Set A records (v2)
+    c11 = c11.assign(dataset="CinC2011", unit=c11["record_name"].astype(str), record=c11["record_name"].astype(str))
     c17 = pd.read_csv(CINC17)
     c17 = c17.assign(dataset="CinC2017", unit=c17["record_name"].astype(str), record=c17["record_name"].astype(str))
     cols = ["dataset", "segment_id", "unit", "record", "label", "signal_path", "image_path"] + SQI_FEATURE_NAMES
@@ -79,8 +79,8 @@ def cinc17_training_subset(c17: pd.DataFrame) -> pd.DataFrame:
 
 
 def train_and_score(train: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
-    Xtr = np.nan_to_num(train[SQI_FEATURE_NAMES].values.astype(float))
-    Xte = np.nan_to_num(test[SQI_FEATURE_NAMES].values.astype(float))
+    Xtr = np.nan_to_num(train[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
+    Xte = np.nan_to_num(test[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
     ytr = train["label"].values.astype(int)
     out = test[["dataset", "segment_id", "unit", "record", "label"]].copy()
     out["Logistic_Regression_SQI"] = SQILogisticRegression().fit(Xtr, ytr).predict_proba(Xte)
@@ -121,14 +121,11 @@ def run_probe():
     src = load_sources()
     # With the full CinC 2017 features (analysis plan A2) the probe uses the same CinC 2017 training subset as the
     # other models and is tested on all 8,512 recordings; otherwise the balanced subset is used for both.
-    full17 = (FEAT / "CinC2017_full_image.npy").exists()
-    feats = {}
-    for name, key in [("BUT_QDB", "BUT_QDB"), ("CinC2011", "CinC2011_leadII"),
-                      ("CinC2017", "CinC2017_full" if full17 else "CinC2017_subset")]:
-        X = np.load(FEAT / f"{key}_image.npy")
-        ids = pd.read_csv(FEAT / f"{key}_ids.csv")["segment_id"].values
-        meta = src[name].set_index("segment_id").loc[ids].reset_index()
-        feats[name] = (X, meta)
+    full17 = not missing_ids(FEAT, "image", src["CinC2017"].segment_id)
+    if not full17:
+        raise RuntimeError("d1 image features of all CinC 2017 windows are required (experiments/d1_cinc2017_full.py)")
+    feats = {name: (load_features(FEAT, "image", src[name].segment_id), src[name].reset_index(drop=True))
+             for name in ["BUT_QDB", "CinC2011", "CinC2017"]}
     train_feats = dict(feats)
     if full17:
         keep = feats["CinC2017"][1].segment_id.isin(cinc17_training_subset(src["CinC2017"]).segment_id).values
@@ -188,8 +185,8 @@ def boot_ci(y, p, cluster, B=2000, seed=SEED):
 
 def single_source_predictions() -> dict:
     """Stored BUT-only predictions on each external set, keyed by segment_id (same units as the LODO tests)."""
-    c11 = pd.read_csv(RESULTS / "cinc_random_draws_predictions.csv").drop_duplicates("segment_id").set_index("segment_id")
     w = pd.read_csv(RESULTS / "external_window_predictions.csv", low_memory=False)
+    c11 = w[w.dataset == "CinC2011"].set_index("segment_id")  # all 998 labelled records (v2)
     c17 = w[w.dataset == "CinC2017"].set_index("segment_id")
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv").set_index("segment_id")
     oof = oof.rename(columns={c: c.replace("prob_", "") for c in oof.columns if c.startswith("prob_")})

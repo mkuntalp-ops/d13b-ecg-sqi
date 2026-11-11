@@ -11,6 +11,8 @@ the evaluated data:
    training, so their thresholds are chosen on their scores for the 12 training subjects.
 2. Source-selected thresholds for transfer. Thresholds chosen on the pooled BUT QDB out-of-fold scores are
    applied frozen to CinC 2011 (lead II; reported subset and random subsets) and to CinC 2017 (recording max).
+   v2 (revision of 2026-11-05): CinC 2011 is all 998 labelled Set A records; the score tables are those of
+   evaluation/paired_comparisons.families(), so TabPFN, the HuBERT-ECG probe and the d1-3B probe are included too.
 
 Operating rules (positive = unusable, p >= t): Target 1 = maximum sensitivity with FPR <= 5%
 (ties: minimum FPR); Target 2 = minimum FPR with sensitivity >= 80% (ties: maximum sensitivity);
@@ -33,13 +35,14 @@ from sklearn.model_selection import GroupKFold
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
 from models.multimodal_fusion import IndependentSQIClassifier, SinglePassMultimodalClassifier
 from models.tabular_baselines import SQIGradientBoosting, SQILogisticRegression
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 OOF = RESULTS / "cohort1000_consolidated_oof_predictions.csv"
 MANIFEST = RESULTS / "manifest_butqdb_1000_cohort.csv"
 FOLDS_OUT = RESULTS / "nested_thresholds_folds.csv"
@@ -96,7 +99,7 @@ def train_score(model, tr, te, df, X, sigs, imgs):
 def nested():
     df = pd.read_csv(MANIFEST)
     oof = pd.read_csv(OOF).set_index("segment_id").loc[df["segment_id"]].reset_index()
-    X = np.nan_to_num(df[SQI_FEATURE_NAMES].values.astype(float))
+    X = np.nan_to_num(df[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
     sigs = [np.load(p) for p in df["signal_path"]]
     imgs = df["image_path"].tolist()
     y, subj, fold = df["label"].values, df["subject_id"].values, df["fold_id"].values
@@ -136,39 +139,27 @@ def nested():
 
 
 def transfer():
-    oof = pd.read_csv(OOF)
-    y_b = oof["label"].values
-    cinc = pd.read_csv(RESULTS / "cinc2011_expanded_predictions.csv")
-    draws = pd.read_csv(RESULTS / "cinc_random_draws_predictions.csv")
-    mem = pd.read_csv(PROJECT_ROOT / "cache" / "datasets" / "cinc2011" / "cinc2011_random_draws_manifest.csv")
-    win = pd.read_csv(RESULTS / "external_window_predictions.csv")
-    d1 = pd.read_csv(RESULTS / "d1_external_predictions.csv")
-    c17 = win[win.dataset == "CinC2017"].copy()
-    full17 = RESULTS / "d1_cinc2017_full_predictions.csv"  # d1-3B on all CinC 2017 windows (analysis plan A2)
-    if full17.exists():
-        c17["LiquidAI_d1_3B_Neural"] = c17["segment_id"].map(pd.read_csv(full17).set_index("segment_id")["prob_unusable"])
-    else:
-        c17["LiquidAI_d1_3B_Neural"] = c17["segment_id"].map(d1[d1.dataset == "CinC2017_subset"].set_index("segment_id")["prob_unusable"])
+    sys.path.insert(0, str(PROJECT_ROOT / "evaluation"))
+    from paired_comparisons import families  # noqa: E402
+    fam = families()
+    but = fam["BUT_QDB (5-fold subject CV)"][1]
+    targets = {"CinC2011 all 998 records (lead II)": fam["CinC2011 lead II (998 records)"][1],
+               "CinC2017 all (record max)": fam["CinC2017 (8,512 recordings)"][1]}
+    y_b = but["y"].values.astype(int)
+    models = [c for c in but.columns if c not in ("unit", "y", "cluster")]
     rows = []
-    for m in TRAINED + UNTRAINED:
-        for rule in ["target1_fpr5", "target2_sens80", "youden", "fixed_0.5"]:
-            t = pick(y_b, oof[f"prob_{m}"].values, rule)
+    for m in models:
+        for rule in RULES:
+            t = pick(y_b, but[m].values.astype(float), rule)
             rows.append({"model": m, "rule": rule, "threshold": t, "dataset": "BUT_QDB pooled OOF (selection set)",
-                         **realised(y_b, oof[f"prob_{m}"].values, t)})
-            rows.append({"model": m, "rule": rule, "threshold": t, "dataset": "CinC2011 first-N (lead II)",
-                         **realised(cinc["label"].values, cinc[f"prob_{m}"].values, t)})
-            for draw, mm in mem[mem.draw.str.startswith("random")].groupby("draw"):
-                p = draws.drop_duplicates("record_name").set_index("record_name").loc[mm.record_name, m].values
-                rows.append({"model": m, "rule": rule, "threshold": t, "dataset": f"CinC2011 {draw} (lead II)",
-                             **realised(mm.label.values, p, t)})
-            rec = c17.groupby("record_name").agg(label=("label", "first"), p=(m, "max")).dropna()
-            name = ("CinC2017 balanced d1 subset (record max)" if m == "LiquidAI_d1_3B_Neural" and not full17.exists()
-                    else "CinC2017 all (record max)")
-            rows.append({"model": m, "rule": rule, "threshold": t, "dataset": name,
-                         **realised(rec.label.values, rec.p.values, t)})
+                         **realised(y_b, but[m].values.astype(float), t)})
+            for name, df in targets.items():
+                if m in df.columns:
+                    rows.append({"model": m, "rule": rule, "threshold": t, "dataset": name,
+                                 **realised(df["y"].values.astype(int), df[m].values.astype(float), t)})
     out = pd.DataFrame(rows)
     out.to_csv(TRANSFER_OUT, index=False)
-    print(out[out.rule.isin(["target1_fpr5", "target2_sens80"]) & ~out.dataset.str.contains("random")]
+    print(out[out.rule.isin(["target1_fpr5", "target2_sens80"])]
           [["model", "rule", "dataset", "threshold", "sens", "fpr"]].round(3).to_string(index=False))
     print(f"[Saved] {TRANSFER_OUT}")
 

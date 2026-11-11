@@ -20,7 +20,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import config
 from config import RESULTS_DIR, FIGURES_DIR
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 from models.tabular_baselines import SQILogisticRegression, SQIGradientBoosting
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
@@ -35,7 +35,7 @@ def run_revised_nstdb_experiment(verbose: bool = True):
     # 1. Load source models trained on BUT QDB
     manifest_path = RESULTS_DIR / "manifest_butqdb_1000_cohort.csv"
     but_df = pd.read_csv(manifest_path)
-    X_train_sqi = np.nan_to_num(but_df[SQI_FEATURE_NAMES].values, nan=0.0)
+    X_train_sqi = np.nan_to_num(but_df[MODEL_INPUT_FEATURE_NAMES].values, nan=0.0)
     y_train = but_df["label"].values
     train_sigs = [np.load(p) for p in but_df["signal_path"]]
     train_imgs = but_df["image_path"].tolist()
@@ -54,7 +54,9 @@ def run_revised_nstdb_experiment(verbose: bool = True):
     df_nstdb = pd.read_csv(nstdb_csv)
     print(f"Loaded calibrated NSTDB dataset: {len(df_nstdb)} windows.")
     
-    X_nstdb_sqi = np.nan_to_num(df_nstdb[SQI_FEATURE_NAMES].values, nan=0.0)
+    X_nstdb_sqi = np.nan_to_num(df_nstdb[MODEL_INPUT_FEATURE_NAMES].values, nan=0.0)
+    # The zero-shot d1-3B prompt reads all 13 SQI names (unchanged since v1); only the trained models use 11 inputs
+    X_nstdb_prompt = np.nan_to_num(df_nstdb[SQI_FEATURE_NAMES].values, nan=0.0)
     sigs_nstdb = [np.load(p) for p in df_nstdb["signal_path"]]
     imgs_nstdb = df_nstdb["image_path"].tolist()
     
@@ -66,7 +68,7 @@ def run_revised_nstdb_experiment(verbose: bool = True):
     p_unusable_mm = mm.predict_proba(imgs_nstdb, X_nstdb_sqi)
     
     p_d1 = []
-    for img_p, sqi_vec in zip(imgs_nstdb, X_nstdb_sqi):
+    for img_p, sqi_vec in zip(imgs_nstdb, X_nstdb_prompt):
         sqi_dict = dict(zip(SQI_FEATURE_NAMES, sqi_vec))
         with Image.open(img_p) as pil_img:
             dec = d1.decide_single(pil_img, sqi_dict, modality="multimodal", segment_id=img_p)
@@ -159,6 +161,7 @@ def run_revised_nstdb_experiment(verbose: bool = True):
     plt.legend(frameon=True, facecolor="white", loc="best", fontsize=9)
     plt.grid(True, linestyle=":", alpha=0.6)
     plt.tight_layout()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     plt.savefig(FIGURES_DIR / "figure_revised_nstdb_degradation_curve.png")
     plt.close()
     

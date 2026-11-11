@@ -10,7 +10,12 @@ Evaluates:
 7. Rule-Based SQI Heuristic (Expert Rule Baseline, 0 parameters)
 
 Saves raw out-of-fold predictions to results/raw_supervised_cohort1000_oof_predictions.csv
-with fold_id, inner validation chosen thresholds, and segment_ids.
+with fold_id and segment_ids.
+
+Note (code audit 2026-11-11, CODE-008): the inner-validation thresholds computed below (first quarter of the training
+subjects; Youden index) are NOT saved and are not used by any reported analysis. Reported thresholds come from
+experiments/nested_thresholds.py (4-fold inner GroupKFold over the training subjects). The inner fits are kept so that
+a re-run executes the same sequence of operations as the run behind the stored predictions.
 """
 
 import os
@@ -28,7 +33,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from config import RESULTS_DIR, TARGET_FS
-from features.sqi_extractor import SQI_FEATURE_NAMES
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES
 from models.tabular_baselines import SQILogisticRegression, SQIGradientBoosting
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
@@ -65,7 +70,7 @@ def run_supervised_cv():
     df = pd.read_csv(manifest_path)
     n_samples = len(df)
 
-    X_sqi = np.nan_to_num(df[SQI_FEATURE_NAMES].values, nan=0.0)
+    X_sqi = np.nan_to_num(df[MODEL_INPUT_FEATURE_NAMES].values, nan=0.0)
     raw_signals = [np.load(p) for p in df["signal_path"]]
     image_paths = df["image_path"].tolist()
     y = df["label"].values

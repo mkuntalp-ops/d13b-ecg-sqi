@@ -33,7 +33,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from features.sqi_extractor import SQI_FEATURE_NAMES
 from models.d1_real_neural_model import RealD1DecisionModel
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 BUT_MANIFEST = RESULTS / "manifest_butqdb_1000_cohort.csv"
 BUT_STORED = RESULTS / "cohort1000_consolidated_oof_predictions.csv"
 CINC_STORED = RESULTS / "cinc2011_expanded_predictions.csv"

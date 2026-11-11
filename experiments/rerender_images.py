@@ -24,7 +24,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from data.ecg_rendering import render_ecg_image
 from data.units import to_millivolts
 
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 CINC_DIR = PROJECT_ROOT / "cache" / "datasets" / "cinc2011"
 NSTDB_CSV = PROJECT_ROOT / "cache" / "datasets" / "nstdb" / "nstdb_paired_windows.csv"
 OUT = RESULTS / "rerender_images_report.csv"

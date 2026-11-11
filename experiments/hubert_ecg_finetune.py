@@ -7,7 +7,7 @@ windows; class-weighted binary cross-entropy (positive weight = usable/unusable 
 Input: the authors' preprocessing of experiments/hubert_ecg_probe.py (primary). Each 10-s window gives two 5-s halves;
 their time-averaged last hidden states are averaged and passed to the head (as in the probe).
 Protocol: the five BUT QDB subject folds (out-of-fold predictions), then training on all of BUT QDB and transfer to
-CinC 2011 lead II (565 records) and all CinC 2017 windows (recording maximum).
+CinC 2011 lead II (998 records in v2, 565 in v1) and all CinC 2017 windows (recording maximum).
 
 Feasibility (plan F2: run only if one fold trains in under one hour): --time-fold0 trains one epoch of fold 0 and
 reports the time per epoch; the full run is started only if 10 epochs are projected to take under one hour.
@@ -33,7 +33,8 @@ import hubert_ecg_probe as hp  # noqa: E402
 from lodo_multisource import load_sources  # noqa: E402
 
 assert hp.PREPROC == "authors"
-RESULTS = ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 PRED_OUT = RESULTS / "hubert_finetune_predictions.csv"
 SUM_OUT = RESULTS / "hubert_finetune_summary.csv"
 SEED, EPOCHS, BATCH, N_TRAINABLE_LAYERS = 42, 10, 16, 4

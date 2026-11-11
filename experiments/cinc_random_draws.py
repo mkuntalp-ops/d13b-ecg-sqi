@@ -28,7 +28,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from data.ecg_rendering import render_ecg_image
 from data.units import to_millivolts
-from features.sqi_extractor import SQI_FEATURE_NAMES, extract_sqi_features
+from features.sqi_extractor import MODEL_INPUT_FEATURE_NAMES, SQI_FEATURE_NAMES, extract_sqi_features
 from models.cnn1d import ECG1DCNNClassifier
 from models.cnn2d import ECG2DCNNClassifier
 from models.d1_real_neural_model import RealD1DecisionModel
@@ -39,7 +39,8 @@ from models.tabular_baselines import SQIGradientBoosting, SQILogisticRegression
 CINC_DIR = PROJECT_ROOT / "cache" / "datasets" / "cinc2011"
 SIG_DIR = CINC_DIR / "signals"
 IMG_DIR = CINC_DIR / "images"
-RESULTS = PROJECT_ROOT / "results"
+from config import RESULTS_DIR as _CFG_RESULTS  # noqa: E402  (ECG_RESULTS_DIR overrides)
+RESULTS = _CFG_RESULTS
 COHORT = RESULTS / "manifest_butqdb_1000_cohort.csv"
 DRAW_SEEDS = [42, 1, 2, 3, 4]
 N_PER_CLASS = 75
@@ -88,7 +89,7 @@ def extract_record(rec_id: str):
 
 def fit_models():
     df = pd.read_csv(COHORT)
-    X = np.nan_to_num(df[SQI_FEATURE_NAMES].values.astype(float))
+    X = np.nan_to_num(df[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
     y = df["label"].values
     sigs = [np.load(p) for p in df["signal_path"]]
     imgs = df["image_path"].tolist()
@@ -104,7 +105,7 @@ def fit_models():
 
 def score(records: pd.DataFrame, models) -> pd.DataFrame:
     lr, lgb, mlp, c1, c2, mm = models
-    X = np.nan_to_num(records[SQI_FEATURE_NAMES].values.astype(float))
+    X = np.nan_to_num(records[MODEL_INPUT_FEATURE_NAMES].values.astype(float))
     sigs = [np.load(p) for p in records["signal_path"]]
     imgs = records["image_path"].tolist()
     out = pd.DataFrame({"segment_id": records["segment_id"].values, "record_name": records["record_name"].values})
@@ -119,7 +120,7 @@ def score(records: pd.DataFrame, models) -> pd.DataFrame:
     d1 = RealD1DecisionModel(device="mps")
     existing = pd.read_csv(D1_EXISTING).set_index("segment_id")["prob_unusable"].to_dict() if D1_EXISTING.exists() else {}
     for (_, row), sqi in zip(records.iterrows(), X):
-        sqi_dict = dict(zip(SQI_FEATURE_NAMES, sqi))
+        sqi_dict = dict(zip(MODEL_INPUT_FEATURE_NAMES, sqi))
         with Image.open(row["image_path"]) as img:
             rule_p.append(rule.decide_single(img, sqi_dict, modality="multimodal")["prob_unusable"])
             if row["segment_id"] in existing:
