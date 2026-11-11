@@ -294,7 +294,7 @@ CODE-007 (özet ve Bölüm 2.6 metni), yeni tabloların makaleye eklenmesi, `pai
   S43 (kota ve resmi aralıklar). Üretici: `build_manuscript_tables.py` tablo 21–24.
 - Metin (`manuscript/v2/main_v2_template.md`): özet (246 kelime, aynı sayaçla önce 245): "best on CinC 2011" yerine 925 kayıtlık sonuçla
   nitelenmiş ifade; "eight approaches (one hand-set)"; Bölüm 2.1 kohort tanımı (kota kısıtlamadan önce uygulandı); 2.5 (p tabanı, yeni
-  analizler); 2.6 madde 4 (prob temsilinin seçimi sonuçlardan bağımsız sayılamaz — **yazar teyit etmeli**) ve yeni madde 8; 3.1, 3.2,
+  analizler); 2.6 madde 4 (prob temsilinin seçimi önceden belirlenmemişti; yazar onayıyla yalnız belgelenebilir olgu yazıldı: iki temsil aynı çalıştırmada, commit 8417435) ve yeni madde 8; 3.1, 3.2,
   tartışma, sınırlılıklar ve sonuç.
 - Kontroller: `verify_v2_prose.py` 121 kontrol, 0 hata (11 yeni kontrol); 35 birim testi geçti; üretilen tablo dosyasında eski tablolardaki
   tek fark Tablo 9 ve 9b'deki dört p hücresi.
