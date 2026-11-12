@@ -440,6 +440,17 @@ PDF'ler yeniden üretimde zaman damgası taşıdığı için özetleri her üret
   sütunları) değişikliğini gösteriyor; tahmin ve özet CSV'lerinin hiçbiri değişmedi.
 - PAPER-005: belgelenmiş politika istisnası; hedef derginin kabulü doğrulanmadı (dergi seçilmedi).
 
+### 2026-11-12 — Kayıtlı çıktılardan çapraz kontrol (PAPER-001/002/009 için kanıt; yazar onayıyla depoya eklendi)
+
+`evaluation/crosscheck_saved_outputs.py` (proje modülü içe aktarmaz; salt-okunur; model eğitmez, süre ölçmez). Sonuç (c12de60
+üzerindeki çıktılarla): Tablo 1'in 33 AUROC'u `model_cis.csv` ile en çok 1,1e-16 farkla; 33 özgün ve 33 harmonize AUROC
+`harmonised_summary.csv` ile en çok 1,1e-16 farkla (sabit-girdi kuralı betikte ayrıca uygulanarak; CinC 2011'de 73 sabit kayıt,
+hepsi kabul edilemez); Spearman 0,6091/0,4909, −0,0182/−0,1909, 0,1909/0,4273; on modelin CinC 2011 aralığı 0,322–0,824 →
+0,731–0,824; tohum aralıkları MLP 0,686–0,776, çok kipli ağ 0,706–0,768; Tablo S45'in 24 medyan (p95) hücresi üç ham ölçüm
+dosyasından aynen. Gecikme kodunda sekiz modelin hepsi için sinyal zamanlayıcıdan önce yükleniyor, süre SQI/çizimle başlıyor.
+Sınır: bu ikinci bir hesaplamadır, bağımsız hakem doğrulaması değildir; harmonize eğitimler ve gecikme ölçümü yeniden
+çalıştırılmadı.
+
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ
 (36 izlenen dosya değişti + yeni dosyalar; `git status` ile görülebilir). v1 = commit 55095ed, `results/`.
