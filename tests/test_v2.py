@@ -372,5 +372,19 @@ class TestCinc2017WindowTable(unittest.TestCase):
             self.assertAlmostEqual(float(v), stored[m], places=10)
 
 
+class TestTableBlocks(unittest.TestCase):
+    """Multi-part generated tables must reach the manuscript whole (review of 2026-11-12)."""
+
+    def test_parts_separated_by_blank_lines_are_kept(self):
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "evaluation"))
+        from sync_manuscript_tables import table_blocks
+        lines = ["## Table 1", "", "| a |", "| :- |", "| 1 |", "", "| b |", "| :- |", "| 2 |", "", "A note.", "",
+                 "## Table 2", "", "| c |", "| :- |", "| 3 |", "## Table 3", "| d |", "| :- |", "| 4 |", "", ""]
+        blocks = table_blocks(lines)
+        self.assertEqual(blocks["Table 1"], ["| a |", "| :- |", "| 1 |", "", "| b |", "| :- |", "| 2 |"])
+        self.assertEqual(blocks["Table 2"], ["| c |", "| :- |", "| 3 |"])
+        self.assertEqual(blocks["Table 3"], ["| d |", "| :- |", "| 4 |"])
+
+
 if __name__ == "__main__":
     unittest.main()

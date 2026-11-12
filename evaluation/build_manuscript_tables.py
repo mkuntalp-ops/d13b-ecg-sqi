@@ -271,8 +271,8 @@ def table_1e() -> str:
     q0 = d.groupby("prevalence_scope").prevalence.first()
     pc = lambda s, nd=1: f"{100 * q0[s]:.{nd}f}%"
     o_s, a_s, q_s = "natural, official intervals", "natural, all records", "quota cohort"
-    out = [f"| Model Architecture | AP, quota cohort ({pc(q_s)}) | AP, natural, all records ({pc(a_s)}) | AP, natural, official intervals ({pc(o_s, 2)}) | "
-           f"PPV at τ = 0.50, {pc(a_s)} | PPV at τ = 0.50, {pc(o_s, 2)} | NPV at τ = 0.50, {pc(o_s, 2)} | False rejections per hour of usable signal |",
+    out = [f"| Model Architecture | AP, quota cohort ({pc(q_s)}) | AP projected to all annotated intervals ({pc(a_s)}) | AP projected to official intervals ({pc(o_s, 2)}) | "
+           f"Projected PPV at τ = 0.50, {pc(a_s)} | Projected PPV at τ = 0.50, {pc(o_s, 2)} | Projected NPV at τ = 0.50, {pc(o_s, 2)} | False rejections per hour of usable signal |",
            "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
     for m, label in MODEL_LABELS.items():
         g = d[d.model == m].set_index("prevalence_scope")
@@ -342,9 +342,9 @@ def table_16() -> str:
     if not path.exists():
         return _missing(path)
     d = pd.read_csv(path)
-    aggs = [("max_12", "Maximum"), ("mean_12", "Mean")]
+    aggs = [("lead_II", "Lead II"), ("max_12", "Maximum"), ("mean_12", "Mean")]
     out = ["| Model Architecture | " + " | ".join(f"{n}: all 998 | {n}: without constant-lead records" for _, n in aggs) + " |",
-           "| :--- | :---: | :---: | :---: | :---: |"]
+           "| :--- |" + " :---: | :---: |" * len(aggs)]
     for m, label in {**MODEL_LABELS, "d1_image_probe": "d1-3B image-token probe"}.items():
         cells = []
         for a, _ in aggs:
@@ -1203,7 +1203,7 @@ _HARM_SETS = [("BUT_QDB", "BUT QDB (988 windows)"), ("CinC2011", "CinC 2011 lead
 
 def table_26() -> str:
     """Harmonised-pipeline comparison: original and harmonised AUROC per model and set (experiments/harmonised_pipeline.py;
-    post hoc, secondary, pre-stated; reviewer finding PAPER-002)."""
+    post hoc, secondary, results-informed; reviewer finding PAPER-002)."""
     path = RESULTS / "harmonised_summary.csv"
     if not path.exists():
         return _missing(path)

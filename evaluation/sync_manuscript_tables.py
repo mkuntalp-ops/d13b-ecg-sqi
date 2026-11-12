@@ -28,6 +28,13 @@ def table_blocks(lines):
             k = j
             while k < len(lines) and lines[k].startswith("|"):
                 k += 1
+                # A table may have several parts separated by blank lines (for example Tables S36, S37, S44 and S47).
+                # Keep them together; before 2026-11-12 only the first part reached the manuscript.
+                m = k
+                while m < len(lines) and not lines[m].strip():
+                    m += 1
+                if m > k and m < len(lines) and lines[m].startswith("|") and (k >= len(lines) or not lines[k].startswith("|")):
+                    k = m
             if k > j:
                 blocks[title] = lines[j:k]
             i = k

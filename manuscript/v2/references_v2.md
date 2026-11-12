@@ -41,9 +41,8 @@ heartbeit: Vaid A, Jiang J, Sawant A, et al. A foundational vision transformer i
 stmem: Na Y, Park M, Tae Y, Joo S. Guiding masked representation learning to capture spatio-temporal relationship of electrocardiogram. In: International Conference on Learning Representations (ICLR); 2024. https://openreview.net/forum?id=WcOohbsF4H
 ecgfounder: Li J, Aguirre AD, Junior VM, et al. An electrocardiogram foundation model built on over 10 million recordings. NEJM AI. 2025;2(7). doi:10.1056/AIoa2401033
 merl: Liu C, Wan Z, Ouyang C, et al. Zero-shot ECG classification with multimodal learning and test-time clinical knowledge enhancement. In: Proceedings of the 41st International Conference on Machine Learning. Proc Mach Learn Res. 2024;235:31949–31963.
-pulse: Liu R, Bai Y, Yue X, Zhang P. Teach multimodal LLMs to comprehend electrocardiographic images. arXiv:2410.19008. 2024 (preprint).
 kmerl: Liu C, Ouyang C, Wan Z, et al. Knowledge-enhanced multimodal ECG representation learning with arbitrary-lead inputs. In: Findings of the Association for Computational Linguistics: EMNLP 2025; 2025. p. 7298–7316. doi:10.18653/v1/2025.findings-emnlp.385
-ecgchat: Zhao Y, Kang J, Zhang T, et al. ECG-Chat: a large ECG-language model for cardiac disease diagnosis. arXiv:2408.08849. 2024 (preprint).
+ecgchat: Zhao Y, Kang J, Zhang T, Han P, Chen T. ECG-Chat: a large ECG-language model for cardiac disease diagnosis. In: 2025 IEEE International Conference on Multimedia and Expo (ICME); 2025. p. 1–6. doi:10.1109/ICME59968.2025.11209476
 vancalster: Van Calster B, McLernon DJ, van Smeden M, Wynants L, Steyerberg EW. Calibration: the Achilles heel of predictive analytics. BMC Med. 2019;17:230. doi:10.1186/s12916-019-1466-7
 ribeiro: Ribeiro AH, Ribeiro MH, Paixão GMM, et al. Automatic diagnosis of the 12-lead ECG using a deep neural network. Nat Commun. 2020;11:1760. doi:10.1038/s41467-020-15432-4
 hannun: Hannun AY, Rajpurkar P, Haghpanahi M, et al. Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network. Nat Med. 2019;25(1):65–69. doi:10.1038/s41591-018-0268-3

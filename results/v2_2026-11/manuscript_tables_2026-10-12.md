@@ -152,7 +152,7 @@ NSTDB windows: clean control = 44, active noise = 264
 
 ## Table 1e
 
-| Model Architecture | AP, quota cohort (24.1%) | AP, natural, all records (16.0%) | AP, natural, official intervals (2.14%) | PPV at τ = 0.50, 16.0% | PPV at τ = 0.50, 2.14% | NPV at τ = 0.50, 2.14% | False rejections per hour of usable signal |
+| Model Architecture | AP, quota cohort (24.1%) | AP projected to all annotated intervals (16.0%) | AP projected to official intervals (2.14%) | Projected PPV at τ = 0.50, 16.0% | Projected PPV at τ = 0.50, 2.14% | Projected NPV at τ = 0.50, 2.14% | False rejections per hour of usable signal |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Logistic Regression (SQI)** | 0.759 | 0.678 | 0.372 | 0.614 | 0.154 | 0.989 | 23.0 |
 | **LightGBM (SQI)** | 0.894 | 0.851 | 0.623 | 0.746 | 0.252 | 0.993 | 15.8 |
@@ -691,18 +691,18 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 
 ## Table 16
 
-| Model Architecture | Maximum: all 998 | Maximum: without constant-lead records | Mean: all 998 | Mean: without constant-lead records |
-| :--- | :---: | :---: | :---: | :---: |
-| **Logistic Regression (SQI)** | 0.351 | 0.500 | 0.154 | 0.355 |
-| **LightGBM (SQI)** | 0.617 | 0.753 | 0.854 | 0.837 |
-| **Independent SQI MLP** | 0.838 | 0.631 | 0.840 | 0.631 |
-| **1D CNN (Raw Signal)** | 0.229 | 0.307 | 0.789 | 0.769 |
-| **2D CNN (Rendered Image)** | 0.718 | 0.854 | 0.882 | 0.878 |
-| **SinglePass Multimodal Net** | 0.500 | 0.500 | 0.500 | 0.500 |
-| **Rule-Based SQI Heuristic** | 0.842 | 0.650 | 0.719 | 0.513 |
-| **LiquidAI d1-3B (Zero-Shot)** | 0.813 | 0.570 | 0.644 | 0.401 |
-| **d1-3B image-token probe** | 0.951 | 0.902 | 0.944 | 0.912 |
-| **HuBERT-ECG probe** | 0.431 | 0.683 | 0.510 | 0.805 |
+| Model Architecture | Lead II: all 998 | Lead II: without constant-lead records | Maximum: all 998 | Maximum: without constant-lead records | Mean: all 998 | Mean: without constant-lead records |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Logistic Regression (SQI)** | 0.322 | 0.467 | 0.351 | 0.500 | 0.154 | 0.355 |
+| **LightGBM (SQI)** | 0.752 | 0.715 | 0.617 | 0.753 | 0.854 | 0.837 |
+| **Independent SQI MLP** | 0.675 | 0.527 | 0.838 | 0.631 | 0.840 | 0.631 |
+| **1D CNN (Raw Signal)** | 0.695 | 0.707 | 0.229 | 0.307 | 0.789 | 0.769 |
+| **2D CNN (Rendered Image)** | 0.787 | 0.759 | 0.718 | 0.854 | 0.882 | 0.878 |
+| **SinglePass Multimodal Net** | 0.500 | 0.500 | 0.500 | 0.500 | 0.500 | 0.500 |
+| **Rule-Based SQI Heuristic** | 0.678 | 0.517 | 0.842 | 0.650 | 0.719 | 0.513 |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.641 | 0.424 | 0.813 | 0.570 | 0.644 | 0.401 |
+| **d1-3B image-token probe** | 0.824 | 0.795 | 0.951 | 0.902 | 0.944 | 0.912 |
+| **HuBERT-ECG probe** | 0.562 | 0.736 | 0.431 | 0.683 | 0.510 | 0.805 |
 
 ## Table 17
 

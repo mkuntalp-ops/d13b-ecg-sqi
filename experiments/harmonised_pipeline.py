@@ -9,8 +9,9 @@ Safeguards (none uses target labels or target performance):
      regression, LightGBM, SQI MLP, TabPFN, the SQI branch of the multimodal net, and the hand-set heuristic.
   G3 standardised inputs clipped to [-3, 3] with training statistics: the same models except the heuristic.
 Everything else is as in the primary analysis (folds, hyperparameters, seed 42). The MLP and the multimodal net are
-also refitted with seeds 1-4 for BUT-only transfer. The 1D CNN, 2D CNN, zero-shot d1-3B and the two probes have no
-tabular input and are not refitted; their stored scores get G1 only.
+also refitted with seeds 1-4 for BUT-only transfer. The 1D CNN, 2D CNN and the two probes have no
+tabular input and are not refitted; their stored scores get G1 only. Zero-shot d1-3B receives the eight SQIs as text in
+its prompt; these were left unchanged (not re-run), so its stored scores also get G1 only.
 
 Evaluations: BUT QDB 5-fold out-of-fold (988 windows), CinC 2011 lead II (998 records), CinC 2017 (8,512 recordings,
 recording maximum). Reported per model and set: original and harmonised AUROC, paired difference with 95% CI

@@ -378,6 +378,68 @@ ile sınırlandırılır, değiştirmezse bu da yazılır. Başka sınır veya t
 - **PAPER-001:** dal uzak depoya push edildi (aşağıdaki commit).
 - Kontroller: `verify_v2_prose.py` 145 kontrol, 0 hata; 39 birim testi geçti.
 
+### 2026-11-12 — Hakemin ikinci raporu (PAPER-003/005/007/012 kalanları, yeni PAPER-013…015); yazar onayıyla
+
+Yeni deney yok; yalnız metin, kaynakça, tablo üretici ve kontrol listesi. Hakemin yedi iddiası depoda doğrulandı.
+- **PAPER-013:** Bölüm 2.4, 2.6 (10), 3.3 tartışma cümlesi, özet ve Tablo S46 başlığı: uyumlaştırılmış analiz artık "sonuçlardan
+  haberdar duyarlılık analizi" olarak tanımlı. Önlemler hedef etiketi kullanmıyor ve skorlardan önce commit edildi (999c419), ancak
+  önceki harici sonuçlar bilinerek seçildi (sabit derivasyonlar, flatline ölçüsü, S15'teki [−3, 3] sınırı). Özette "Pre-stated" →
+  "Post hoc".
+- **PAPER-014:** sıfır-örnekli d1-3B istemde sekiz SQI'yi metin olarak alır; bu değerler değiştirilmedi (yalnız G1). Metin ve
+  `experiments/harmonised_pipeline.py` belge dizgisi düzeltildi; kod davranışı değişmedi.
+- **PAPER-015:** "indistinguishable" iki yerde "no significant difference was detected" oldu.
+- **PAPER-003:** sınırlılıklarda "re-weighted" → koşullu projeksiyon; Tablo S3 sütun başlıkları "projected".
+- **PAPER-007:** Tablo S35'e derivasyon II sütunları eklendi (aynı kayıtlı CSV'lerden); 0,736 artık tabloda görünüyor.
+- **PAPER-012:** kontrol listesi S1–S47; madde 2 için özet, TRIPOD+AI for Abstracts'ın 13 maddesine göre tek tek işaretlendi
+  (kaynak: bildirimin Tablo 3'ü, PMC11019967); 12b, 13, 16, 18c, 23a, 23b güncellendi.
+- **PAPER-005:** ECG-Chat yayımlanmış sürümüyle değiştirildi (IEEE ICME 2025, doi:10.1109/ICME59968.2025.11209476; Crossref ve
+  yazarların deposundan doğrulandı). HuBERT-ECG (medRxiv), PULSE (arXiv) ve TabPFN-3 (arXiv teknik rapor) için hakemli sürüm
+  bulunamadı; ön baskı olarak işaretli kaldı. Bunların kaynakçada kalıp kalmayacağı yazar kararı.
+- Kontroller: `verify_v2_prose.py` 145 kontrol, 0 hata; 39 birim testi geçti. Commit edilmedi.
+
+### 2026-11-12 (devam) — Hakemin üçüncü notu; görsel denetim ve bulunan tablo eksikliği
+
+- **PAPER-013 kalıntısı:** Bölüm 3.3'teki "(Table S46; post hoc, pre-stated)" düzeltildi. `verify_v2_prose.py`'ye 16 ifade kontrolü
+  eklendi (7 yasak eski ifade, 9 zorunlu yeni ifade).
+- **Görsel denetim:** üç PDF'in bütün sayfaları (26 + 38 + 6; yeniden üretimden sonra ek 39) küçültülmüş sayfa görüntüleriyle
+  incelendi (PDFKit ile; pdftoppm yok). Kırpılan tablo veya taşan metin görülmedi; şekiller yerinde. Küçültülmüş görüntüde hücre
+  düzeyinde okuma yapılmadı.
+- **Bulunan hata (kendi tespitimiz):** `sync_manuscript_tables.table_blocks` çok bölümlü tabloların yalnız ilk bölümünü alıyordu.
+  Bu yüzden Tablo S36 (alt: yeniden skorlama), S37 (alt: eşli farklar), S44 (Spearman bölümü) ve S47 (orta: tohum aralığı; alt:
+  girdi tanıları) ekte eksikti; başlıkları bu bölümleri vaat ediyordu. Commit 0dc93f4'teki ek bu eksikle push edildi. Sayılar
+  metinde doğruydu (kontroller CSV'den), yalnız tablolar gösterilmiyordu. İşlev düzeltildi, birim testi eklendi (40 test).
+- **Kaynakça politikası (yazar kararı, 2026-11-12):** PULSE (arXiv ön baskısı; yalnız girişte ilgili çalışma) kaynakçadan ve
+  giriş cümlesinden çıkarıldı; cümle kalan yayımlanmış kaynakların desteklediği kapsama daraltıldı ("reading ECG images" →
+  "ECG report generation"). HuBERT-ECG (medRxiv) ve TabPFN-3 (arXiv teknik rapor) bu çalışmada kullanılan modellerin birincil
+  teknik tanımlarıdır; hakemli sürümleri bulunamadı ve hakem değerlendirmesinden geçmemiş kaynak olarak açıkça işaretli biçimde
+  kaynakçada tutuluyor (istisna). PAPER-005 bu nedenle "kabul edilmiş sınırlılık" olarak kalır, "düzeltildi" değil. ECG-Chat ICME 2025 kaydı Crossref API yanıtıyla doğrulandı (10.1109/ICME59968.2025.11209476).
+- Kontroller: 145 sayı + 16 ifade kontrolü, 0 hata; 40 birim testi geçti. Commit edilmedi.
+
+### 2026-11-12 (son) — Dışa aktarım sürümü ve görsel denetim
+
+Altı dışa aktarım (izlenmeyen `manuscript/v2/export/`) aynı üç kaynak dosyadan tek komutla, 2026-11-12 09:27'de üretildi
+(pandoc + başsız Chrome, `evaluation/pmea_print.css`). SHA-256:
+
+```
+  2c194a3e8a012c881f8460fe7f89ef5a9d9698b3e3e47a6c0a50e156f3e84560  manuscript/v2/main_v2.md
+  0a504b0108a7176e0ce3e57947887519091204fad33d209f98e778ff4fd6aa09  manuscript/v2/supplement_v2.md
+  d203a95823aacff7bf6adb896e188645eecdede1fcf0e24222be2eba9e0568ff  manuscript/v2/tripod_ai_checklist_v2.md
+  e0b50b424b3d5ec7b921c398f515f76751884b12cd4ce629083587886da94dcd  manuscript/v2/export/main_v2.docx
+  303ce834d033d8b356f8666e0f41b03b676434c67e191d399a3ceac03b4b9079  manuscript/v2/export/main_v2.pdf
+  a8a4db323cebed0fde1c0609841c68e22aac3d4a4fd5bd5c104b094b84372370  manuscript/v2/export/supplement_v2.docx
+  49c65befb6b311f6c9f28ddf19dfc49d778965c14861034fe903e94361f2cc2c  manuscript/v2/export/supplement_v2.pdf
+  905753282fbd47b8fd774d3fe0ecde4859e84bf443b9cd492d782a0e36bcb50b  manuscript/v2/export/tripod_ai_checklist_v2.docx
+  def7deda5908eccf1ab4f30aaf586f728eba999ce74b3fa16a1512d13ccae0ab  manuscript/v2/export/tripod_ai_checklist_v2.pdf
+```
+
+PDF'ler yeniden üretimde zaman damgası taşıdığı için özetleri her üretimde değişir; kaynak `.md` özetleri belirleyicidir.
+- Görsel denetim (bu sürüm): ana metin 26 sayfanın tamamı; ek 39 sayfanın 25–39. sayfaları (S31 sonu–S47; değişen bölge). Ekin
+  1–24. sayfaları bir önceki üretimde incelendi ve kaynağı değişmedi. Kontrol listesi (6 sayfa) bir önceki üretimde incelendi,
+  kaynağı değişmedi. Kırpılan tablo, taşan metin veya eksik şekil görülmedi; hücre düzeyinde okuma yapılmadı.
+- Sonuç dosyaları: `git status results/` yalnız `manuscript_tables_2026-10-12.md` (üretilen tablo metni: S3 başlıkları, S35
+  sütunları) değişikliğini gösteriyor; tahmin ve özet CSV'lerinin hiçbiri değişmedi.
+- PAPER-005: belgelenmiş politika istisnası; hedef derginin kabulü doğrulanmadı (dergi seçilmedi).
+
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ
 (36 izlenen dosya değişti + yeni dosyalar; `git status` ile görülebilir). v1 = commit 55095ed, `results/`.

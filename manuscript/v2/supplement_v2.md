@@ -136,7 +136,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 
 ## Table S3. BUT QDB precision metrics projected to the prevalence of Class 3 inside the official intervals (2.14%, primary) and over all annotated intervals including the excluded stretch (16.0%; tabulated for continuity with the earlier version, not interpreted). The projection changes the class ratio only and assumes that the score distributions within each class in the quota cohort hold for all eligible windows; the values are conditional projections, not estimates for the full eligible population (main text, section 2.4; Table S43).
 
-| Model Architecture | AP, quota cohort (24.1%) | AP, natural, all records (16.0%) | AP, natural, official intervals (2.14%) | PPV at τ = 0.50, 16.0% | PPV at τ = 0.50, 2.14% | NPV at τ = 0.50, 2.14% | False rejections per hour of usable signal |
+| Model Architecture | AP, quota cohort (24.1%) | AP projected to all annotated intervals (16.0%) | AP projected to official intervals (2.14%) | Projected PPV at τ = 0.50, 16.0% | Projected PPV at τ = 0.50, 2.14% | Projected NPV at τ = 0.50, 2.14% | False rejections per hour of usable signal |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Logistic Regression (SQI)** | 0.759 | 0.678 | 0.372 | 0.614 | 0.154 | 0.989 | 23.0 |
 | **LightGBM (SQI)** | 0.894 | 0.851 | 0.623 | 0.746 | 0.252 | 0.993 | 15.8 |
@@ -713,20 +713,20 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | CinC2017 | LightGBM (SQI) | 8,512 | 0.891 | 0.889 | 6,573 | 6,042 |
 | CinC2017 | Logistic Regression (SQI) | 8,512 | 0.870 | 0.879 | 8,510 | 8,510 |
 
-## Table S35. CinC 2011 scored on 12 leads, with and without the 135 records that have at least one constant lead (signal SD 0; 129 of them unacceptable). Post hoc and descriptive; no tests. Without these records: 863 records, 96 unacceptable. Number of constant leads alone (all 998 records): AUROC 0.784.
+## Table S35. CinC 2011 scored on lead II and on 12 leads (maximum and mean over leads), with and without the 135 records that have at least one constant lead (signal SD 0; 129 of them unacceptable). Post hoc and descriptive; no tests. Without these records: 863 records, 96 unacceptable. Number of constant leads alone (all 998 records): AUROC 0.784.
 
-| Model Architecture | Maximum: all 998 | Maximum: without constant-lead records | Mean: all 998 | Mean: without constant-lead records |
-| :--- | :---: | :---: | :---: | :---: |
-| **Logistic Regression (SQI)** | 0.351 | 0.500 | 0.154 | 0.355 |
-| **LightGBM (SQI)** | 0.617 | 0.753 | 0.854 | 0.837 |
-| **Independent SQI MLP** | 0.838 | 0.631 | 0.840 | 0.631 |
-| **1D CNN (Raw Signal)** | 0.229 | 0.307 | 0.789 | 0.769 |
-| **2D CNN (Rendered Image)** | 0.718 | 0.854 | 0.882 | 0.878 |
-| **SinglePass Multimodal Net** | 0.500 | 0.500 | 0.500 | 0.500 |
-| **Rule-Based SQI Heuristic** | 0.842 | 0.650 | 0.719 | 0.513 |
-| **LiquidAI d1-3B (Zero-Shot)** | 0.813 | 0.570 | 0.644 | 0.401 |
-| **d1-3B image-token probe** | 0.951 | 0.902 | 0.944 | 0.912 |
-| **HuBERT-ECG probe** | 0.431 | 0.683 | 0.510 | 0.805 |
+| Model Architecture | Lead II: all 998 | Lead II: without constant-lead records | Maximum: all 998 | Maximum: without constant-lead records | Mean: all 998 | Mean: without constant-lead records |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Logistic Regression (SQI)** | 0.322 | 0.467 | 0.351 | 0.500 | 0.154 | 0.355 |
+| **LightGBM (SQI)** | 0.752 | 0.715 | 0.617 | 0.753 | 0.854 | 0.837 |
+| **Independent SQI MLP** | 0.675 | 0.527 | 0.838 | 0.631 | 0.840 | 0.631 |
+| **1D CNN (Raw Signal)** | 0.695 | 0.707 | 0.229 | 0.307 | 0.789 | 0.769 |
+| **2D CNN (Rendered Image)** | 0.787 | 0.759 | 0.718 | 0.854 | 0.882 | 0.878 |
+| **SinglePass Multimodal Net** | 0.500 | 0.500 | 0.500 | 0.500 | 0.500 | 0.500 |
+| **Rule-Based SQI Heuristic** | 0.678 | 0.517 | 0.842 | 0.650 | 0.719 | 0.513 |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.641 | 0.424 | 0.813 | 0.570 | 0.644 | 0.401 |
+| **d1-3B image-token probe** | 0.824 | 0.795 | 0.951 | 0.902 | 0.944 | 0.912 |
+| **HuBERT-ECG probe** | 0.562 | 0.736 | 0.431 | 0.683 | 0.510 | 0.805 |
 
 ## Table S36. Diagnosis of the constant multimodal-net score on CinC 2011 lead II (seed 42; descriptive, no tests). Top: inputs standardised with the BUT QDB mean and SD. Bottom: rescoring with the same fitted net.
 
@@ -744,6 +744,13 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | powerline_noise_ratio | 3.092 | 13.05 | -0.24 | 0.24 | 0.0% |
 | signal_std | 0.4655 | 0.9998 | -0.35 | 40.87 | 1.5% |
 
+| Variant | Records | Distinct scores | AUROC |
+| :--- | :---: | :---: | :---: |
+| Original inputs | 998 | 1 | 0.500 |
+| Image stream only | 998 | 930 | 0.801 |
+| SQI stream only | 998 | 1 | 0.500 |
+| Flatline input replaced by quantization-insensitive measure | 998 | 798 | 0.719 |
+
 ## Table S37. Effect of rejecting recordings by quality score on rhythm classification, CinC 2017 (8,234 recordings with a rhythm label; macro-F1 without rejection 0.719). Values are the change in macro-F1 minus the mean change under random rejection of the same fraction, with 95% bootstrap interval; intervals are not adjusted for multiplicity and no tests were run. Quality-score ties were broken at random (1D CNN: 1,159 recordings share a value with another recording, so its figures depend slightly on the tie-break; a deterministic tie-break changed its macro-F1 by at most 0.0002). Bottom: paired differences in the change.
 
 | Quality model | Reject 5% | Reject 10% (primary) | Reject 20% | Rejected at 10%: N / A / O |
@@ -759,6 +766,11 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | **TabPFN (SQI)** | +0.0017 (-0.0007 to +0.0045) | +0.0050 (+0.0010 to +0.0090) | +0.0055 (-0.0005 to +0.0105) | 544 / 53 / 226 |
 | **HuBERT-ECG probe** | -0.0007 (-0.0039 to +0.0029) | +0.0012 (-0.0036 to +0.0056) | +0.0073 (+0.0001 to +0.0141) | 389 / 73 / 361 |
 | **d1-3B image-token probe** | +0.0063 (+0.0036 to +0.0092) | +0.0082 (+0.0046 to +0.0126) | +0.0107 (+0.0054 to +0.0169) | 500 / 47 / 276 |
+
+| Comparison | Reject 5% | Reject 10% | Reject 20% |
+| :--- | :---: | :---: | :---: |
+| d1-3B image-token probe minus 2D CNN | +0.0075 (+0.0042 to +0.0110) | +0.0066 (+0.0024 to +0.0110) | +0.0052 (-0.0003 to +0.0112) |
+| d1-3B image-token probe minus HuBERT-ECG probe | +0.0070 (+0.0031 to +0.0108) | +0.0071 (+0.0026 to +0.0125) | +0.0035 (-0.0028 to +0.0103) |
 
 ## Table S38. Frozen test on PTB-XL v1.0.3 (one record per patient; models fitted on BUT QDB only). AUROC with 95% bootstrap interval. Global versus clean: 600 records, 300 global. Partial versus clean: 600 records, 300 partial. The outcome is annotated noise, a proxy for unusability, and the sampled prevalence is artificial. No record had a constant lead, so the planned analysis without such records is identical.
 
@@ -878,6 +890,15 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | **Logistic Regression (SQI)** | 0.899 (10) | 0.322 (11) | 0.870 (6) | 0.863 (6) |
 | **LiquidAI d1-3B (Zero-Shot)** | 0.828 (11) | 0.641 (8) | 0.757 (11) | 0.739 (11) |
 
+| Evaluation sets compared | Models | Spearman ρ of AUROC | p (descriptive) |
+| :--- | :---: | :---: | :---: |
+| BUT QDB vs CinC2011 lead II | 11 | +0.61 | 0.047 |
+| BUT QDB vs CinC2017 | 11 | -0.02 | 0.958 |
+| BUT QDB vs CinC2017 balanced subset | 11 | +0.04 | 0.915 |
+| CinC2011 lead II vs CinC2017 | 11 | +0.19 | 0.574 |
+| CinC2011 lead II vs CinC2017 balanced subset | 11 | +0.21 | 0.537 |
+| CinC2017 vs CinC2017 balanced subset | 11 | +0.99 | < 0.001 |
+
 ## Table S45. Per-window latency on an Apple M4 (median and 95th percentile of three runs of 25 windows), separating preprocessing from the forward pass. Every model is timed from the stored 500-Hz window to its decision; rendering is included for every model that needs a strip image, including the rule heuristic. (Table 5 of the main text in an earlier version.)
 
 | Model Architecture | Parameters | Disk Weights | Execution Device | Preproc Median (p95) | Forward Median (p95) | Total Median (p95) | Total Median, Range over Runs | Preproc Share (Median of Ratios) |
@@ -891,7 +912,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | **SinglePass Multimodal Net** | 131,841 | 0.47 MiB | Apple M4 (MPS) | 62.88 ms (131.44 ms) | 5.60 ms (6.17 ms) | 68.32 ms (137.26 ms) | 67.34–71.56 ms | 91.9% |
 | **LiquidAI d1-3B (Zero-Shot)** | 3,120,000,000 | 5958.00 MiB | Apple M4 (MPS) | 64.16 ms (153.21 ms) | 830.84 ms (834.07 ms) | 896.00 ms (984.59 ms) | 891.65–896.13 ms | 7.2% |
 
-## Table S46. Harmonised-pipeline comparison (post hoc, secondary; definition committed before any harmonised score was computed). AUROC with the original pipeline and with three input safeguards: G1, constant-input rule (a window with zero signal SD is scored unusable); G2, quantization-insensitive flatline input; G3, standardised inputs clipped to [−3, 3] with training statistics. Δ with 95% CI: subject cluster bootstrap on BUT QDB, DeLong externally; no multiplicity adjustment. Models marked "G1 only" were not refitted. Seed 42; rows ordered by harmonised AUROC on CinC 2011. BUT QDB contains no constant window.
+## Table S46. Harmonised-pipeline comparison (post hoc, secondary; a results-informed sensitivity analysis whose definition was committed before any harmonised score was computed but after the earlier external results were known). AUROC with the original pipeline and with three input safeguards: G1, constant-input rule (a window with zero signal SD is scored unusable); G2, quantization-insensitive flatline input; G3, standardised inputs clipped to [−3, 3] with training statistics. Δ with 95% CI: subject cluster bootstrap on BUT QDB, DeLong externally; no multiplicity adjustment. Models marked "G1 only" were not refitted; the SQI values in the zero-shot d1-3B prompt were left unchanged. Seed 42; rows ordered by harmonised AUROC on CinC 2011. BUT QDB contains no constant window.
 
 | Model | Safeguards applied | BUT QDB (988 windows): original → harmonised (Δ [95% CI]) | CinC 2011 lead II (998 records): original → harmonised (Δ [95% CI]) | CinC 2017 (8,512 recordings): original → harmonised (Δ [95% CI]) | Distinct scores on CinC 2011: original → harmonised |
 | :--- | :--- | :---: | :---: | :---: | :---: |
@@ -914,3 +935,25 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | BUT QDB vs CinC 2011 lead II | 11 | +0.61 | +0.49 |
 | BUT QDB vs CinC 2017 | 11 | -0.02 | -0.19 |
 | CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.43 |
+
+| Model (harmonised, BUT-only transfer) | Evaluation set | AUROC, seed 42 | AUROC, range over seeds 42 and 1–4 | Distinct scores, range over seeds |
+| :--- | :--- | :---: | :---: | :---: |
+| **Independent SQI MLP** | CinC 2011 lead II (998 records) | 0.761 | 0.686–0.776 | 913–914 |
+| **SinglePass Multimodal Net** | CinC 2011 lead II (998 records) | 0.731 | 0.706–0.768 | 905–914 |
+| **Independent SQI MLP** | CinC 2017 (8,512 recordings) | 0.889 | 0.873–0.891 | 8499–8509 |
+| **SinglePass Multimodal Net** | CinC 2017 (8,512 recordings) | 0.858 | 0.821–0.858 | 8421–8497 |
+
+| Input (standardised with BUT QDB mean and SD) | BUT QDB: share of windows beyond 3 SD (median absolute z) | CinC 2011 lead II: share of windows beyond 3 SD (median absolute z) | CinC 2017: share of windows beyond 3 SD (median absolute z) |
+| :--- | :---: | :---: | :---: |
+| bsqi_detector_agreement | 0.1% (0.828) | 7.8% (1.04) | 0.1% (0.641) |
+| baseline_wander_ratio | 2.4% (0.441) | 2.5% (0.419) | 3.3% (0.384) |
+| high_frequency_noise_ratio | 4.6% (0.241) | 0.0% (0.24) | 0.0% (0.241) |
+| saturation_fraction | 0.2% (0.045) | 57.7% (22.2) | 3.1% (0.045) |
+| flatline_fraction | 1.0% (0.543) | 100.0% (2.29e+03) | 52.6% (4.18) |
+| qrs_energy_ratio | 0.1% (0.71) | 7.7% (1.08) | 0.1% (0.924) |
+| kurtosis_ksqi | 0.7% (0.796) | 1.2% (0.549) | 0.5% (0.52) |
+| skewness_ssqi | 0.4% (0.902) | 1.1% (0.72) | 0.9% (0.648) |
+| zero_crossing_rate | 3.5% (0.439) | 0.2% (0.366) | 0.0% (0.608) |
+| powerline_noise_ratio | 4.6% (0.237) | 0.0% (0.237) | 0.0% (0.237) |
+| signal_std | 0.8% (0.191) | 2.0% (0.354) | 0.0% (0.303) |
+| flatline_fraction_robust (replaces flatline_fraction; G2) | 0.0% (0) | 0.0% (0) | 0.0% (0) |

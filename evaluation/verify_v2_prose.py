@@ -451,7 +451,32 @@ def main() -> int:
                 continue
             print("MISSING:", frag)
             fails += 1
-    print(f"{len(items)} prose checks, {fails} failed ({moved} found in the other file); placeholders left: {sorted(set(left))}")
+    # Wording checks (review of 2026-11-12, PAPER-003/013/014/015): phrases that must not come back, and statements that
+    # must stay. They check wording only; the numbers are checked above.
+    both = main_t + supp_t
+    forbidden = ["pre-stated", "Pre-stated", "indistinguishable", "reported re-weighted", "AP, natural",
+                 "none of its three safeguards uses target labels or target performance",
+                 "zero-shot d1-3B and the two probes have no tabular input"]
+    required = [("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
+                ("designed with knowledge of the earlier external results", main_t),
+                ("receives the eight SQIs as text in its prompt", main_t),
+                ("so only G1 applies to it", main_t),
+                ("no significant difference was detected among eight models", main_t),
+                ("no significant difference was detected among eight approaches in-domain, which does not establish their equivalence", main_t),
+                ("reported as conditional projections", main_t),
+                ("Post hoc input safeguards", main_t),
+                ("a results-informed sensitivity analysis whose definition was committed", supp_t)]
+    for w in forbidden:
+        if w in both:
+            print("FORBIDDEN WORDING:", w)
+            fails += 1
+    for w, text in required:
+        if w not in text:
+            print("MISSING WORDING:", w)
+            fails += 1
+    n_word = len(forbidden) + len(required)
+    print(f"{len(items)} prose checks and {n_word} wording checks, {fails} failed ({moved} found in the other file); "
+          f"placeholders left: {sorted(set(left))}")
     return 1 if fails or left else 0
 
 

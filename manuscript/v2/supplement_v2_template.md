@@ -264,7 +264,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 
 {{Table 15}}
 
-## Table S35. CinC 2011 scored on 12 leads, with and without the 135 records that have at least one constant lead (signal SD 0; 129 of them unacceptable). Post hoc and descriptive; no tests. Without these records: 863 records, 96 unacceptable. Number of constant leads alone (all 998 records): AUROC 0.784.
+## Table S35. CinC 2011 scored on lead II and on 12 leads (maximum and mean over leads), with and without the 135 records that have at least one constant lead (signal SD 0; 129 of them unacceptable). Post hoc and descriptive; no tests. Without these records: 863 records, 96 unacceptable. Number of constant leads alone (all 998 records): AUROC 0.784.
 
 {{Table 16}}
 
@@ -308,7 +308,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 
 {{Table 4}}
 
-## Table S46. Harmonised-pipeline comparison (post hoc, secondary; definition committed before any harmonised score was computed). AUROC with the original pipeline and with three input safeguards: G1, constant-input rule (a window with zero signal SD is scored unusable); G2, quantization-insensitive flatline input; G3, standardised inputs clipped to [−3, 3] with training statistics. Δ with 95% CI: subject cluster bootstrap on BUT QDB, DeLong externally; no multiplicity adjustment. Models marked "G1 only" were not refitted. Seed 42; rows ordered by harmonised AUROC on CinC 2011. BUT QDB contains no constant window.
+## Table S46. Harmonised-pipeline comparison (post hoc, secondary; a results-informed sensitivity analysis whose definition was committed before any harmonised score was computed but after the earlier external results were known). AUROC with the original pipeline and with three input safeguards: G1, constant-input rule (a window with zero signal SD is scored unusable); G2, quantization-insensitive flatline input; G3, standardised inputs clipped to [−3, 3] with training statistics. Δ with 95% CI: subject cluster bootstrap on BUT QDB, DeLong externally; no multiplicity adjustment. Models marked "G1 only" were not refitted; the SQI values in the zero-shot d1-3B prompt were left unchanged. Seed 42; rows ordered by harmonised AUROC on CinC 2011. BUT QDB contains no constant window.
 
 {{Table 26}}
 
