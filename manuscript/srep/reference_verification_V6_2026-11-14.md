@@ -33,6 +33,21 @@ both an effective out-of-the-box solution and easily fine-tunable"). An erratum,
 is unlikely to affect that. This is an inference from how the paper is used, not a reading of the erratum; the author
 should open the notice once before submission.
 
+**Update, 2026-11-14 (after V7): content of the correction, as read by the author.** The author opened the notice in
+a browser and passed its text to the coding assistant, which did not open the publisher page itself. Summary (not a
+quotation): the notice replaces one paragraph of the Methods subsection "Training with Real-World Annotations: Noisy,
+Imbalanced, Positive Unlabeled". The paragraph describes the multilabel loss used in pre-training, which lowers the
+weight of negative labels that the model predicts with high probability because they may be unannotated positives;
+it gives the loss formula and the hyperparameter value γ = 1.5. The notice does not show the earlier wording, so
+what exactly differed (formula, value or text) cannot be stated here. It does not mention results, data, the model
+weights or the conclusions.
+
+Effect on this manuscript: none. The two citations above describe ECGFounder only as a pre-trained ECG foundation
+model that was not evaluated here. The manuscript does not use, quote or depend on its training loss, and no
+ECGFounder weights or results enter any analysis. The inference recorded above is thereby confirmed by a reading of
+the notice. The reference entry stays as the original article (doi:10.1056/AIoa2401033); the erratum is recorded
+here and not added to the reference list. The statement "NOT READ" above describes the state on the V6 date.
+
 ## Second-source screen of all references (new in V6)
 
 Because the Crossref-only screen had this gap, every DOI in `references_srep.md` was also looked up in Europe PMC, whose
