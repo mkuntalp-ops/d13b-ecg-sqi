@@ -7,6 +7,10 @@ Each "{{Table X}}" marker in manuscript/v2/*_template.md is replaced by the gene
 Citations are written as [@key] and numbered here from manuscript/v2/references_v2.md.
 Run after evaluation/build_manuscript_tables.py, with ECG_RESULTS_DIR=results/v2_2026-11.
 Outputs: manuscript/v2/main_v2.md, manuscript/v2/supplement_v2.md
+
+`--variant srep` assembles the Scientific Reports version from manuscript/srep/*_template.md and
+manuscript/srep/references_srep.md (Nature reference style, numbered "1.") into manuscript/srep/main_srep.md and
+manuscript/srep/supplement_srep.md. The v2 files are not touched.
 """
 
 import re
@@ -20,8 +24,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sync_manuscript_tables import GEN, RESULTS_DIR, table_blocks  # noqa: E402
 
 # v2 templates and outputs live in manuscript/v2/; the v1 files (main_q1*.md, supplement_q1*.md) are left as submitted.
-PAIRS = [("v2/main_v2_template.md", "v2/main_v2.md"), ("v2/supplement_v2_template.md", "v2/supplement_v2.md")]
-REFERENCES = ROOT / "manuscript" / "v2" / "references_v2.md"
+VARIANTS = {
+    "v2": {"pairs": [("v2/main_v2_template.md", "v2/main_v2.md"), ("v2/supplement_v2_template.md", "v2/supplement_v2.md")],
+           "references": ROOT / "manuscript" / "v2" / "references_v2.md", "ref_prefix": "[{n}] "},
+    "srep": {"pairs": [("srep/main_srep_template.md", "srep/main_srep.md"),
+                       ("srep/supplement_srep_template.md", "srep/supplement_srep.md")],
+             "references": ROOT / "manuscript" / "srep" / "references_srep.md", "ref_prefix": "{n}. "},
+}
+VARIANT = sys.argv[sys.argv.index("--variant") + 1] if "--variant" in sys.argv else "v2"
+if VARIANT not in VARIANTS:
+    raise SystemExit(f"unknown variant {VARIANT!r}; choose from {sorted(VARIANTS)}")
+PAIRS = VARIANTS[VARIANT]["pairs"]
+REFERENCES = VARIANTS[VARIANT]["references"]
+REF_PREFIX = VARIANTS[VARIANT]["ref_prefix"]
 
 
 def number_citations(text: str) -> str:
@@ -53,7 +68,7 @@ def number_citations(text: str) -> str:
     unused = set(entries) - set(order)
     if unused:
         raise ValueError(f"references never cited: {sorted(unused)}")
-    refs = "\n\n".join(f"[{i + 1}] {entries[k]}" for i, k in enumerate(order))
+    refs = "\n\n".join(REF_PREFIX.format(n=i + 1) + entries[k] for i, k in enumerate(order))
     assert text.count("{{References}}") == 1
     return text.replace("{{References}}", refs)
 
@@ -87,6 +102,8 @@ def main():
     for src, dst in PAIRS:
         text = re.sub(r"<!--.*?-->\n?", "", (ROOT / "manuscript" / src).read_text(encoding="utf-8"), flags=re.S)
         text = fill(text, blocks)
+        if VARIANT == "srep":  # generated cells written for v2 say "Table Sn"; Scientific Reports wants "Supplementary Table Sn"
+            text = re.sub(r"(?<!Supplementary )\bTable(s?) S(\d)", r"Supplementary Table\1 S\2", text)
         if "{{References}}" in text:
             text = number_citations(text)
         (ROOT / "manuscript" / dst).write_text(text, encoding="utf-8")

@@ -451,6 +451,123 @@ dosyasından aynen. Gecikme kodunda sekiz modelin hepsi için sinyal zamanlayıc
 Sınır: bu ikinci bir hesaplamadır, bağımsız hakem doğrulaması değildir; harmonize eğitimler ve gecikme ölçümü yeniden
 çalıştırılmadı.
 
+### 2026-11-13 — Hedef dergi: Scientific Reports (yazar kararı); dergiye özel sürüm
+
+Kılavuzlar Chrome'dan okundu: CMPB (ana metin normalde ≤ 3.500 kelime), BSPC (~5.000, yeni teknik beklentisi), MBEC (≤ 18 sayfa;
+"var olan yöntemleri açık veri setlerine uygulayan" çalışmalar masada elenir), JBI ve AI in Medicine (yeni yöntem şartı),
+Computers in Biology and Medicine (17 Kasım 2025'te Web of Science'tan çıkarıldı). Yazar Scientific Reports'u seçti: ana metin
+≤ 4.500 kelime (yöntem hariç), başlık ≤ 20 kelime, özet ≤ 200 kelime başlıksız, ≤ 8 görsel öge, tablo ≤ 1 sayfa, ≤ 60 kaynak,
+yayın ücreti £2.290 / $2.850 / €2.490 + KDV. Çeyreklik JCR'den doğrulanmadı.
+- `manuscript/srep/`: ana metin 3.608 kelime (giriş 505, sonuçlar 1.779, tartışma 1.324), başlık 16, özet 197 kelime; 3 tablo,
+  4 şekil; eski Tablo 4 → Ek Tablo S48 (Şekil 4 aynı bulguyu gösteriyor); CinC 2017 tablosu Tablo 2, LODO Tablo 3 (atıf sırası).
+  Yöntem sona taşındı; tartışma alt başlıksız (sınırlılıklar ve sonuç içinde). İstatistik bölümüne "tüm testler çift yönlü,
+  anlamlılık p_Holm < 0,05" eklendi (kodla doğrulandı: DeLong 2·sf, bootstrap 2·min). Yapay zekâ beyanı ve etik Yöntem'de.
+  Etik: yalnız BUT QDB için yazılı onam belgede var (PhysioNet sayfası); PTB-XL için etik kurul yayın onayı (PTB-2020-1);
+  CinC 2011, CinC 2017, NSTDB belgelerinde onam bilgisi yok, metin bunu söylüyor.
+- Ek: numarasız ek yöntem/sonuç başlıkları, "Supplementary Table Sn" etiketleri, eski sürümün tam Sonuçlar metni
+  "Supplementary Note: extended results" olarak (yalnız çapraz atıflar uyarlandı). Hiçbir analiz eklenmedi ya da çıkarılmadı.
+- Kaynakça Nature biçimine çevrildi (50 kaynak). TRIPOD+AI listesi bu sürüme uyarlandı (özet maddesi yeniden değerlendirildi).
+  Başvuru mektubu taslağı: önerilen/istenmeyen hakemler ve tarih yazar tarafından doldurulacak.
+- Betikler: `assemble_q1_manuscript.py --variant srep`; `verify_v2_prose.py --variant srep` (srep'e özgü ifade kontrolleri ve sayı
+  kaynağı kontrolü). Sonuç: 137 sayı + 15 ifade kontrolü 0 hata; ana metindeki 280 sayının hepsi doğrulanmış kaynaklarda; v2
+  sürümü değişmedi (145 + 16, 0 hata); 40 birim testi ve çapraz kontrol geçti. Ana metin PDF'i 22 sayfanın tamamı gözle incelendi.
+- Commit edilmedi.
+
+### 2026-11-13 — Üçüncü hakem raporu (PAPER-001–012, Scientific Reports sürümü üzerinde); yazar "Evet, uygula"
+
+Bulguların hepsi kod ve metinle doğrulandı. Hiçbir model yeniden eğitilmedi; yeni analizler kayıtlı çıktılardan.
+- PAPER-003: `decision_calibration.py` kesim noktası artık skor denkleminin kökü (Brent), eğim adım yarılamalı Newton; durum
+  sütunları eklendi. Eski çözücü sabit skorda NaN veriyordu (998 kayıt, 225 pozitif, p = 1−1e-6: analitik −15.0497). Eski çıktı
+  `decision_calibration_pre_PAPER003_2026-11-13.csv` olarak saklandı. Değişen: CinC 2011'de 4 kesim noktası (LR, MLP, multimodal,
+  zero-shot d1-3B) ve CinC 2017 1D CNN'in kesim noktası aralığı (önceden bazı bootstrap örnekleri NaN). Eğim: multimodal sabit
+  skor → tanımsız; LR ve MLP yarı-tam ayrışma (74 kayıt alt sınırda, hepsi pozitif) → yakınsamaz (Nelder–Mead ile teyit).
+  2 yeni birim testi (analitik sabit skor, ayrışma).
+- PAPER-001/002: `evaluation/rank_uncertainty.py` → `rank_uncertainty.csv` (2.000 eşleştirilmiş bootstrap, seed 42; BUT QDB
+  denek, dış veri kayıt). ρ: 0,61 [0,06–0,75], −0,02 [−0,35–0,32], 0,19 [0,04–0,31]; iç alan lideri dış veride lider: %0,5 ve
+  %0,0; seçim kaybı 0,037 ve 0,057 AUROC. Sezgisel yöntem çıkarılınca ρ 0,62 ve −0,05. Nokta tahminleri rank_agreement ile
+  birebir. Ek Tablo S44'e ikinci bileşen tablo. Özet ve sonuçlarda sezgisel yöntem nitelendi; sekiz model arasındaki 28 çiftin
+  hepsi p_Holm ≥ 0,615 (paired_comparisons.csv) — mektuptaki "birbirinden farklı değil" ifadesi buna dayandırıldı.
+- PAPER-006: `evaluation/local_threshold_triviality.py` → `local_threshold_triviality.csv`; Ek Tablo S22/S48 (v2 Tablo 4) iki sütun.
+  n = 100: CinC 2017'de sıfır ret %17–95, yararlı kontrol %0–70; CinC 2011'de LR ve multimodal %100, 1D CNN %60.
+- PAPER-004: BUT QDB 15 denek: 9 kadın, 6 erkek, 21–83 yaş (medyan 37) (subject-info.csv). v2'deki "10 kadın 8 erkek kayıt"
+  kayıt düzeyiydi; denek düzeyine çevrildi.
+- PAPER-005: istatistik envanteri düzeltildi (12 derivasyon prob testleri: Holm dört test; S26/S35 betimsel).
+- PAPER-007: "matters more" ve "removes the tuning question" yapılandırmalarla sınırlandı; uyarlama bütçesi farkı ve tek-derivasyon
+  HuBERT girişi sınırlılıklarda.
+- PAPER-008: iki ön baskı "preprint" etiketiyle tutuldu (dergi izin veriyor; yazara bırakıldı).
+- PAPER-009: README güncellendi; veri erişimine dal adı ve [COMMIT HASH AND ARCHIVE DOI] yer tutucusu (yazar dolduracak).
+- PAPER-010: BenchECG/xECG npj Digit. Med. 2026 (doi:10.1038/s41746-026-03196-y; erken kabul sürümü, yayıncı sayfası okundu)
+  eklendi; katkı cümlesi sınırlandı. Kaynak sayısı srep 51.
+- PAPER-011/012: TRIPOD (madde 2, 19, 20b, çift önek), Etik'e hasta-kamu katılımı cümlesi; mektup ifadesi.
+- Sapma maddesi eklendi (v2 (11), srep (12)). Özet 199 kelime; srep ana metin 4.031 kelime.
+- Doğrulama: v2 154 sayı + 23 ifade, srep 146 + 22, 0 hata; srep 291 sayının hepsi kaynaklı; 42 test ve çapraz kontrol geçti.
+  Değişen tablolar ve v2 Tablo 4 PDF'te gözle incelendi.
+- Commit edilmedi.
+
+### 2026-11-13 — V3: üçüncü hakemin takip yanıtı ("Bu yanıt.docx"); sürüm numaralandırması başladı
+
+Yazar kararı: her düzeltme turu sürümü 1 artırır (V1 = PMEA gönderimi, V2 = bu tarihe kadarki durum, V3 = bu tur).
+Kaynak klasörler değişmez; dışa aktarımlar `manuscript/<variant>/export/v3/*_v3.*`, önceki dışa aktarımlar V2 kaydı olarak
+yerinde. Yeni model eğitimi veya yeni deney yok; yalnız kayıtlı çıktılar.
+
+- PAPER-003 (kapanış kanıtı): `decision_calibration.py`'ye `separation()` eklendi. Bu fonksiyon tam veya yarı-tam ayrışmayı skor–etiket yapısından doğrudan, optimizasyondan bağımsız olarak saptar (Albert & Anderson 1984).
+  - Durumlar: "not identifiable (constant score)", "not estimable (complete|quasi-complete separation)" ve "not converged (optimisation)"; sonuncusu yalnız ayrışma yokken çözücü başarısız olursa kullanılır.
+  - Nokta tahminlerinde ve 2.000 yeniden örneklemenin hiçbirinde optimizasyon hatası çıkmadı. BUT QDB'de eğimi olmayan 1–16 yeniden örneklemenin hepsi saptanmış ayrışma.
+  - CinC 2011'de LR ve MLP: bir kırpma sınırındaki 74 kaydın hepsi kullanılamaz, yani yarı-tam ayrışma. Profil olabilirliği |b| ile monoton artıyor (LR b → −∞, MLP b → +∞).
+  - Sayısal değerler önceki çıktıyla birebir aynı; yalnız durum etiketleri değişti. Yedek: `decision_calibration_pre_V3_2026-11-13.csv`.
+  - Testler: kaba kuvvet tanımıyla 20.000 rastgele örnekte uyum; scikit-learn'ün cezasız fit'iyle normal, aşırı ve kırpılmış skorlarda karşılaştırma; yarı-tam ayrışma yapısı. Toplam 44 test.
+  - S32'de, bazı yeniden örneklemelerde tahmin yoksa tahminli örnekleme sayısı gösteriliyor.
+- PAPER-007: "mattered more than the model class" kaldırıldı; yapılandırma bağımlılığı bildiriliyor.
+- Sıralama cümlesi: betimsel sıra ile Holm-destekli üstünlük ayrıldı.
+- S44 yorumu:
+  - CinC 2011 aralığı sıfırı dışlıyor ama geniş.
+  - "0.0%" yerine "2.000 yeniden örneklemenin hiçbirinde (gözlenmedi; olasılık sıfır demek değil)".
+- PAPER-011: TRIPOD v2 madde 2 yalnız S28; iki listede madde 14 notu ana metinle uyumlu (demografi var, 7 denek yetersiz, dış veriler demografik olarak analiz edilmedi).
+- PAPER-008 (yazar kararı: yazılım atfı):
+  - HuBERT-ECG medRxiv ve TabPFN-3 arXiv kaynakça girdileri kaldırıldı.
+  - Yerlerine kullanılan sürümler kondu: HF Edoardo-Coppola/hubert-ecg-base rev. 8ffa1ad…; HF Prior-Labs/tabpfn_3 rev. 24a16a8…, checkpoint tabpfn-v3-classifier-v3_default.ckpt, tabpfn 9.0.0. Revizyonlar yerel indirme metaverisiyle eşleşti.
+  - Sapma listesindeki ön baskı cümlesi güncellendi.
+- Kaynak doğrulaması: `manuscript/srep/reference_verification_V3_2026-11-13.md` ve Crossref CSV'si (`evaluation/crossref_reference_check.py`).
+  - Düzeltilen bulgular:
+    - Smital 2026'ya cilt 13 ve makale 1567 eklendi.
+    - ST-MEM bağlantısı ICLR bildiri sayfasına çevrildi.
+    - Pan–Tompkins: kod sadeleştirilmiş bir yeniden uygulama (tek global eşik). Yöntem metni artık bunu söylüyor.
+    - SiamQuality ifadesi inceltildi.
+  - Albert & Anderson 1984 eklendi; srep kaynak sayısı 52.
+- Sapma maddesine ayrışma teşhisi eklendi.
+- srep ana metin yaklaşık 57 kelime uzadı (önceki sayımla ≈4.088); özet 199 kelime, değişmedi.
+- Doğrulama: v2 155 sayı + 31 ifade, srep 147 + 30, 0 hata; srep'te 291 sayının hepsi kaynaklı; 44 test ve çapraz kontrol geçti. S32 PDF'te gözle incelendi.
+- İnceleme paketi: `manuscript/srep/export/v3/review_package_v3/` (kod, CSV'ler, test/doğrulama kaydı, kaynak raporu).
+- Commit edilmedi.
+
+### 2026-11-14 — V4: üçüncü hakemin V3 yanıtı ("V3.docx"; karar: MAJOR REVISION, sayısal kapanış doğrulaması bekleniyor)
+
+Yeni model eğitimi veya deney yok; tüm kontroller kayıtlı tahminlerden. V3 dışa aktarımları ve raporları V3 kaydı olarak duruyor.
+
+- **PAPER-003 (ayrışma kanıtı):** yeni salt-okunur betik `evaluation/calibration_separation_diagnostic.py`.
+  - Çıktılar, `results/v2_2026-11/` altında:
+    - `calibration_separation_levels.csv`: düzey başına sınıf sayıları;
+    - `calibration_separation_diagnostic.csv`: kesim, yön, eşitsizlikler, kesimdeki iki sınıf, kontrol sırası; tahmin edilen 41 eğim için scikit-learn karşılaştırması ve skor normu;
+    - `calibration_separation_bootstrap.csv`: 2.000 yeniden örneklemede durum sayıları ve bağımsız kaba kuvvet teyidi.
+  - **V3 ifadesinin düzeltilmesi:** "bir sınırdaki 74 kaydın hepsi kullanılamaz" ifadesi eksikti.
+    - LR'de kesim üst sınırda: altındaki 76 kaydın hepsi kullanılamaz, üstünde kayıt yok, sınırda 149 kullanılamaz ve 773 kullanılabilir kayıt var (b → −∞).
+    - MLP'de kesim alt sınırda: üstündeki 75 kayıt kullanılamaz, sınırda 150 kullanılamaz ve 773 kullanılabilir kayıt var (b → +∞).
+    - Ana metin, S32 açıklaması, verify_v2_prose kontrolü ve test buna göre güncellendi.
+  - Sayısal sonuçlar:
+    - 41 tahmin scikit-learn ile en çok 4,3×10⁻¹⁰ farkla uyumlu (tolerans 10⁻⁴·max(1,|b|)); skor normu ≤ 1,0×10⁻¹².
+    - Eğimi olmayan her yeniden örnekleme ayrışma; kaba kuvvetle teyit edildi; optimizasyon hatası 0.
+  - S32: tanım açıkça yazıldı; sabit-skor kontrolünün önce geldiği belirtildi; aralıkların tahminli yeniden örneklemelere koşullu olduğu ve dışlananları temsil etmediği eklendi.
+- **Ön baskı cümlesi:** "have no peer-reviewed version" yerine "searches on 13 November 2026 found no peer-reviewed version".
+- **Ek S-M1:** Pan–Tompkins sadeleştirmesi burada da yazıldı.
+- **Model sürümleri:** yerel ağırlıkların SHA-256'sı, HF API'nin belirtilen revizyondaki LFS oid'si ile eşleşti (`results/v2_2026-11/model_provenance_V4_2026-11-14.csv`).
+- **İddia desteği:** öncelikli kaynak grupları kontrol edildi (`manuscript/srep/reference_verification_V4_2026-11-14.md`). Düzeltmeler:
+  - "Three experts annotated" artık Smital 2026'ya atfediliyor (Smital 2020 bir yöntem makalesi);
+  - HeartBEiT için "frozen … linear probe" ifadesi genelleştirildi;
+  - Moeyersons için "often recommended" yerine "improved results in an earlier cross-dataset study";
+  - Guo/Subbaswamy için "ranking" yerine "discrimination".
+- **Dışa aktarım:** komutlar `evaluation/export_manuscript.sh` betiğine kaydedildi. Betik var olan bir tur klasörünün üzerine yazmıyor ve `MANIFEST_vN.txt` dosyasını üretiyor (git HEAD ve kirli durum, araç sürümleri, kaynak ve çıktıların SHA-256'sı).
+- Commit edilmedi; commit kimliği ve arşiv DOI'si yazar onayı bekliyor.
+
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ
 (36 izlenen dosya değişti + yeni dosyalar; `git status` ile görülebilir). v1 = commit 55095ed, `results/`.

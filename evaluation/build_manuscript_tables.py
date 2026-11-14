@@ -636,17 +636,23 @@ def _recal_table(n_values) -> str:
         return _missing(path)
     s = pd.read_csv(path)
     s = s[s.n.isin(n_values)]
+    triv_path = RESULTS / "local_threshold_triviality.csv"  # review PAPER-006 (evaluation/local_threshold_triviality.py)
+    if not triv_path.exists():
+        return _missing(triv_path)
+    triv = pd.read_csv(triv_path).set_index(["dataset", "model", "n"])
     labels = {**MODEL_LABELS, **EXTRA_LABELS}
     out = ["| Dataset | Model | n | Transferred threshold: FPR / Sens. (median) | Local threshold: FPR median [95% range] | "
-           "Local threshold: Sens. median [95% range] | Draws with FPR ≤ 5% / ≤ 7.5% (local) | Fallback draws | "
-           "Brier: raw → Platt (median; Platt skipped) |",
-           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+           "Local threshold: Sens. median [95% range] | Draws with FPR ≤ 5% / ≤ 7.5% (local) | Zero-rejection draws | "
+           "Draws with FPR ≤ 5% and Sens. > 0 | Fallback draws | Brier: raw → Platt (median; Platt skipped) |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
     for _, r in s.iterrows():
+        t = triv.loc[(r["dataset"], r["model"], r["n"])]
         out.append(f"| {r['dataset']} | **{labels.get(r['model'], r['model'])}** | {r['n']} | "
                    f"{100 * r['fpr_transferred_median']:.1f}% / {100 * r['sens_transferred_median']:.1f}% | "
                    f"{100 * r['fpr_local_median']:.1f}% [{100 * r['fpr_local_p2.5']:.1f}–{100 * r['fpr_local_p97.5']:.1f}%] | "
                    f"{100 * r['sens_local_median']:.1f}% [{100 * r['sens_local_p2.5']:.1f}–{100 * r['sens_local_p97.5']:.1f}%] | "
-                   f"{100 * r['share_fpr_le_5_local']:.0f}% / {100 * r['share_fpr_le_7.5_local']:.0f}% | {r['fallback_draws']} | "
+                   f"{100 * r['share_fpr_le_5_local']:.0f}% / {100 * r['share_fpr_le_7.5_local']:.0f}% | "
+                   f"{100 * t['zero_rejection']:.0f}% | {100 * t['useful_control']:.0f}% | {r['fallback_draws']} | "
                    f"{r['brier_raw_median']:.3f} → {r['brier_platt_median']:.3f} ({r['platt_skipped']}) |")
     return "\n".join(out)
 
@@ -1054,7 +1060,12 @@ def table_1h() -> str:
             if r.empty:
                 continue
             r = r.iloc[0]
-            fmt_nd = lambda k: ci(r, k, 1, 2) if np.isfinite(r[k]) else "not estimable"
+            def fmt_nd(k, r=r):
+                # V3 (2026-11-13): when some resamples gave no estimate, the interval rests on fewer resamples; say how many
+                if not np.isfinite(r[k]):
+                    return str(r.get(f"{k}_status", "not estimable"))
+                n_ok, n_all = int(r[f"{k}_n_finite"]), int(r.valid_resamples)
+                return ci(r, k, 1, 2) + (f" ({n_ok:,} of {n_all:,} resamples)" if n_ok < n_all else "")
             ppv = ci(r, "ppv") if np.isfinite(r["ppv"]) else "—"
             npv = ci(r, "npv") if np.isfinite(r["npv"]) else "—"
             out.append(f"| {fam} | **{labels[m]}** | {int(r.n_units):,} ({int(r.n_positive):,}) | {ci(r, 'sensitivity')} | {ci(r, 'false_reject_rate')} | "
@@ -1195,6 +1206,20 @@ def table_25() -> str:
     out += ["", "| Evaluation sets compared | Models | Spearman ρ of AUROC | p (descriptive) |", "| :--- | :---: | :---: | :---: |"]
     for r in rho.itertuples():
         out.append(f"| {short[r.family_a]} vs {short[r.family_b]} | {r.n_models} | {r.spearman_rho:+.2f} | {_p_fmt(r.p)} |")
+    # review PAPER-001/002: paired bootstrap of the evaluation units (evaluation/rank_uncertainty.py)
+    unc_path = RESULTS / "rank_uncertainty.csv"
+    if not unc_path.exists():
+        return _missing(unc_path)
+    u = pd.read_csv(unc_path)
+    out += ["", "| Models | Selection set → target set | Spearman ρ [95% bootstrap interval] (share of resamples with ρ > 0) | "
+            "Leader of selection set also leads target set (share of resamples) | AUROC lost by selecting the leader of the selection set [95% bootstrap interval] |",
+            "| :--- | :--- | :---: | :---: | :---: |"]
+    for (ms, a, b), g in u.groupby(["model_set", "set_a", "set_b"], sort=False):
+        r = g.set_index("statistic")
+        rho_r, lead, reg = r.loc["spearman_rho"], r.loc["same_leader"], r.loc["regret_auroc"]
+        out.append(f"| {ms} ({int(rho_r.n_models)}) | {a} → {b} | {rho_r.estimate:+.2f} [{rho_r.ci_lo:+.2f} to {rho_r.ci_hi:+.2f}] "
+                   f"({100 * rho_r.prop_positive:.0f}%) | {'yes' if lead.estimate else 'no'} ({100 * lead.prop_positive:.1f}%) | "
+                   f"{reg.estimate:.3f} [{reg.ci_lo:.3f}–{reg.ci_hi:.3f}] |")
     return "\n".join(out)
 
 

@@ -130,6 +130,78 @@ class TestCalibration(unittest.TestCase):
         self.assertAlmostEqual(self.ci(y, p), a, places=4)
         self.assertAlmostEqual(self.cs(y, p), b, places=4)
 
+    def test_constant_score_intercept_is_analytic(self):
+        # review PAPER-003: constant scores at the clipping bound; intercept = logit(prevalence) - logit(p)
+        from decision_calibration import calibration_slope_status
+        y = np.r_[np.ones(225), np.zeros(773)]
+        for pc in (1.0, 1 - 1e-6, 0.0, 0.3):
+            p = np.full(998, pc)
+            z = self.logit(p)[0]
+            self.assertAlmostEqual(self.ci(y, p), np.log(225 / 773) - z, places=8)
+            self.assertEqual(calibration_slope_status(y, p)[1], "not identifiable (constant score)")
+
+    def test_separation_slope_flagged(self):
+        from decision_calibration import calibration_slope_status
+        y = np.r_[np.zeros(50), np.ones(50)]
+        p = np.r_[np.linspace(0.01, 0.4, 50), np.linspace(0.6, 0.99, 50)]
+        b, status = calibration_slope_status(y, p)
+        self.assertTrue(np.isnan(b))
+        self.assertEqual(status, "not estimable (complete separation)")
+        self.assertTrue(np.isfinite(self.ci(y, p)))
+
+    def test_quasi_complete_separation_structure(self):
+        # V3: the CinC 2011 structure of the MLP: 74 records at the upper clipping bound, all unusable; 923 at the
+        # lower bound with both classes; one record in between. The profile likelihood rises monotonically in b.
+        from decision_calibration import _loglik, calibration_slope_status, separation
+        from scipy.optimize import minimize_scalar
+        y = np.r_[np.ones(74), np.ones(150), np.zeros(773), 1]
+        p = np.r_[np.full(74, 1.0), np.full(923, 0.0), 0.014]
+        z = self.logit(p)
+        self.assertEqual(separation(y, z), "quasi-complete")
+        self.assertEqual(calibration_slope_status(y, p)[1], "not estimable (quasi-complete separation)")
+        prof = [-minimize_scalar(lambda a: -_loglik(a + b * z, y), bounds=(-1e5, 1e5), method="bounded",
+                                 options={"xatol": 1e-10}).fun for b in (0.5, 1, 2, 5, 20)]
+        self.assertTrue(all(b2 >= b1 - 1e-6 for b1, b2 in zip(prof, prof[1:])))
+
+    def test_overlap_not_flagged_and_matches_sklearn(self):
+        # V3: independent fit (scikit-learn, unpenalised) for ordinary, extreme and heavily clipped scores without
+        # separation; none may be labelled separation.
+        from decision_calibration import calibration_slope_status, separation
+        from sklearn.linear_model import LogisticRegression
+        rng = np.random.default_rng(11)
+        cases = {"ordinary": 1 / (1 + np.exp(-(0.8 * self.z_true + 0.3))),
+                 "extreme": 1 / (1 + np.exp(-(6 * self.z_true - 2))),
+                 "clipped": np.where(rng.uniform(size=4000) < 0.3, (self.z_true > 0).astype(float),
+                                     1 / (1 + np.exp(-self.z_true)))}
+        for name, p in cases.items():
+            z = self.logit(p)
+            self.assertIsNone(separation(self.y, z), name)
+            b, status = calibration_slope_status(self.y, p)
+            self.assertEqual(status, "estimated", name)
+            ref = LogisticRegression(C=np.inf, solver="newton-cg", tol=1e-12, max_iter=1000)  # unpenalised
+            ref.fit(z[:, None], self.y)
+            self.assertAlmostEqual(b, ref.coef_[0, 0], places=5, msg=name)
+
+    def test_separation_certificate(self):
+        # V4: the certificate of calibration_separation_diagnostic.py on the CinC 2011 structure of logistic
+        # regression (74 unusable at the lower bound, 2 unusable in between, 149 unusable and 773 usable at the upper
+        # bound): the cut is at the upper bound, all units below it are unusable, both classes sit at it, and the
+        # likelihood rises as b -> -inf. A complete separation is reported with no unit at the cut.
+        from calibration_separation_diagnostic import certificate, profile_loglik_increases
+        y = np.r_[np.ones(74), 1, 1, np.ones(149), np.zeros(773)]
+        p = np.r_[np.full(74, 0.0), 0.99999, 0.999997, np.full(922, 1.0)]
+        c = certificate(y, self.logit(p))
+        self.assertEqual(c["separation"], "quasi-complete")
+        self.assertEqual((c["n_y0_below"], c["n_y1_below"], c["n_y0_at"], c["n_y1_at"], c["n_y0_above"],
+                          c["n_y1_above"]), (0, 76, 773, 149, 0, 0))
+        self.assertTrue(c["both_classes_at_cut"])
+        self.assertTrue(c["slope_direction"].startswith("-inf"))
+        self.assertTrue(profile_loglik_increases(y, self.logit(p), -1))
+        y2 = np.r_[np.zeros(50), np.ones(50)]
+        c2 = certificate(y2, np.r_[np.linspace(-3, -1, 50), np.linspace(1, 3, 50)])
+        self.assertEqual((c2["separation"], c2["n_y0_at"] + c2["n_y1_at"]), ("complete", 0))
+        self.assertIsNone(certificate(self.y, self.logit(1 / (1 + np.exp(-self.z_true)))))
+
     def test_decision_counts(self):
         from sklearn.metrics import confusion_matrix
         p = np.r_[0.0, 1.0, np.linspace(0, 1, 100)]

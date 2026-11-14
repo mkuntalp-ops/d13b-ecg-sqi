@@ -12,18 +12,20 @@ silva2011: Silva I, Moody GB, Celi L. Improving the quality of ECGs collected us
 cinc2011protocol: PhysioNet/Computing in Cardiology Challenge 2011: challenge protocol. https://moody-challenge.physionet.org/2011/
 subbaswamy: Subbaswamy A, Saria S. From development to deployment: dataset shift, causality, and shift-stable models in health AI. Biostatistics. 2020;21(2):345–352. doi:10.1093/biostatistics/kxz041
 guo2022: Guo LL, et al. Evaluation of domain generalization and adaptation on improving model robustness to temporal dataset shift in clinical medicine. Sci Rep. 2022;12:2726. doi:10.1038/s41598-022-06484-1
+benchecg: Lunelli R, Nicolson A, Pröll SM, Reinstadler SJ, Bauer A, Dlaska C. BenchECG and xECG: a benchmark and baseline for ECG foundation models. NPJ Digit Med. 2026 (accepted article, published online 14 Sep 2026). doi:10.1038/s41746-026-03196-y
 moeyersons: Moeyersons J, Smets E, Morales J, et al. Artefact detection and quality assessment of ambulatory ECG signals. Comput Methods Programs Biomed. 2019;182:105050. doi:10.1016/j.cmpb.2019.105050
 tabpfn: Hollmann N, Müller S, Purucker L, et al. Accurate predictions on small data with a tabular foundation model. Nature. 2025;637(8045):319–326. doi:10.1038/s41586-024-08328-6
-hubert: Coppola E, Savardi M, Massussi M, Adamo M, Metra M, Signoroni A. HuBERT-ECG as a self-supervised foundation model for broad and scalable cardiac applications. medRxiv. 2024. doi:10.1101/2024.11.14.24317328 (preprint)
+hubert: Coppola E, Savardi M, Massussi M, Adamo M, Metra M, Signoroni A. HuBERT-ECG base (model weights and code). Hugging Face; 2024. Revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465; licence CC BY-NC 4.0. https://huggingface.co/Edoardo-Coppola/hubert-ecg-base
 ecgfm: McKeen K, Masood S, Toma A, Rubin B, Wang B. ECG-FM: an open electrocardiogram foundation model. JAMIA Open. 2025;8(5):ooaf122. doi:10.1093/jamiaopen/ooaf122
 butqdb: Nemcova A, Smisek R, Opravilová K, Vitek M, Smital L, Maršánová L. Brno University of Technology ECG Quality Database (BUT QDB), version 1.0.0. PhysioNet; 2020. doi:10.13026/kah4-0w24
-smital2026: Smital L, Nemcova A, Saclova L, Smisek R, Opravilova K, Filipenska M, Vitek M. Real-world 24h+ ECG dataset with quality annotations and motion context. Sci Data. 2026. doi:10.1038/s41597-026-07905-w
+smital2026: Smital L, Nemcova A, Saclova L, Smisek R, Opravilova K, Filipenska M, Vitek M. Real-world 24h+ ECG dataset with quality annotations and motion context. Sci Data. 2026;13:1567. doi:10.1038/s41597-026-07905-w
 clifford2017: Clifford GD, Liu C, Moody B, Lehman LH, Silva I, Li Q, Johnson AE, Mark RG. AF classification from a short single lead ECG recording: the PhysioNet/Computing in Cardiology Challenge 2017. Comput Cardiol. 2017;44. doi:10.22489/CinC.2017.065-469
 nstdb: Moody GB, Muldrow WE, Mark RG. A noise stress test for arrhythmia detectors. Comput Cardiol. 1984;11:381–384.
 pantompkins: Pan J, Tompkins WJ. A real-time QRS detection algorithm. IEEE Trans Biomed Eng. 1985;BME-32(3):230–236. doi:10.1109/TBME.1985.325532
 delong: DeLong ER, DeLong DM, Clarke-Pearson DL. Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach. Biometrics. 1988;44(3):837–845.
 holm: Holm S. A simple sequentially rejective multiple test procedure. Scand J Stat. 1979;6(2):65–70.
-tabpfn3: Grinsztajn L, Flöge K, Key O, et al. TabPFN-3: technical report. arXiv:2605.13986. 2026 (technical report, not peer reviewed).
+tabpfn3: Prior Labs. TabPFN-3 classifier checkpoint tabpfn-v3-classifier-v3_default.ckpt, used with the tabpfn Python package 9.0.0. Hugging Face; 2026. Revision 24a16a89d245878b846555110985634aa2e656d7. https://huggingface.co/Prior-Labs/tabpfn_3
+albert1984: Albert A, Anderson JA. On the existence of maximum likelihood estimates in logistic regression models. Biometrika. 1984;71(1):1–10. doi:10.1093/biomet/71.1.1
 tripod: Collins GS, Moons KGM, Dhiman P, et al. TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378. doi:10.1136/bmj-2023-078378
 hayn: Hayn D, Jammerbund B, Schreier G. QRS detection based ECG quality assessment. Physiol Meas. 2012;33(9):1449–1461. doi:10.1088/0967-3334/33/9/1449
 johannesen: Johannesen L, Galeotti L. Automatic ECG quality scoring methodology: mimicking human annotators. Physiol Meas. 2012;33(9):1479–1489. doi:10.1088/0967-3334/33/9/1479

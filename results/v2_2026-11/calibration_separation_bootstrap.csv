@@ -1,0 +1,45 @@
+family,model,valid_resamples,estimated,separation_not_confirmed_by_brute_force,not estimable (complete separation),not estimable (quasi-complete separation),not identifiable (constant score)
+BUT_QDB (5-fold subject CV),Logistic_Regression_SQI,2000,2000.0,0,0.0,0.0,0.0
+BUT_QDB (5-fold subject CV),LightGBM_SQI,2000,1999.0,0,1.0,0.0,0.0
+BUT_QDB (5-fold subject CV),Independent_SQI_MLP,2000,2000.0,0,0.0,0.0,0.0
+BUT_QDB (5-fold subject CV),1D_CNN_RawECG,2000,1984.0,0,16.0,0.0,0.0
+BUT_QDB (5-fold subject CV),2D_CNN_Image,2000,1998.0,0,2.0,0.0,0.0
+BUT_QDB (5-fold subject CV),Multimodal_Fusion,2000,2000.0,0,0.0,0.0,0.0
+BUT_QDB (5-fold subject CV),Rule_Based_SQI_Heuristic,2000,1996.0,0,4.0,0.0,0.0
+BUT_QDB (5-fold subject CV),LiquidAI_d1_3B_Neural,2000,1996.0,0,1.0,3.0,0.0
+BUT_QDB (5-fold subject CV),d1_image_probe,2000,1997.0,0,3.0,0.0,0.0
+BUT_QDB (5-fold subject CV),TabPFN_SQI,2000,2000.0,0,0.0,0.0,0.0
+BUT_QDB (5-fold subject CV),HuBERT_ECG_probe,2000,1999.0,0,1.0,0.0,0.0
+CinC2011 lead II (998 records),Logistic_Regression_SQI,2000,0.0,0,0.0,2000.0,0.0
+CinC2011 lead II (998 records),LightGBM_SQI,2000,2000.0,0,0.0,0.0,0.0
+CinC2011 lead II (998 records),Independent_SQI_MLP,2000,0.0,0,0.0,2000.0,0.0
+CinC2011 lead II (998 records),1D_CNN_RawECG,2000,2000.0,0,0.0,0.0,0.0
+CinC2011 lead II (998 records),2D_CNN_Image,2000,2000.0,0,0.0,0.0,0.0
+CinC2011 lead II (998 records),Multimodal_Fusion,2000,0.0,0,0.0,0.0,2000.0
+CinC2011 lead II (998 records),Rule_Based_SQI_Heuristic,2000,2000.0,0,0.0,0.0,0.0
+CinC2011 lead II (998 records),LiquidAI_d1_3B_Neural,2000,2000.0,0,0.0,0.0,0.0
+CinC2011 lead II (998 records),d1_image_probe,2000,2000.0,0,0.0,0.0,0.0
+CinC2011 lead II (998 records),TabPFN_SQI,2000,2000.0,0,0.0,0.0,0.0
+CinC2011 lead II (998 records),HuBERT_ECG_probe,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",Logistic_Regression_SQI,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",LightGBM_SQI,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",Independent_SQI_MLP,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",1D_CNN_RawECG,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",2D_CNN_Image,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",Multimodal_Fusion,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",Rule_Based_SQI_Heuristic,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",LiquidAI_d1_3B_Neural,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",TabPFN_SQI,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",HuBERT_ECG_probe,2000,2000.0,0,0.0,0.0,0.0
+"CinC2017 (8,512 recordings)",d1_image_probe,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),Logistic_Regression_SQI,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),LightGBM_SQI,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),Independent_SQI_MLP,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),1D_CNN_RawECG,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),2D_CNN_Image,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),Multimodal_Fusion,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),Rule_Based_SQI_Heuristic,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),LiquidAI_d1_3B_Neural,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),TabPFN_SQI,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),HuBERT_ECG_probe,2000,2000.0,0,0.0,0.0,0.0
+CinC2017 balanced subset (556 recordings),d1_image_probe,2000,2000.0,0,0.0,0.0,0.0

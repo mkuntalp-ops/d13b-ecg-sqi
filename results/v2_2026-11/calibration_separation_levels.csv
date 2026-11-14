@@ -1,0 +1,9 @@
+family,model,status,level,z,p_clipped,n_y0,n_y1
+CinC2011 lead II (998 records),Logistic_Regression_SQI,not estimable (quasi-complete separation),0,-13.815509557963773,1.0000000000000008e-06,0,74
+CinC2011 lead II (998 records),Logistic_Regression_SQI,not estimable (quasi-complete separation),1,11.929231345709693,0.9999934052583123,0,1
+CinC2011 lead II (998 records),Logistic_Regression_SQI,not estimable (quasi-complete separation),2,12.643550242918298,0.999996771695468,0,1
+CinC2011 lead II (998 records),Logistic_Regression_SQI,not estimable (quasi-complete separation),3,13.815509557935018,0.999999,773,149
+CinC2011 lead II (998 records),Independent_SQI_MLP,not estimable (quasi-complete separation),0,-13.815509557963773,1.0000000000000008e-06,773,150
+CinC2011 lead II (998 records),Independent_SQI_MLP,not estimable (quasi-complete separation),1,-4.250718132927581,0.014053672999999996,0,1
+CinC2011 lead II (998 records),Independent_SQI_MLP,not estimable (quasi-complete separation),2,13.815509557935018,0.999999,0,74
+CinC2011 lead II (998 records),Multimodal_Fusion,not identifiable (constant score),0,13.815509557935018,0.999999,773,225

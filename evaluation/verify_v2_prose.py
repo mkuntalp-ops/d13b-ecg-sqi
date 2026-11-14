@@ -6,7 +6,12 @@ manuscript/v2/main_v2_template.md (or supplement_v2_template.md). `--fill` first
 depend on results produced late in the queue (latency, fine-tuning, the DeLong/bootstrap implementation check); each token
 must occur the expected number of times.
 
-Usage: ECG_RESULTS_DIR=results/v2_2026-11 python evaluation/verify_v2_prose.py [--fill]
+Usage: ECG_RESULTS_DIR=results/v2_2026-11 python evaluation/verify_v2_prose.py [--fill] [--variant srep]
+
+`--variant srep` runs the same checks on the Scientific Reports templates (manuscript/srep/). There, "Supplementary
+Table Sn" is read as "Table Sn" before matching, and two extra checks apply: the variant's own wording checks, and a
+number-provenance check that every number in the prose of the srep main text also occurs in the checked v2 manuscript
+(main or supplement, assembled) or in the srep supplement, so that shortening cannot introduce an unchecked number.
 Exit status 1 if any check fails or any placeholder remains.
 """
 
@@ -24,8 +29,11 @@ import config  # noqa: E402
 import paired_comparisons as pc  # noqa: E402
 
 R = config.RESULTS_DIR
-MAIN = ROOT / "manuscript" / "v2" / "main_v2_template.md"
-SUPP = ROOT / "manuscript" / "v2" / "supplement_v2_template.md"
+VARIANT = sys.argv[sys.argv.index("--variant") + 1] if "--variant" in sys.argv else "v2"
+if VARIANT not in ("v2", "srep"):
+    raise SystemExit(f"unknown variant {VARIANT!r}")
+MAIN = ROOT / "manuscript" / VARIANT / f"main_{VARIANT}_template.md"
+SUPP = ROOT / "manuscript" / VARIANT / f"supplement_{VARIANT}_template.md"
 TOKEN_RE = r"\b(?:FT_(?:BUT|C11|C17)|DL_CI|BOOT_CI|LAT_[A-Z0-9_]+)\b"
 
 BUT, C11, C17, BAL = "BUT_QDB (5-fold subject CV)", "CinC2011 lead II (998 records)", "CinC2017 (8,512 recordings)", "CinC2017 balanced subset (556 recordings)"
@@ -134,11 +142,12 @@ def checks() -> list:
     c.append((f"difference {f3(-p.delta)}, 95% CI {f3(-p.ci_hi)}–{f3(-p.ci_lo)}; p_Holm = {f3(p.p_holm)}", MAIN))
     for m, frag in {HEUR: "the rule heuristic (0.887, p_Holm = {})", MLP: "the MLP (0.876, p_Holm = {})", LR: "logistic regression (0.870, p_Holm = {})"}.items():
         c.append((frag.format(f3(holm_best(C17, m))), MAIN))
-    # Abstract
+    # Abstract (the Scientific Reports abstract is worded differently; its numbers are checked further down)
     zs = [auroc(f, ZS) for f in (BUT, C11, C17)]
-    c += [(f"Zero-shot d1-3B was weak ({f3(min(zs))}–{f3(max(zs))})", MAIN),
-          (f"rose from eighth to first ({f3(auroc(C17, HUB))}) while near chance on CinC 2011 ({f3(auroc(C11, HUB))})", MAIN),
-          (f"fell from second ({f3(auroc(BUT, CNN1))}) to tenth ({f3(auroc(C17, CNN1))})", MAIN)]
+    if VARIANT == "v2":
+        c += [(f"Zero-shot d1-3B was weak ({f3(min(zs))}–{f3(max(zs))})", MAIN),
+              (f"rose from eighth to first ({f3(auroc(C17, HUB))}) while near chance on CinC 2011 ({f3(auroc(C11, HUB))})", MAIN),
+              (f"fell from second ({f3(auroc(BUT, CNN1))}) to tenth ({f3(auroc(C17, CNN1))})", MAIN)]
     # 12 leads
     t = pd.read_csv(R / "cinc2011_twelve_lead_summary.csv")
     tl = lambda a, m: f3(float(t[(t.aggregation == a) & (t.model == m)].auroc.iloc[0]))  # noqa: E731
@@ -169,7 +178,8 @@ def checks() -> list:
     c += [(f"it reached {f3(h12.auroc['max_12'])} with the maximum and {f3(h12.auroc['mean_12'])} with the mean, {hd('max_12')} and {hd('mean_12')} below the d1-3B probe", MAIN),
           (f"Without the records with a constant lead its AUROC was {f3(hk.auroc_without_constant['max_12'])} and {f3(hk.auroc_without_constant['mean_12'])}", MAIN),
           (f"Given the real 12 leads in one input, it reached {f3(h12.auroc['native_12'])}", MAIN),
-          (f"its lead II AUROC was {f3(hk.auroc_without_constant['lead_II'])} (Table S35; without only the 73 records whose lead II is constant, {f3(k_hub_73)}, Table S26)", MAIN)]
+          ] + ([(f"its lead II AUROC was {f3(hk.auroc_without_constant['lead_II'])} (Table S35; without only the 73 records whose lead II is constant, {f3(k_hub_73)}, Table S26)", MAIN)]
+               if VARIANT == "v2" else [])
     # Raster
     r = pd.read_csv(R / "raster_2dcnn_summary.csv").set_index("dataset")
     a = r.loc["BUT QDB (5-fold subject CV)"]
@@ -307,7 +317,8 @@ def checks() -> list:
     ptb_max = float(ptb[(ptb.outcome == "global_vs_clean") & (ptb.aggregation == "max_12")].auroc.max())
     c += [(f"Under the maximum rule no model exceeded an AUROC of {f3(ptb_max)} on this outcome.", MAIN)]
     assert aucf(PROBE, M2) == "0.579"
-    c.append((f"(AUROC {aucf(PROBE, M2)}–{aucf(PROBE, ME)})", MAIN))
+    if VARIANT == "v2":  # conclusions of the full-length version
+        c.append((f"(AUROC {aucf(PROBE, M2)}–{aucf(PROBE, ME)})", MAIN))
     # 12-lead value in the abstract
     tw = pd.read_csv(R / "d1_probe_twelve_lead_summary.csv").set_index("aggregation")
     assert f"{tw.auroc['max_12']:.3f}" == "0.951"  # quoted in section 3.3 (checked above with its interval)
@@ -331,7 +342,8 @@ def checks() -> list:
     c.append((f"the other nine models stayed significantly below the probe (all p_Holm ≤ {f3(others.p_holm.max())})", MAIN))
     aw = lambda m: f3(float(x.auroc_a if x.model_a == m else x.auroc_b))  # noqa: E731
     assert (aw(PROBE), aw(CNN2)) == ("0.740", "0.716")
-    c.append((f"(Holm-adjusted p = {f3(pair(C11, CNN2, PROBE).p_holm)} with them, {f3(x.p_holm)} without)", MAIN))
+    if VARIANT == "v2":  # abstract of the full-length version
+        c.append((f"(Holm-adjusted p = {f3(pair(C11, CNN2, PROBE).p_holm)} with them, {f3(x.p_holm)} without)", MAIN))
     c.append((f"({int(x.n_units)} records, {int(x.n_positive)} unacceptable)", SUPP))
     # BUT QDB per-subject AUROC
     ps = pd.read_csv(R / "butqdb_per_subject_auroc.csv", dtype={"subject": str})
@@ -366,7 +378,11 @@ def checks() -> list:
     r11, r17, rx = rho[(BUT, C11)], rho[(BUT, C17)], rho[(C11, C17)]
     assert r17 < 0
     c.append((f"was {r11:.2f} on CinC 2011 and −{-r17:.2f} on CinC 2017, and between the two external datasets {rx:.2f}", MAIN))
-    c.append((f"(Spearman ρ = {r11:.2f}) and unrelated on CinC 2017 (ρ = −{-r17:.2f})", MAIN))
+    if VARIANT == "v2":
+        c.append((f"(Spearman ρ = {r11:.2f}) and unrelated on CinC 2017 (ρ = −{-r17:.2f})", MAIN))
+    else:  # Scientific Reports abstract
+        c.append((f"moderate on one dataset (Spearman ρ = {r11:.2f}) and absent on the other (ρ = −{-r17:.2f})", MAIN))
+        c.append(("a raw-signal network fell from second to tenth, and an ECG foundation-model probe rose from eighth to first", MAIN))
     rank = lambda m, f: int(rk.loc[m, f"rank | {f}"])  # noqa: E731
     assert [rank(CNN1, f) for f in (BUT, C11, C17)] == [2, 5, 10] and [rank(CNN2, f) for f in (BUT, C11, C17)] == [1, 2, 8]
     assert [rank(HUB, f) for f in (BUT, C11, C17)] == [8, 9, 1]
@@ -378,8 +394,11 @@ def checks() -> list:
     f11 = 100 * tt[tt.dataset == "CinC2011 all 998 records (lead II)"].fpr
     assert len(f17) == len(f11) == 11
     c.append((f"{f17.min():.1f}–{f17.max():.1f}% across the 11 models on CinC 2017 and {f11.min():.1f}–{f11.max():.1f}% on CinC 2011 (Table S4)", MAIN))
-    c.append((f"gave {f17.min():.0f}–{f17.max():.0f}% on CinC 2017", MAIN))
-    c.append((f"the number of windows alone gave AUROC {f3(float(ls[ls.aggregation == 'none'].auroc.iloc[0]))}", MAIN))
+    if VARIANT == "v2":
+        c.append((f"gave {f17.min():.0f}–{f17.max():.0f}% on CinC 2017", MAIN))
+        c.append((f"the number of windows alone gave AUROC {f3(float(ls[ls.aggregation == 'none'].auroc.iloc[0]))}", MAIN))
+    else:
+        c.append((f"recording length alone gave an AUROC of {f3(float(ls[ls.aggregation == 'none'].auroc.iloc[0]))}", MAIN))
     # ---- latency prose (session repeated 2026-11-11 with a common input boundary; PAPER-009)
     lv = latency_values()
     runs = [pd.read_csv(R / "latency_repeats" / f"run{k}_summary.csv").set_index("Model") for k in (1, 2, 3)]
@@ -415,8 +434,9 @@ def checks() -> list:
     others = c11h.drop(ZS)
     rng_h, rng_o = f"{f3(others.auroc_harmonised.min())}–{f3(others.auroc_harmonised.max())}", f"{f3(others.auroc_original.min())}–{f3(others.auroc_original.max())}"
     c.append((f"then spanned {rng_h} instead of {rng_o}", MAIN))
-    c.append((f"from {rng_o} to {rng_h}", MAIN))                       # abstract
-    c.append((f"({rng_h} for the ten models other than zero-shot d1-3B, against {rng_o})", MAIN))
+    if VARIANT == "v2":
+        c.append((f"from {rng_o} to {rng_h}", MAIN))                       # abstract
+        c.append((f"({rng_h} for the ten models other than zero-shot d1-3B, against {rng_o})", MAIN))
     top2 = c11h.auroc_harmonised.sort_values(ascending=False).index[:2]
     assert list(top2) == [PROBE, CNN2] and hh(D, ZS) == ho(D, ZS)
     c.append((f"the d1-3B probe ({hh(D, PROBE)}) and the 2D CNN ({hh(D, CNN2)}) remained the two highest, and zero-shot d1-3B was unchanged ({hh(D, ZS)})", MAIN))
@@ -430,14 +450,120 @@ def checks() -> list:
     c.append((f"was {a.spearman_harmonised:.2f} on CinC 2011 and −{-b_.spearman_harmonised:.2f} on CinC 2017, against {a.spearman_original:.2f} and "
               f"−{-b_.spearman_original:.2f} with the original pipeline, while the agreement between the two external datasets rose from "
               f"{x_.spearman_original:.2f} to {x_.spearman_harmonised:.2f}", MAIN))
-    c.append((f"its lead II AUROC was {hh(D, HUB)} (Table S46)", MAIN))
+    c.append((f"lead II AUROC was {hh(D, HUB)} (Table S46)", MAIN))
+    # ---- third review (2026-11-13): PAPER-001/002 rank uncertainty, PAPER-003 calibration, PAPER-004 demographics,
+    # PAPER-006 zero-rejection thresholds, PAPER-012 pairwise comparisons among the eight in-domain leaders
+    u = pd.read_csv(R / "rank_uncertainty.csv").set_index(["model_set", "set_a", "set_b", "statistic"])
+    ua = lambda a, b, st, ms="all 11 models": u.loc[(ms, a, b, st)]  # noqa: E731
+    r1, r2, r3 = ua("BUT QDB", "CinC 2011", "spearman_rho"), ua("BUT QDB", "CinC 2017", "spearman_rho"), ua("CinC 2011", "CinC 2017", "spearman_rho")
+    assert r1.ci_lo > 0 and r2.ci_lo < 0 < r2.ci_hi and r3.ci_lo > 0
+    assert abs(r1.estimate - r11) < 1e-12 and abs(r2.estimate - r17) < 1e-12 and abs(r3.estimate - rx) < 1e-12
+    c.append((f"gave 95% intervals of {r1.ci_lo:.2f} to {r1.ci_hi:.2f} for CinC 2011, −{-r2.ci_lo:.2f} to {r2.ci_hi:.2f} for CinC 2017 and "
+              f"{r3.ci_lo:.2f} to {r3.ci_hi:.2f} between the external datasets", MAIN))
+    l1, l2 = ua("BUT QDB", "CinC 2011", "same_leader"), ua("BUT QDB", "CinC 2017", "same_leader")
+    g1, g2 = ua("BUT QDB", "CinC 2011", "regret_auroc"), ua("BUT QDB", "CinC 2017", "regret_auroc")
+    assert l1.estimate == 0 and l2.estimate == 0
+    assert l2.prop_positive == 0 and int(l2.resamples) == 2000  # V3: "none of the 2,000"
+    c.append((f"The in-domain leader also led CinC 2011 in {100 * l1.prop_positive:.1f}% of resamples and CinC 2017 in none of the 2,000 "
+              f"(not observed, which does not make the probability zero), and selecting it cost {g1.estimate:.3f} AUROC on CinC 2011 and {g2.estimate:.3f} on CinC 2017", MAIN))
+    h1, h2 = ua("BUT QDB", "CinC 2011", "spearman_rho", "heuristic excluded"), ua("BUT QDB", "CinC 2017", "spearman_rho", "heuristic excluded")
+    assert h2.estimate < 0
+    c.append((f"Without the rule heuristic the correlations were {h1.estimate:.2f} and −{-h2.estimate:.2f}", MAIN))
+    c.append((f"CinC 2017 was wide (−{-r2.ci_lo:.2f} to {r2.ci_hi:.2f})", MAIN))
+    pcomp = pd.read_csv(R / "paired_comparisons.csv")
+    pb = pcomp[pcomp.family == BUT]
+    au = pd.concat([pb.set_index("model_a").auroc_a, pb.set_index("model_b").auroc_b])
+    au = au[~au.index.duplicated()]
+    top8 = au[au >= 0.9375].index
+    assert len(top8) == 8 and len(pb) == 55
+    t8 = pb[pb.model_a.isin(top8) & pb.model_b.isin(top8)]
+    assert len(t8) == 28
+    c.append((f"None of the 28 pairwise comparisons among these eight models was significant after Holm adjustment over all 55 pairs "
+              f"(all p_Holm ≥ {np.floor(1000 * t8.p_holm.min()) / 1000:.3f})", MAIN))
+    tr = pd.read_csv(R / "local_threshold_triviality.csv")
+    t17, t11 = tr[(tr.dataset == "CinC2017") & (tr.n == 100)], tr[(tr.dataset == "CinC2011") & (tr.n == 100)].set_index("model")
+    assert len(t17) == 11 and len(t11) == 11
+    assert t11.loc[LR, "zero_rejection"] == 1 and t11.loc[MM, "zero_rejection"] == 1 and (t11.zero_rejection == 1).sum() == 2
+    c.append((f"flagged no held-out recording in {100 * t17.zero_rejection.min():.0f}–{100 * t17.zero_rejection.max():.0f}% of these draws, depending on the model, "
+              f"so a false reject rate of at most 5% together with a sensitivity above zero was reached in only {100 * t17.useful_control.min():.0f}–"
+              f"{100 * t17.useful_control.max():.0f}% of them", MAIN))
+    c.append((f"and in {100 * t11.loc[CNN1, 'zero_rejection']:.0f}% of draws for the 1D CNN", MAIN))
+    dc = pd.read_csv(R / "decision_calibration.csv")
+    d11 = dc[dc.family == C11].set_index("model")
+    assert (dc.calibration_intercept_status == "estimated").all() and d11.calibration_intercept.idxmin() == MM and d11.calibration_intercept.idxmax() == MLP
+    assert d11.loc[MM, "calibration_slope_status"] == "not identifiable (constant score)"
+    assert set(d11.index[d11.calibration_slope_status == "not estimable (quasi-complete separation)"]) == {LR, MLP}
+    assert (dc.calibration_slope_status != "estimated").sum() == 3
+    assert not dc.calibration_slope_status.str.contains("not converged").any()
+    # V4: the separation certificate from the data. LR: every record below the upper clipping bound unusable, both
+    # classes at it (slope -> -inf); MLP: every record above the lower bound unusable, both classes at it (slope -> +inf)
+    from decision_calibration import logit as _lg, separation as _sep
+    from paired_comparisons import families as _families
+    f11 = _families()[C11][1]
+    y_ = f11.y.values.astype(int)
+    for m_, bound, off_side, n_off, n_at, n_at_pos in ((LR, "max", "below", 76, 922, 149), (MLP, "min", "above", 75, 923, 150)):
+        z_ = _lg(f11[m_].values)
+        assert _sep(y_, z_) == "quasi-complete"
+        v = z_.max() if bound == "max" else z_.min()
+        off = z_ < v if off_side == "below" else z_ > v
+        assert off.sum() == n_off and y_[off].min() == 1, m_
+        assert (z_ == v).sum() == n_at and y_[z_ == v].sum() == n_at_pos and 0 < n_at_pos < n_at, m_
+        assert not (z_ > v).any() if off_side == "below" else not (z_ < v).any()
+    c.append(("logistic regression: all 76 records below the upper bound unusable, 149 of the 922 at it; MLP: all 75 records "
+              "above the lower bound unusable, 150 of the 923 at it), a quasi-complete separation", MAIN))
+    diag = pd.read_csv(R / "calibration_separation_diagnostic.csv")
+    boot = pd.read_csv(R / "calibration_separation_bootstrap.csv")
+    est = diag[diag.status == "estimated"]
+    assert len(est) == 41 and est.within_tolerance.all()
+    assert (boot.separation_not_confirmed_by_brute_force == 0).all()
+    assert not any("not converged" in col for col in boot.columns if (boot[col] != 0).any())
+    c.append((f"On CinC 2011 the intercept ranged from −{-d11.loc[MM, 'calibration_intercept']:.2f} (multimodal net, which gave every record the same score) "
+              f"to {d11.loc[MLP, 'calibration_intercept']:.2f} (MLP)", MAIN))
+    from config import LOCAL_DATASETS_DIR
+    si = pd.read_csv(next(Path(LOCAL_DATASETS_DIR, "butqdb").glob("*/subject-info.csv")), sep=";")
+    si["subject"] = si.ID // 1000
+    subj = si.drop_duplicates("subject")
+    assert len(subj) == 15 and (si.groupby("subject").Gender.nunique() == 1).all()
+    c.append((f"The 15 subjects ({(subj.Gender == 'F').sum()} women and {(subj.Gender == 'M').sum()} men) were aged "
+              f"{subj.Age.min()}–{subj.Age.max()} years (median {subj.Age.median():.0f})", MAIN))
     return c
+
+
+def SREP_REQUIRED(main_t: str, supp_t: str) -> list:
+    """Statements the Scientific Reports version must keep (it is shortened, so the v2 sentences differ)."""
+    return [("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
+            ("designed with knowledge of the earlier external results", main_t),
+            ("receives the eight SQIs as text in its prompt", main_t),
+            ("so only G1 applies to it", main_t),
+            ("does not establish equivalent performance", main_t),
+            ("reported as conditional projections", main_t),
+            ("All tests were two-sided", main_t),
+            ("a results-informed sensitivity analysis whose definition was committed", supp_t)]
+
+
+def number_provenance(main_t: str, supp_t: str) -> int:
+    """Every number in the srep main prose must occur in the checked v2 manuscript or in the srep supplement."""
+    v2 = "".join((ROOT / "manuscript" / "v2" / f).read_text(encoding="utf-8") for f in ("main_v2.md", "supplement_v2.md"))
+    pool = set(re.findall(r"\d[\d,]*(?:\.\d+)?", v2 + supp_t))
+    main_t = main_t[main_t.index("## Abstract"):]  # the title page (address, ORCID) carries no results
+    prose = "\n".join(ln for ln in main_t.splitlines()
+                      if not ln.startswith(("|", "![", "<!--", "{{", "#")) and "@" not in ln[:1])
+    prose = re.sub(r"\[@[^\]]+\]", "", prose)
+    bad = sorted({n for n in re.findall(r"\d[\d,]*(?:\.\d+)?", prose) if n.rstrip(",") not in pool})
+    for n in bad:
+        print("NUMBER NOT IN CHECKED SOURCES:", n)
+    print(f"number provenance: {len(set(re.findall(r'\d[\d,]*(?:\.\d+)?', prose)))} distinct numbers, {len(bad)} unmatched")
+    return len(bad)
 
 
 def main() -> int:
     if "--fill" in sys.argv:
         fill()
     main_t, supp_t = MAIN.read_text(encoding="utf-8"), SUPP.read_text(encoding="utf-8")
+    if VARIANT == "srep":
+        def norm(s):
+            return s.replace("Supplementary Tables S", "Tables S").replace("Supplementary Table S", "Table S")
+        main_t, supp_t = norm(main_t), norm(supp_t)
     left = re.findall(TOKEN_RE, main_t) + re.findall(TOKEN_RE, supp_t)
     fails = moved = 0
     items = checks()
@@ -456,8 +582,17 @@ def main() -> int:
     both = main_t + supp_t
     forbidden = ["pre-stated", "Pre-stated", "indistinguishable", "reported re-weighted", "AP, natural",
                  "none of its three safeguards uses target labels or target performance",
-                 "zero-shot d1-3B and the two probes have no tabular input"]
-    required = [("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
+                 "zero-shot d1-3B and the two probes have no tabular input",
+                 # third review (2026-11-13)
+                 "removes the tuning question", "from what input, matters more", "could not be estimated for the models with saturated",
+                 "Not estimable: scores saturated", "constant-lead check and flatline analysis are descriptive and were not tested",
+                 "which the public datasets could not support", "brought false rejections close to the target",
+                 # V3 (2026-11-13)
+                 "mattered more than the model class", "Rankings are reported only where", "not converged (separation)",
+                 "did not converge for logistic regression", "CinC 2017 in 0.0%", "medRxiv", "arXiv:2605", "Preprint at",
+                 "the 74 records at one clipping bound", "have no peer-reviewed version", "an implementation following Pan and Tompkins"]
+    required = SREP_REQUIRED(main_t, supp_t) if VARIANT == "srep" else [
+                ("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
                 ("designed with knowledge of the earlier external results", main_t),
                 ("receives the eight SQIs as text in its prompt", main_t),
                 ("so only G1 applies to it", main_t),
@@ -465,7 +600,12 @@ def main() -> int:
                 ("no significant difference was detected among eight approaches in-domain, which does not establish their equivalence", main_t),
                 ("reported as conditional projections", main_t),
                 ("Post hoc input safeguards", main_t),
-                ("a results-informed sensitivity analysis whose definition was committed", supp_t)]
+                ("a results-informed sensitivity analysis whose definition was committed", supp_t),
+                ("are therefore conditional on those resamples", supp_t),
+                ("The constant-score check precedes the separation check", supp_t),
+                ("searches on 13 November 2026 found no peer-reviewed version", main_t),
+                ("a simplified re-implementation of the Pan–Tompkins detector", main_t),
+                ("a simplified re-implementation of the Pan–Tompkins detector (its band-pass filtering", supp_t)]
     for w in forbidden:
         if w in both:
             print("FORBIDDEN WORDING:", w)
@@ -475,6 +615,8 @@ def main() -> int:
             print("MISSING WORDING:", w)
             fails += 1
     n_word = len(forbidden) + len(required)
+    if VARIANT == "srep":
+        fails += number_provenance(main_t, supp_t)
     print(f"{len(items)} prose checks and {n_word} wording checks, {fails} failed ({moved} found in the other file); "
           f"placeholders left: {sorted(set(left))}")
     return 1 if fails or left else 0
