@@ -621,6 +621,16 @@ Hakem 25 dosyayı hash'leriyle doğruladı ve PAPER-003'ü VERIFIED FIXED yaptı
      `BINDING_v7_<commit>.txt` ile bağlandı.
 - Sunum: ana metinde "0.5% (11 of 2,000)" yerine "11 of 2,000 resamples (0.55%)".
 - Yeni analiz ya da model eğitimi yok. `db7224c` V3/V4 durumunun kaydı olarak kalıyor.
+- V7 kayıt düzeltmesi (2026-11-14, hakemin V7 yanıtı; yeni sürüm ya da dışa aktarım yok):
+  - Gönderim-kaynak commit'i `34d9b9ed38db7493f4ed9dd30de53a33552668cd`; V7 bu commit'ten dışa aktarıldı.
+  - Hakem dört V7 PDF'inin manifestle eşleştiğini doğruladı. İki kayıt hatası: `MANIFEST_v7.txt` izlenen dosyalarda
+    değişiklik yokken "DIRTY" diyor (betik izlenmeyen `export/` klasörünü sayıyordu); `BINDING_v7_34d9b9e.txt` şekiller
+    için V4'ten kalma "hash'lenmedi" ifadesini taşıyor (V7 manifesti dört şeklin hash'ini içerir).
+  - İki kayıt değiştirilmedi. Yanlarına `CORRECTION_v7_2026-11-14.txt` yazıldı (iki varyant). Dışa aktarım anında
+    `git status` çıktısı saklanmadığı için DIRTY nedeni çıkarım olarak, sonradan alınan çıktı da öyle etiketlenerek verildi.
+  - Betikler düzeltildi: `export_manuscript.sh` izlenen değişiklikleri ve izlenmeyen dosyaları ayrı raporlar ve git
+    çıktısını manifeste yazar; `bind_export_to_commit.py` manifestteki şekil hash'lerini commit ile karşılaştırır ve var
+    olan bir kaydın üzerine yazmaz. Düzeltilmiş betikler yeni bir dışa aktarımda henüz kullanılmadı.
 
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ

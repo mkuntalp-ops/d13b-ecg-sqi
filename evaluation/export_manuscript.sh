@@ -35,11 +35,23 @@ for variant in srep v2; do
     echo "Export manifest, round v$ROUND, variant $variant"
     echo "created: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
     echo "git HEAD: $(git -C "$ROOT" rev-parse HEAD)  branch: $(git -C "$ROOT" rev-parse --abbrev-ref HEAD)"
-    if [ -n "$(git -C "$ROOT" status --porcelain -- evaluation manuscript/$variant results tests ':!manuscript/*/export')" ]; then
-      echo "working tree: DIRTY (uncommitted changes in evaluation/, manuscript/$variant, results/ or tests/; the"
-      echo "  source hashes below identify the exact inputs; the commit that contains them is recorded separately)"
+    # V7 correction: tracked changes and untracked files are reported separately and the git output is kept in the
+    # manifest. The earlier single check also counted the untracked export directory and so always printed DIRTY.
+    tracked="$(git -C "$ROOT" status --porcelain --untracked-files=no -- evaluation manuscript/$variant results tests)"
+    untracked="$(git -C "$ROOT" ls-files --others --exclude-standard -- evaluation manuscript/$variant results tests |
+                 { grep -v "^manuscript/$variant/export/" || true; })"
+    if [ -z "$tracked" ]; then
+      echo "tracked files (evaluation/, manuscript/$variant, results/, tests/): no uncommitted changes"
     else
-      echo "working tree: clean for the export inputs"
+      echo "tracked files (evaluation/, manuscript/$variant, results/, tests/): UNCOMMITTED CHANGES (git status --porcelain):"
+      echo "$tracked" | sed 's/^/  /'
+      echo "  the source hashes below identify the exact inputs; the commit that contains them is recorded separately"
+    fi
+    if [ -z "$untracked" ]; then
+      echo "untracked files in the same paths (export directory excluded): none"
+    else
+      echo "untracked files in the same paths (export directory excluded):"
+      echo "$untracked" | sed 's/^/  /'
     fi
     echo "pandoc: $(pandoc --version | head -1)"
     echo "chrome: $("$CHROME" --version)"

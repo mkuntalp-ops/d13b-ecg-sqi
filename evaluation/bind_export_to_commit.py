@@ -61,22 +61,34 @@ def main():
             ok = sha((out_dir / name).read_bytes()) == h
             all_ok &= ok
             lines.append(f"  {'UNCHANGED' if ok else 'CHANGED  '} {h}  {name}")
-        lines += ["", "3. Other production inputs (not hashed in the manifest)"]
+        # V7 correction: manifests from round V5 on hash the figures at export time; say so and compare those hashes.
+        fig_manifest = {p: h for h, p in re.findall(r"^figure  ([0-9a-f]{64})  (\S+)$", manifest, re.M)}
+        if fig_manifest:
+            lines += ["", "3. Figures recorded in the manifest (hashed at export time) vs. the same path in the commit"]
+            for rel, h in sorted(fig_manifest.items()):
+                blob = git_blob(full, rel)
+                ok = blob is not None and sha(blob) == h
+                all_ok &= ok
+                lines.append(f"  figure  {'MATCH   ' if ok else 'MISMATCH'} {h}  {rel}")
+            lines.append("  stylesheet  evaluation/pmea_print.css (hashed in section 1)")
+        else:
+            lines += ["", "3. Other production inputs (not hashed in the manifest)"]
         figs = set()
         for name in re.findall(r"^source  [0-9a-f]{64}  (\S+\.md)$", manifest, re.M):
             text = (ROOT / "manuscript" / variant / name).read_text(encoding="utf-8")
             figs |= set(re.findall(r"!\[[^\]]*\]\(([^)\s]+)\)", text))
-        for f in sorted(figs):
-            p = (ROOT / "manuscript" / variant / f).resolve()
+        for f in ([] if fig_manifest else sorted(figs)):
+            p =(ROOT / "manuscript" / variant / f).resolve()
             rel = p.relative_to(ROOT).as_posix()
             blob = git_blob(full, rel)
             ok = blob is not None and sha(p.read_bytes()) == sha(blob)
             all_ok &= ok
             mtime = datetime.fromtimestamp(p.stat().st_mtime, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             lines.append(f"  figure  {'MATCH   ' if ok else 'MISMATCH'} {sha(p.read_bytes())}  {rel}  (modified {mtime})")
-        lines.append("  The figures were not hashed at export time. The match above is for the files now on disk, and the")
-        lines.append("  modification times (all before the export) are weaker evidence that they were the files used.")
-        lines.append("  stylesheet  evaluation/pmea_print.css (hashed in section 1)")
+        if not fig_manifest:
+            lines.append("  The figures were not hashed at export time. The match above is for the files now on disk, and the")
+            lines.append("  modification times (all before the export) are weaker evidence that they were the files used.")
+            lines.append("  stylesheet  evaluation/pmea_print.css (hashed in section 1)")
         lines += ["", "4. Export command (evaluation/export_manuscript.sh, in the commit):",
                   f"  evaluation/export_manuscript.sh {rnd}",
                   "  per file: pandoc <name>.md --from <reader> -o <name>_vN.docx;",
@@ -91,8 +103,13 @@ def main():
                   "  - no data files are read by the export; the markdown already contains every number and table.",
                   "", "Note: the markdown sources were generated from the saved results by build_manuscript_tables.py and",
                   "assemble_q1_manuscript.py, which are in the commit together with the results they read."]
-        (out_dir / f"BINDING_v{rnd}_{full[:7]}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-        print(f"[binding] {out_dir / f'BINDING_v{rnd}_{full[:7]}.txt'}")
+        # optional third argument: write the records elsewhere (used to test the script without touching a record)
+        target = (Path(sys.argv[3]) / variant if len(sys.argv) > 3 else out_dir) / f"BINDING_v{rnd}_{full[:7]}.txt"
+        if target.exists():
+            sys.exit(f"refusing to overwrite existing {target}")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        print(f"[binding] {target}")
     print("ALL MATCH" if all_ok else "SOME MISMATCH")
     sys.exit(0 if all_ok else 1)
 
