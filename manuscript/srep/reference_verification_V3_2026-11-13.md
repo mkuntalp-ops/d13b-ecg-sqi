@@ -24,6 +24,7 @@ independent reviewer assessment.
   - Van Calster: Crossref lists the STRATOS topic group as first "author"; the article authors are as cited.
   - Smital 2026: Crossref adds volume 13, article 1567. **Corrected in V3.**
 - No retraction notices. Three entries have correction notices, and the cited content is unaffected: TRIPOD+AI (bmj.q902), Ribeiro 2020 (author correction 10.1038/s41467-020-16172-1) and Hannun 2019 (publisher correction 10.1038/s41591-019-0359-9). The review's mention of corrections to references 26 and 50 refers to these.
+  - **Correction added 2026-11-14 (V6, review PAPER-015):** the sentence above was wrong. ECGFounder (Li et al., NEJM AI 2025) has its own erratum (doi:10.1056/AIx2500913), which this Crossref-only check missed. See `reference_verification_V6_2026-11-14.md`.
 
 **Entries without a DOI (10), plus the new albert1984.**
 

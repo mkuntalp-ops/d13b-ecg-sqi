@@ -464,8 +464,21 @@ def checks() -> list:
     g1, g2 = ua("BUT QDB", "CinC 2011", "regret_auroc"), ua("BUT QDB", "CinC 2017", "regret_auroc")
     assert l1.estimate == 0 and l2.estimate == 0
     assert l2.prop_positive == 0 and int(l2.resamples) == 2000  # V3: "none of the 2,000"
-    c.append((f"The in-domain leader also led CinC 2011 in {100 * l1.prop_positive:.1f}% of resamples and CinC 2017 in none of the 2,000 "
-              f"(not observed, which does not make the probability zero), and selecting it cost {g1.estimate:.3f} AUROC on CinC 2011 and {g2.estimate:.3f} on CinC 2017", MAIN))
+    # V6 (review PAPER-013): ties for the highest AUROC; primary rule = first in the fixed model order
+    n_pos = lambda a, b, st: int(ua(a, b, st).n_resamples_positive)  # noqa: E731
+    assert round(l1.prop_positive * 2000) == 11
+    assert (n_pos("BUT QDB", "CinC 2011", "ties_selection"), n_pos("BUT QDB", "CinC 2017", "ties_target")) == (7, 1)
+    assert n_pos("BUT QDB", "CinC 2011", "ties_target") == 0
+    assert all(ua(a, b, st).estimate == 0 for a, b in (("BUT QDB", "CinC 2011"), ("BUT QDB", "CinC 2017"), ("CinC 2011", "CinC 2017"))
+               for st in ("ties_selection", "ties_target"))  # no tie in the full-data ranking
+    any1, any2 = n_pos("BUT QDB", "CinC 2011", "same_leader_any"), n_pos("BUT QDB", "CinC 2017", "same_leader_any")
+    for a_, b_ in (("BUT QDB", "CinC 2011"), ("BUT QDB", "CinC 2017"), ("CinC 2011", "CinC 2017")):
+        lo_, hi_ = ua(a_, b_, "regret_best_case"), ua(a_, b_, "regret_worst_case")
+        assert max(abs(hi_.ci_lo - lo_.ci_lo), abs(hi_.ci_hi - lo_.ci_hi)) <= 0.002 and lo_.estimate == hi_.estimate
+    c.append((f"The in-domain leader also led CinC 2011 in 11 of 2,000 resamples ({100 * l1.prop_positive:.2f}%) and CinC 2017 in none of the 2,000 "
+              f"(not observed, which does not make the probability zero). Models tied for the highest AUROC in 7 in-domain resamples and in 1 CinC 2017 "
+              f"resample; ties were broken by a fixed model order, and breaking every tie in favour of agreement would give {any1} and {any2} of 2,000. "
+              f"Selecting the in-domain leader cost {g1.estimate:.3f} AUROC on CinC 2011 and {g2.estimate:.3f} on CinC 2017", MAIN))
     h1, h2 = ua("BUT QDB", "CinC 2011", "spearman_rho", "heuristic excluded"), ua("BUT QDB", "CinC 2017", "spearman_rho", "heuristic excluded")
     assert h2.estimate < 0
     c.append((f"Without the rule heuristic the correlations were {h1.estimate:.2f} and −{-h2.estimate:.2f}", MAIN))
@@ -549,6 +562,8 @@ def number_provenance(main_t: str, supp_t: str) -> int:
     prose = "\n".join(ln for ln in main_t.splitlines()
                       if not ln.startswith(("|", "![", "<!--", "{{", "#")) and "@" not in ln[:1])
     prose = re.sub(r"\[@[^\]]+\]", "", prose)
+    prose = re.sub(r"\b[0-9a-f]{40}\b", "", prose)  # V5: a commit id is an identifier, not a result; its digits
+    # would otherwise be "matched" against the same id in the v2 text
     bad = sorted({n for n in re.findall(r"\d[\d,]*(?:\.\d+)?", prose) if n.rstrip(",") not in pool})
     for n in bad:
         print("NUMBER NOT IN CHECKED SOURCES:", n)
@@ -590,7 +605,8 @@ def main() -> int:
                  # V3 (2026-11-13)
                  "mattered more than the model class", "Rankings are reported only where", "not converged (separation)",
                  "did not converge for logistic regression", "CinC 2017 in 0.0%", "medRxiv", "arXiv:2605", "Preprint at",
-                 "the 74 records at one clipping bound", "have no peer-reviewed version", "an implementation following Pan and Tompkins"]
+                 "the 74 records at one clipping bound", "have no peer-reviewed version", "an implementation following Pan and Tompkins",
+                 "[COMMIT HASH AND ARCHIVE DOI", "increases without bound"]
     required = SREP_REQUIRED(main_t, supp_t) if VARIANT == "srep" else [
                 ("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
                 ("designed with knowledge of the earlier external results", main_t),
@@ -602,6 +618,9 @@ def main() -> int:
                 ("Post hoc input safeguards", main_t),
                 ("a results-informed sensitivity analysis whose definition was committed", supp_t),
                 ("are therefore conditional on those resamples", supp_t),
+                ("approaches a finite supremum that no finite slope attains", supp_t),
+                ("changed by at most 0.002 at either interval bound", supp_t),
+                ("correspond to commit a21e70b89d2448565624f15be6d6ec98caebdaca on the branch", main_t),
                 ("The constant-score check precedes the separation check", supp_t),
                 ("searches on 13 November 2026 found no peer-reviewed version", main_t),
                 ("a simplified re-implementation of the Pan–Tompkins detector", main_t),

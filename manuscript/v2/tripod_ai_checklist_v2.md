@@ -51,7 +51,7 @@
 | 18c | Protocol availability | Partly | A dated written analysis plan is kept with the code (Section 2.6). There is no protocol for the original analyses, and post hoc decisions are listed (Section 2.6), including the analyses added after an independent code audit (item 8 there) the change of framing after all results were known (item 9 there) and the analyses added after an independent scientific review, including the harmonised pipeline, whose safeguards were chosen with knowledge of the earlier external results (item 10 there). |
 | 18d | Registration | Reported | Not registered (stated in Section 2.6) |
 | 18e | Data availability | Reported | Data and code availability (PhysioNet) |
-| 18f | Code availability | Reported | Public repository https://github.com/mkuntalp-ops/d13b-ecg-sqi (MIT licence) with code, saved predictions and table/figure scripts (Data availability statement) |
+| 18f | Code availability | Reported | Public repository https://github.com/mkuntalp-ops/d13b-ecg-sqi (MIT licence) with code, saved predictions and table/figure scripts; analysis version: commit a21e70b on branch v2-revision-2026-11 (Data availability statement) |
 | 19 | Patient and public involvement | Reported | None (Ethics section) |
 | 20a | Participant flow and outcome counts | Reported | Figure 1 (flow diagram); Section 2.1 gives the numeric flow for each dataset: recordings, exclusions, windows, units and outcome counts. LODO training sets are in Section 2.4. |
 | 20b | Participant characteristics | Partly | Sex and age of the 15 BUT QDB development subjects (Section 2.1); dataset-level characteristics of the external sets; no demographic subgroup analysis (Section 4.1). |

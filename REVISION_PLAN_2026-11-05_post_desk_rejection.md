@@ -567,6 +567,60 @@ Yeni model eğitimi veya deney yok; tüm kontroller kayıtlı tahminlerden. V3 d
   - Guo/Subbaswamy için "ranking" yerine "discrimination".
 - **Dışa aktarım:** komutlar `evaluation/export_manuscript.sh` betiğine kaydedildi. Betik var olan bir tur klasörünün üzerine yazmıyor ve `MANIFEST_vN.txt` dosyasını üretiyor (git HEAD ve kirli durum, araç sürümleri, kaynak ve çıktıların SHA-256'sı).
 - Commit edilmedi; commit kimliği ve arşiv DOI'si yazar onayı bekliyor.
+- 2026-11-14 ek: commit `db7224c062237e46234970994b2133dfa4516661` oluşturuldu (yazar onayı; push yok).
+  - Hakem notu: "kaynak hash'leri PDF'lerin bu commit'ten üretildiğini teyit eder" ifadem fazla güçlüydü.
+  - `MANIFEST_v4.txt` değiştirilmedi. Yanına `evaluation/bind_export_to_commit.py` ile `BINDING_v4_db7224c.txt` yazıldı. İçeriği:
+    - kaynaklar ve figürler commit ile eşleşiyor;
+    - çıktı hash'leri değişmemiş;
+    - dışa aktarım komutu ve araç sürümleri;
+    - commit dışı girdiler: pandoc, Chrome, sistem fontları.
+  - Figürler dışa aktarım anında hash'lenmemişti. `export_manuscript.sh` artık bundan sonraki turlar için onları da hash'liyor.
+
+### 2026-11-14 — V5: analiz sürümü metne yazıldı (yazar kararı)
+
+Hakem önerisi: commit kimliği arşiv DOI'sine bağlanmasın.
+- Veri erişilebilirliği cümlesi artık şöyle (v2 ve srep): "correspond to commit db7224c062237e46234970994b2133dfa4516661 on the branch `v2-revision-2026-11` (analysis version); an archived release is [ARCHIVE DOI, TO BE ADDED AT SUBMISSION]".
+- TRIPOD 18f'ye analiz sürümü eklendi.
+- verify_v2_prose:
+  - eski yer tutucu yasak, yeni cümle zorunlu;
+  - commit kimliği sayı kaynağı kontrolünden çıkarıldı (rakam grupları yalnız v2 metnindeki aynı kimlikle "eşleşiyordu").
+- `export_manuscript.sh`: figür içermeyen dosyalarda `grep` boş dönünce `pipefail` betiği durduruyordu; düzeltildi. Yarım kalan ilk deneme yalnız bir manifest üretmişti, silinip yeniden çalıştırıldı.
+- Dışa aktarım `export/v5/` altında, `MANIFEST_v5.txt` figür hash'lerini de içeriyor. İnceleme paketi: `manuscript/srep/export/v5/review_package_v5.zip`.
+- Doğrulama: 45 test; v2 155+41, srep 147+34 kontrol, 0 hata; 291 sayı kaynaklı; çapraz kontrol geçti. Ana metin s. 20 ve TRIPOD s. 5 gözle incelendi.
+- Commit edilmedi. V5 metin değişikliği commit edildikten sonra V5 için de eşleştirme kaydı yazılacak.
+
+### 2026-11-14 — V6: hakemin metin paketi incelemesi ("Metin paketi yeterli.docx")
+
+Hakem 25 dosyayı hash'leriyle doğruladı ve PAPER-003'ü VERIFIED FIXED yaptı. Üç yeni bulgu: PAPER-013, 014, 015. Yeni model eğitimi yok.
+
+- **PAPER-013 (eşit AUROC'ta lider):** `rank_uncertainty.py` güncellendi.
+  - Birincil kural artık yazılı: eşitlikte sabit model sırasındaki ilk model (np.argmax).
+  - Yeni satırlar: `ties_selection`, `ties_target`, `same_leader_any`, `same_leader_all`, `regret_best_case`, `regret_worst_case`.
+  - Sonuç: tam veride eşitlik yok. 2.000 yeniden örneklemede BUT QDB'de 7, CinC 2011'de 0, CinC 2017'de 1 eşitlik.
+  - Aynı lider, en az–en çok elverişli eşitlik bozma: CinC 2011 için 11–13, CinC 2017 için 0–1 (2.000'de). AUROC kaybı aralık sınırları en çok 0,002 değişiyor.
+  - Birincil 18 satır önceki çıktıyla birebir aynı; yedek `rank_uncertainty_pre_V6_2026-11-14.csv`.
+  - Ana metin cümlesi ve S44 (iki yeni sütun, açıklama) güncellendi; yeni test `test_leader_ties` (toplam 46).
+- **PAPER-014:** S32 ve teşhis betiği açıklaması: log-olabilirlik sonlu bir supremuma yaklaşır, sonlu MLE eğimi yoktur.
+- **PAPER-015:** ECGFounder düzeltmesi bulundu (doi:10.1056/AIx2500913, PubMed 42932615). Crossref'te bağlantı olmadığı için V3'te kaçmıştı.
+  - İçeriği OKUNAMADI (yayıncı sayfası bot kontrolü). Atıf yalnız modelin varlığına dayandığı için etki beklenmiyor; yazar gönderimden önce bildirimi açmalı.
+  - Tüm DOI'ler ikinci kaynak olarak Europe PMC'de tarandı: 4 düzeltme, geri çekme yok (`reference_europepmc_notices_V6_2026-11-14.csv`).
+  - V3 raporuna tarihli düzeltme notu eklendi; yeni rapor `reference_verification_V6_2026-11-14.md`.
+- **Yeniden hesaplama girdileri:** `export/v6/` altında `review_package_v6_part1.txt`, `review_package_v6_part2_predictions.txt` (üç tahmin tablosu) ve `local_recalibration_draws.csv`. Paketleme betiği: `evaluation/make_text_bundle.py`.
+- Doğrulama: 46 test; v2 155+44, srep 147+35 kontrol, 0 hata; 291 sayı kaynaklı; çapraz kontrol geçti. Ana metin s. 4 ve ek s. 43 gözle incelendi.
+- Commit edilmedi (V5 ve V6 değişiklikleri birlikte bekliyor).
+
+### V7 (2026-11-14): hakemin V6 yanıtı — sürüm beyanı
+- Hakem V6 girdileriyle sıralama ve sıfır-ret sonuçlarını bağımsız yeniden hesapladı. PAPER-001, 002, 006, 013, 014:
+  VERIFIED FIXED. Açık kalanlar: PAPER-008 (ağırlık kökeni için bağımsız doğrulama sınırı), PAPER-009 (sürüm beyanı),
+  PAPER-012 (mektup yer tutucuları), PAPER-015 (ECGFounder düzeltmesinin içeriği okunmadı; yazar okuyacak).
+- PAPER-009: V6 metni bütün analizleri `db7224c` ile eşliyordu; V6 eşitlik analizi o commit'te yok. Hakemin önerdiği sıra
+  uygulandı (yazar onayı, push yok):
+  1. Analiz-dondurma commit'i `a21e70b89d2448565624f15be6d6ec98caebdaca`: analiz kodu, testler, sonuçlar, dışa aktarım betikleri.
+  2. Ana metinler ve TRIPOD 18f artık analiz sürümü olarak `a21e70b…` gösteriyor; `verify_v2_prose.py` bunu zorunlu kılıyor.
+  3. Bu metin değişiklikleri ayrı bir gönderim-kaynak commit'inde; V7 bu commit'ten dışa aktarıldı ve
+     `BINDING_v7_<commit>.txt` ile bağlandı.
+- Sunum: ana metinde "0.5% (11 of 2,000)" yerine "11 of 2,000 resamples (0.55%)".
+- Yeni analiz ya da model eğitimi yok. `db7224c` V3/V4 durumunun kaydı olarak kalıyor.
 
 ## 4. Devir notu (yeni oturum için, 2026-11-07)
 Durum: v2 ana kuyruğu tamamlandı (`results/v2_2026-11/`, günlükler `logs/`). Kod değişiklikleri commit EDİLMEDİ
