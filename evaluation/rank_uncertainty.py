@@ -19,6 +19,16 @@ variability (fold assignment, seeds) is not resampled.
 Sensitivity (PAPER-002): the same with the rule-based heuristic excluded (10 models), because its coefficients were set
 during prototyping and their independence from BUT QDB cannot be guaranteed.
 
+Ties (V6, 2026-11-14, review PAPER-013). Two models can have exactly the same AUROC in a resample. The primary rule
+is stated here: among models tied for the highest AUROC, the leader is the first in the fixed model order of
+paired_comparisons.families() (numpy.argmax), on the selection set and on the target set alike. Because that rule
+depends on the column order, the script also reports, per pair of sets,
+  ties_selection / ties_target   number of resamples in which the highest AUROC is shared (|difference| <= 1e-12);
+  same_leader_any                some model is co-best on both sets (most favourable tie-break);
+  same_leader_all                the co-best sets of the two sets are identical (least favourable);
+  regret_best_case / regret_worst_case   smallest and largest regret over the co-best models of the selection set.
+The primary rows are unchanged by this addition; the output before it is rank_uncertainty_pre_V6_2026-11-14.csv.
+
 Output: $ECG_RESULTS_DIR/rank_uncertainty.csv
 Usage:  ECG_RESULTS_DIR=results/v2_2026-11 python evaluation/rank_uncertainty.py
 """
@@ -78,6 +88,22 @@ def selection(a: np.ndarray, c: np.ndarray) -> tuple[float, float, float]:
     return spearmanr(a, c)[0], float(lead == int(np.argmax(c))), float(c.max() - c[lead])
 
 
+TIE_ATOL = 1e-12
+
+
+def co_best(a: np.ndarray) -> np.ndarray:
+    """Boolean mask of the models sharing the highest AUROC."""
+    return np.isclose(a, a.max(), rtol=0, atol=TIE_ATOL)
+
+
+def selection_ties(a: np.ndarray, c: np.ndarray) -> tuple[float, float, float, float, float, float]:
+    """Tie-aware bounds: ties on a, ties on c, same leader (any / all), regret (best / worst case)."""
+    A, C = co_best(a), co_best(c)
+    regrets = c.max() - c[A]
+    return (float(A.sum() > 1), float(C.sum() > 1), float((A & C).any()), float(np.array_equal(A, C)),
+            float(regrets.min()), float(regrets.max()))
+
+
 def summarise(models: list, point: dict, boot: dict, label: str) -> list:
     rows = []
     for fa, fb in combinations(SETS, 2):
@@ -90,6 +116,19 @@ def summarise(models: list, point: dict, boot: dict, label: str) -> list:
                          "statistic": name, "estimate": est, "boot_median": np.median(col),
                          "ci_lo": np.percentile(col, 2.5), "ci_hi": np.percentile(col, 97.5),
                          "prop_positive": float(np.mean(col > 0)), "boot_mean": float(np.mean(col)),
+                         "leader_a": models[int(np.argmax(pa))], "leader_b": models[int(np.argmax(pb))],
+                         "resamples": B, "seed": SEED})
+        tie0 = selection_ties(pa, pb)
+        ties = np.array([selection_ties(boot[fa][k], boot[fb][k]) for k in range(B)])
+        names = ["ties_selection", "ties_target", "same_leader_any", "same_leader_all", "regret_best_case",
+                 "regret_worst_case"]
+        for j, name in enumerate(names):
+            col = ties[:, j]
+            rows.append({"model_set": label, "n_models": len(models), "set_a": SETS[fa], "set_b": SETS[fb],
+                         "statistic": name, "estimate": tie0[j], "boot_median": np.median(col),
+                         "ci_lo": np.percentile(col, 2.5), "ci_hi": np.percentile(col, 97.5),
+                         "prop_positive": float(np.mean(col > 0)), "boot_mean": float(np.mean(col)),
+                         "n_resamples_positive": int(np.sum(col > 0)),
                          "leader_a": models[int(np.argmax(pa))], "leader_b": models[int(np.argmax(pb))],
                          "resamples": B, "seed": SEED})
     return rows

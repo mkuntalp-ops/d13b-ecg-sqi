@@ -49,6 +49,12 @@ for variant in srep v2; do
   } > "$manifest"
   ( cd "$src" && shasum -a 256 $(for n in $(files_of $variant); do echo "$n.md"; done) ) | sed 's/^/source  /' >> "$manifest"
   ( cd "$ROOT" && shasum -a 256 evaluation/pmea_print.css ) | sed 's/^/source  /' >> "$manifest"
+  # figures embedded by pandoc (V4 follow-up: hash them at export time too), paths relative to the repository root
+  for n in $(files_of $variant); do { grep -oE '!\[[^]]*\]\([^) ]+\)' "$src/$n.md" || true; } | sed -E 's/.*\(([^) ]+)\)/\1/'; done | sort -u |
+  while read -r fig; do
+    dir="$(cd "$src/$(dirname "$fig")" && pwd)"
+    ( cd "$ROOT" && shasum -a 256 "${dir#$ROOT/}/$(basename "$fig")" )
+  done | sed 's/^/figure  /' >> "$manifest"
   for n in $(files_of $variant); do
     ( cd "$src"
       pandoc "$n.md" --from "$(reader_of $variant)" -o "$out/${n}_v$ROUND.docx"

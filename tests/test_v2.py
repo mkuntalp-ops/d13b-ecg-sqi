@@ -182,6 +182,26 @@ class TestCalibration(unittest.TestCase):
             ref.fit(z[:, None], self.y)
             self.assertAlmostEqual(b, ref.coef_[0, 0], places=5, msg=name)
 
+    def test_leader_ties(self):
+        # V6 (review PAPER-013): the reviewer's example. With two models tied on the selection set the primary rule
+        # (first in the fixed order) depends on the column order; the tie-aware bounds do not.
+        from rank_uncertainty import selection, selection_ties
+        a, c = np.array([0.9, 0.9, 0.8]), np.array([0.8, 0.9, 0.7])
+        self.assertEqual(selection(a, c)[1], 0.0)
+        self.assertAlmostEqual(selection(a, c)[2], 0.1)
+        swap = [1, 0, 2]
+        self.assertEqual(selection(a[swap], c[swap])[1], 1.0)
+        for x, y in ((a, c), (a[swap], c[swap])):
+            tie_a, tie_c, any_, all_, best, worst = selection_ties(x, y)
+            self.assertEqual((tie_a, tie_c, any_, all_), (1.0, 0.0, 1.0, 0.0))
+            self.assertAlmostEqual(best, 0.0)
+            self.assertAlmostEqual(worst, 0.1)
+        # without ties the bounds equal the primary rule
+        a2 = np.array([0.95, 0.9, 0.8])
+        self.assertEqual(selection_ties(a2, c)[:4], (0.0, 0.0, 0.0, 0.0))
+        self.assertAlmostEqual(selection_ties(a2, c)[4], selection(a2, c)[2])
+        self.assertAlmostEqual(selection_ties(a2, c)[5], selection(a2, c)[2])
+
     def test_separation_certificate(self):
         # V4: the certificate of calibration_separation_diagnostic.py on the CinC 2011 structure of logistic
         # regression (74 unusable at the lower bound, 2 unusable in between, 149 unusable and 773 usable at the upper

@@ -9,7 +9,7 @@ For every evaluation set and model it writes
      - the order of checks (one class -> constant score -> separation -> Newton fit) and the resulting status;
      - for a separation, a certificate: the cut value v, whether the cut lies between two levels (complete) or at a
        level (quasi-complete), the class counts below, at and above v, the separating inequalities, whether the
-       units at v contain both classes, and the direction in which the likelihood increases without bound;
+       units at v contain both classes, and the direction (slope to +inf or -inf) in which the likelihood keeps increasing;
      - for an estimated slope, the slope from scikit-learn (LogisticRegression, C = inf, i.e. unpenalised, newton-cg,
        tol 1e-10), the absolute difference and the norm of the score (gradient) at our estimate;
   3. calibration_separation_bootstrap.csv: for the same 2,000 resamples as decision_calibration.py (seed 42), the
@@ -18,8 +18,9 @@ For every evaluation set and model it writes
 Definitions (Albert & Anderson, Biometrika 1984), one covariate z with intercept, y in {0, 1}:
   complete separation: some v with y = 1 for all z > v and y = 0 for all z < v (or the reverse), no unit at v;
   quasi-complete separation: the same with the units at z = v unrestricted (both classes may occur there), at
-  least one unit off the cut. In either case the log-likelihood increases without bound as the slope tends to
-  +inf (unusable above v) or -inf (unusable below v), so the maximum-likelihood slope does not exist.
+  least one unit off the cut. In either case the log-likelihood keeps increasing as the slope tends to +inf (unusable
+  above v) or -inf (unusable below v) and approaches a finite supremum that no finite slope attains, so no finite
+  maximum-likelihood slope exists (corrected in V6, review PAPER-014: the likelihood itself is bounded).
 
 Tolerance for the solver comparison (pre-stated here): |b_ours - b_sklearn| <= 1e-4 * max(1, |b|).
 

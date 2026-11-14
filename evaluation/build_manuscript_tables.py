@@ -1212,14 +1212,18 @@ def table_25() -> str:
         return _missing(unc_path)
     u = pd.read_csv(unc_path)
     out += ["", "| Models | Selection set → target set | Spearman ρ [95% bootstrap interval] (share of resamples with ρ > 0) | "
-            "Leader of selection set also leads target set (share of resamples) | AUROC lost by selecting the leader of the selection set [95% bootstrap interval] |",
-            "| :--- | :--- | :---: | :---: | :---: |"]
+            "Leader of selection set also leads target set (share of resamples) | AUROC lost by selecting the leader of the selection set [95% bootstrap interval] | "
+            "Resamples with a tied leader: selection set / target set (of 2,000) | Same leader, least to most favourable tie-break (resamples of 2,000) |",
+            "| :--- | :--- | :---: | :---: | :---: | :---: | :---: |"]
     for (ms, a, b), g in u.groupby(["model_set", "set_a", "set_b"], sort=False):
         r = g.set_index("statistic")
         rho_r, lead, reg = r.loc["spearman_rho"], r.loc["same_leader"], r.loc["regret_auroc"]
         out.append(f"| {ms} ({int(rho_r.n_models)}) | {a} → {b} | {rho_r.estimate:+.2f} [{rho_r.ci_lo:+.2f} to {rho_r.ci_hi:+.2f}] "
                    f"({100 * rho_r.prop_positive:.0f}%) | {'yes' if lead.estimate else 'no'} ({100 * lead.prop_positive:.1f}%) | "
-                   f"{reg.estimate:.3f} [{reg.ci_lo:.3f}–{reg.ci_hi:.3f}] |")
+                   f"{reg.estimate:.3f} [{reg.ci_lo:.3f}–{reg.ci_hi:.3f}] | "
+                   # V6 (review PAPER-013): ties for the highest AUROC and the tie-break range
+                   f"{int(r.loc['ties_selection'].n_resamples_positive)} / {int(r.loc['ties_target'].n_resamples_positive)} | "
+                   f"{int(r.loc['same_leader_all'].n_resamples_positive)}–{int(r.loc['same_leader_any'].n_resamples_positive)} |")
     return "\n".join(out)
 
 

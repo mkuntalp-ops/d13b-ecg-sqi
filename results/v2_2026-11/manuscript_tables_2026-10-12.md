@@ -875,14 +875,14 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | CinC2011 lead II vs CinC2017 balanced subset | 11 | +0.21 | 0.537 |
 | CinC2017 vs CinC2017 balanced subset | 11 | +0.99 | < 0.001 |
 
-| Models | Selection set → target set | Spearman ρ [95% bootstrap interval] (share of resamples with ρ > 0) | Leader of selection set also leads target set (share of resamples) | AUROC lost by selecting the leader of the selection set [95% bootstrap interval] |
-| :--- | :--- | :---: | :---: | :---: |
-| all 11 models (11) | BUT QDB → CinC 2011 | +0.61 [+0.06 to +0.75] (99%) | no (0.5%) | 0.037 [0.019–0.169] |
-| all 11 models (11) | BUT QDB → CinC 2017 | -0.02 [-0.35 to +0.32] (38%) | no (0.0%) | 0.057 [0.024–0.149] |
-| all 11 models (11) | CinC 2011 → CinC 2017 | +0.19 [+0.04 to +0.31] (99%) | no (4.5%) | 0.013 [0.000–0.028] |
-| heuristic excluded (10) | BUT QDB → CinC 2011 | +0.62 [+0.09 to +0.76] (99%) | no (0.5%) | 0.037 [0.019–0.160] |
-| heuristic excluded (10) | BUT QDB → CinC 2017 | -0.05 [-0.42 to +0.25] (30%) | no (0.1%) | 0.057 [0.041–0.149] |
-| heuristic excluded (10) | CinC 2011 → CinC 2017 | +0.19 [+0.08 to +0.32] (100%) | no (4.5%) | 0.013 [0.000–0.028] |
+| Models | Selection set → target set | Spearman ρ [95% bootstrap interval] (share of resamples with ρ > 0) | Leader of selection set also leads target set (share of resamples) | AUROC lost by selecting the leader of the selection set [95% bootstrap interval] | Resamples with a tied leader: selection set / target set (of 2,000) | Same leader, least to most favourable tie-break (resamples of 2,000) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| all 11 models (11) | BUT QDB → CinC 2011 | +0.61 [+0.06 to +0.75] (99%) | no (0.5%) | 0.037 [0.019–0.169] | 7 / 0 | 11–13 |
+| all 11 models (11) | BUT QDB → CinC 2017 | -0.02 [-0.35 to +0.32] (38%) | no (0.0%) | 0.057 [0.024–0.149] | 7 / 1 | 0–1 |
+| all 11 models (11) | CinC 2011 → CinC 2017 | +0.19 [+0.04 to +0.31] (99%) | no (4.5%) | 0.013 [0.000–0.028] | 0 / 1 | 88–89 |
+| heuristic excluded (10) | BUT QDB → CinC 2011 | +0.62 [+0.09 to +0.76] (99%) | no (0.5%) | 0.037 [0.019–0.160] | 7 / 0 | 11–13 |
+| heuristic excluded (10) | BUT QDB → CinC 2017 | -0.05 [-0.42 to +0.25] (30%) | no (0.1%) | 0.057 [0.041–0.149] | 7 / 1 | 2–2 |
+| heuristic excluded (10) | CinC 2011 → CinC 2017 | +0.19 [+0.08 to +0.32] (100%) | no (4.5%) | 0.013 [0.000–0.028] | 0 / 1 | 90–91 |
 
 ## Table 26
 
