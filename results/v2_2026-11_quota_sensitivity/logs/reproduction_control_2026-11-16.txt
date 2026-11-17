@@ -1,0 +1,10 @@
+Reproduction control (2026-11-16), not part of the sensitivity results.
+The primary 988-window manifest was copied to a scratch directory and run_supervised_cohort_cv.py and
+external_validation.score_windows() were run again on it (same code, seed 42, same machine, commit a1b4d38 plus the
+untracked sensitivity scripts). Compared with results/v2_2026-11:
+  raw_supervised_cohort1000_oof_predictions.csv: max |difference| = 0 for all seven columns (988 windows)
+  external_window_predictions.csv: max |difference| = 0 for all seven columns, CinC 2011 (998) and CinC 2017 (23,985 windows)
+Training and scoring are therefore reproducible run to run on this machine, and the differences between the
+sensitivity and the primary analysis are due to the 53 added windows, not to run-to-run variation.
+New HuBERT-ECG and TabPFN stage code, run on the primary manifest: max |recomputed - stored| = 1.1e-16 (25,971 predictions each).
+The scratch outputs were not kept in the repository.

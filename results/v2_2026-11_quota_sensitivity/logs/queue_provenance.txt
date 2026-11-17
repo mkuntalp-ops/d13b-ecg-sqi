@@ -1,0 +1,7 @@
+started: 2026-11-16T15:53:51Z
+git HEAD: a1b4d3828ca1b7c426906023bad67c7bd20c869c
+git status --porcelain (tracked and untracked code):
+   M tests/test_v2.py
+  ?? experiments/quota_sensitivity.py
+  ?? experiments/quota_sensitivity_queue.sh
+  ?? experiments/quota_sensitivity_tabpfn.py

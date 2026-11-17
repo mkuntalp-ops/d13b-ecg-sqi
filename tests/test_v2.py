@@ -478,5 +478,47 @@ class TestTableBlocks(unittest.TestCase):
         self.assertEqual(blocks["Table 3"], ["| d |", "| :- |", "| 4 |"])
 
 
+class TestQuotaSensitivityCohort(unittest.TestCase):
+    """Cohort rule of experiments/quota_sensitivity.py (analysis plan of 2026-11-16), on synthetic windows."""
+
+    def setUp(self):
+        sys.path.insert(0, str(ROOT / "experiments"))
+        import quota_sensitivity as qs
+        self.qs = qs
+
+    @staticmethod
+    def _frame(subject, n, label, start=0):
+        return pd.DataFrame({"segment_id": [f"s{subject}_{label}_{start + i}" for i in range(n)], "subject_id": subject,
+                             "label": label, "fold_id": 0})
+
+    def test_quota_is_drawn_inside_the_mask(self):
+        cand = pd.DataFrame({"segment_id": list("abcdef"), "label": [1, 1, 1, 0, 0, 1]})
+        inside = np.array([True, False, True, True, False, False])
+        got = self.qs.sensitivity_cohort(cand, inside, lambda d: d)  # identity sampler: the rule only restricts candidates
+        self.assertEqual(got.segment_id.tolist(), ["a", "c", "d"])
+
+    def test_difference_must_be_53_unusable_windows_of_subject_105(self):
+        primary = pd.concat([self._frame(105, 1, 1), self._frame(111, 5, 1), self._frame(105, 3, 0)], ignore_index=True)
+        ok = pd.concat([primary, self._frame(105, 53, 1, start=100)], ignore_index=True)
+        added, removed = self.qs.cohort_difference(primary, ok)
+        self.assertEqual((len(added), len(removed)), (53, 0))
+        self.qs.check_difference(added, removed)  # no exception
+        for bad in (pd.concat([primary, self._frame(105, 52, 1, start=100)]),            # wrong number
+                    pd.concat([primary, self._frame(111, 53, 1, start=100)]),            # another subject
+                    pd.concat([primary, self._frame(105, 53, 0, start=100)]),            # usable windows
+                    pd.concat([primary.iloc[1:], self._frame(105, 53, 1, start=100)])):  # a primary window missing
+            with self.assertRaises(ValueError):
+                self.qs.check_difference(*self.qs.cohort_difference(primary, bad))
+
+    def test_folds_are_carried_over_by_subject(self):
+        primary = pd.DataFrame({"subject_id": [105, 105, 111], "fold_id": [3, 3, 2]})
+        cohort = pd.DataFrame({"subject_id": [111, 105, 105, 105]})
+        self.assertEqual(self.qs.carry_folds(cohort, primary).tolist(), [2, 3, 3, 3])
+        with self.assertRaises(ValueError):  # a subject split over two folds
+            self.qs.carry_folds(cohort, pd.DataFrame({"subject_id": [105, 105], "fold_id": [3, 1]}))
+        with self.assertRaises(ValueError):  # a subject without a primary fold
+            self.qs.carry_folds(pd.DataFrame({"subject_id": [999]}), primary)
+
+
 if __name__ == "__main__":
     unittest.main()
