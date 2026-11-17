@@ -930,3 +930,25 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | signal_std | 0.8% (0.191) | 2.0% (0.354) | 0.0% (0.303) |
 | flatline_fraction_robust (replaces flatline_fraction; G2) | 0.0% (0) | 0.0% (0) | 0.0% (0) |
 
+## Table 28
+
+| Model | BUT QDB, AUROC: primary → sensitivity [95% CI, sensitivity cohort] | BUT QDB, p_Holm against the 2D CNN: primary → sensitivity | CinC 2011 lead II, AUROC: primary → sensitivity (Δ [95% CI]) | CinC 2017, AUROC: primary → sensitivity (Δ [95% CI]) | Rank, primary → sensitivity (BUT QDB; CinC 2011; CinC 2017) | Sensitivity at τ = 0.50 on the 54 unusable windows of subject 105 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **2D CNN (Rendered Image)** | 0.985 → 0.993 [0.983–0.999] | best → best | 0.787 → 0.785 (-0.001 [-0.007 to +0.004]) | 0.850 → 0.848 (-0.002 [-0.006 to +0.002]) | 1 → 1; 2 → 2; 8 → 8 | 100.0% |
+| **1D CNN (Raw Signal)** | 0.983 → 0.988 [0.960–0.999] | 1.000 → 1.000 | 0.695 → 0.690 (-0.005 [-0.010 to +0.000]) | 0.768 → 0.769 (+0.001 [-0.000 to +0.003]) | 2 → 2; 5 → 6; 10 → 10 | 100.0% |
+| **HuBERT-ECG probe** | 0.938 → 0.981 [0.946–0.998] | 0.640 → 1.000 | 0.562 → 0.759 (+0.197 [+0.159 to +0.235]) | 0.906 → 0.880 (-0.026 [-0.032 to -0.020]) | 8 → 3; 9 → 4; 1 → 4 | 100.0% |
+| **d1-3B image-token probe** | 0.971 → 0.977 [0.942–0.996] | 1.000 → 1.000 | 0.824 → 0.828 (+0.004 [-0.002 to +0.010]) | 0.894 → 0.908 (+0.015 [+0.009 to +0.020]) | 4 → 4; 1 → 1; 2 → 1 | 100.0% |
+| **Rule-Based SQI Heuristic** | 0.971 → 0.976 [0.917–0.999] | 1.000 → 1.000 | 0.678 → 0.678 (same scores) | 0.887 → 0.887 (same scores) | 3 → 5; 6 → 8; 4 → 3 | 96.3% |
+| **SinglePass Multimodal Net** | 0.966 → 0.968 [0.916–0.998] | 1.000 → 1.000 | 0.500 → 0.500 (same scores) | 0.799 → 0.811 (+0.012 [+0.007 to +0.016]) | 5 → 6; 10 → 10; 9 → 9 | 100.0% |
+| **LightGBM (SQI)** | 0.957 → 0.966 [0.893–0.999] | 1.000 → 1.000 | 0.752 → 0.761 (+0.009 [-0.001 to +0.019]) | 0.891 → 0.888 (-0.004 [-0.006 to -0.001]) | 6 → 7; 3 → 3; 3 → 2 | 100.0% |
+| **TabPFN (SQI)** | 0.956 → 0.963 [0.906–0.996] | 1.000 → 1.000 | 0.731 → 0.755 (+0.024 [+0.015 to +0.033]) | 0.853 → 0.859 (+0.007 [+0.004 to +0.009]) | 7 → 8; 4 → 5; 7 → 6 | 98.1% |
+| **Logistic Regression (SQI)** | 0.899 → 0.937 [0.828–0.993] | 0.028 → 0.702 | 0.322 → 0.325 (+0.003 [-0.004 to +0.009]) | 0.870 → 0.868 (-0.002 [-0.003 to -0.002]) | 10 → 9; 11 → 11; 6 → 5 | 100.0% |
+| **Independent SQI MLP** | 0.904 → 0.932 [0.823–0.987] | 0.028 → 0.264 | 0.675 → 0.683 (+0.008 [-0.006 to +0.022]) | 0.876 → 0.851 (-0.026 [-0.035 to -0.016]) | 9 → 10; 7 → 7; 5 → 7 | 100.0% |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.828 → 0.850 [0.727–0.942] | 0.051 → 0.028 | 0.641 → 0.641 (same scores) | 0.757 → 0.757 (same scores) | 11 → 11; 8 → 9; 11 → 11 | 61.1% |
+
+| Evaluation sets compared | Models | Spearman ρ, primary cohort | Spearman ρ, sensitivity cohort |
+| :--- | :---: | :---: | :---: |
+| BUT QDB vs CinC 2011 lead II | 11 | +0.61 | +0.57 |
+| BUT QDB vs CinC 2017 | 11 | -0.02 | +0.14 |
+| CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.45 |
+

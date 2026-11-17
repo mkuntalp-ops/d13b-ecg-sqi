@@ -1287,6 +1287,60 @@ def table_27() -> str:
     return "\n".join(out)
 
 
+def table_28() -> str:
+    """Quota sensitivity analysis for BUT QDB subject 105 (experiments/quota_sensitivity.py; plan
+    ANALYSIS_PLAN_2026-11-16_quota_sensitivity.md): primary and sensitivity AUROC per model and set, Holm-adjusted
+    comparison with the in-domain best, ranks, sensitivity in subject 105 and rank correlations."""
+    sens = RESULTS.parent / f"{RESULTS.name}_quota_sensitivity"
+    paths = [sens / f for f in ("quota_sensitivity_auroc.csv", "quota_sensitivity_rank_agreement.csv",
+                                "quota_sensitivity_subject_sensitivity.csv", "paired_vs_best.csv", "model_cis.csv")]
+    for path in paths + [RESULTS / "paired_vs_best.csv"]:
+        if not path.exists():
+            return _missing(path)
+    a, rho, ss, vb_s, ci = (pd.read_csv(p) for p in paths)
+    vb_p = pd.read_csv(RESULTS / "paired_vs_best.csv")
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    but_family = "BUT_QDB (5-fold subject CV)"
+    a = a.set_index(["set", "model"])
+    if set(a.index.get_level_values("model")) != set(labels):
+        raise ValueError("quota sensitivity table: model set differs from the 11 models of the manuscript")
+    ci = ci[ci.family == but_family].set_index("model")
+    ss = ss[(ss.analysis == "sensitivity") & (ss.subject == 105)].set_index("model")
+    if not (ss.n_unusable == 54).all():
+        raise ValueError("subject 105 must have 54 unusable windows in the sensitivity cohort")
+
+    def holm(vb, m):
+        r = vb[(vb.family == but_family) & (vb.model == m)]
+        if r.empty:
+            if not (vb[vb.family == but_family].best == m).all():
+                raise ValueError(f"no comparison with the best for {m}")
+            return "best"
+        return _p_fmt(float(r.p_holm_all_pairs.iloc[0]))
+
+    def external(ds, m):
+        r = a.loc[(ds, m)]
+        if bool(r.identical_scores):
+            return f"{r.auroc_primary:.3f} → {r.auroc_sensitivity:.3f} (same scores)"
+        return f"{r.auroc_primary:.3f} → {r.auroc_sensitivity:.3f} ({r.delta:+.3f} [{r.delta_ci_lo:+.3f} to {r.delta_ci_hi:+.3f}])"
+
+    sets = ["BUT QDB", "CinC 2011 lead II", "CinC 2017"]
+    out = ["| Model | BUT QDB, AUROC: primary → sensitivity [95% CI, sensitivity cohort] | BUT QDB, p_Holm against the 2D CNN: primary → sensitivity | "
+           "CinC 2011 lead II, AUROC: primary → sensitivity (Δ [95% CI]) | CinC 2017, AUROC: primary → sensitivity (Δ [95% CI]) | "
+           "Rank, primary → sensitivity (BUT QDB; CinC 2011; CinC 2017) | Sensitivity at τ = 0.50 on the 54 unusable windows of subject 105 |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    for m in a.loc["BUT QDB"].sort_values("auroc_sensitivity", ascending=False).index:
+        b = a.loc[("BUT QDB", m)]
+        ranks = "; ".join(f"{int(a.loc[(s, m)].rank_primary)} → {int(a.loc[(s, m)].rank_sensitivity)}" for s in sets)
+        out.append(f"| **{labels[m]}** | {b.auroc_primary:.3f} → {b.auroc_sensitivity:.3f} [{ci.loc[m].auroc_lo:.3f}–{ci.loc[m].auroc_hi:.3f}] | "
+                   f"{holm(vb_p, m)} → {holm(vb_s, m)} | {external('CinC 2011 lead II', m)} | {external('CinC 2017', m)} | {ranks} | "
+                   f"{100 * ss.loc[m, 'sensitivity_at_0.5']:.1f}% |")
+    out += ["", "| Evaluation sets compared | Models | Spearman ρ, primary cohort | Spearman ρ, sensitivity cohort |", "| :--- | :---: | :---: | :---: |"]
+    for pair_name, g in rho.groupby("pair", sort=False):
+        g = g.set_index("analysis")
+        out.append(f"| {pair_name} | {int(g.loc['primary'].n_models)} | {g.loc['primary'].spearman_rho:+.2f} | {g.loc['sensitivity'].spearman_rho:+.2f} |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = cinc_frame()
@@ -1347,6 +1401,7 @@ def main():
         ("Table 25", table_25()),
         ("Table 26", table_26()),
         ("Table 27", table_27()),
+        ("Table 28", table_28()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")

@@ -539,6 +539,57 @@ def checks() -> list:
     assert len(subj) == 15 and (si.groupby("subject").Gender.nunique() == 1).all()
     c.append((f"The 15 subjects ({(subj.Gender == 'F').sum()} women and {(subj.Gender == 'M').sum()} men) were aged "
               f"{subj.Age.min()}–{subj.Age.max()} years (median {subj.Age.median():.0f})", MAIN))
+    # ---- quota sensitivity analysis (round V9; experiments/quota_sensitivity.py, ANALYSIS_PLAN_2026-11-16_quota_sensitivity.md)
+    Q = R.parent / f"{R.name}_quota_sensitivity"
+    qa = pd.read_csv(Q / "quota_sensitivity_auroc.csv").set_index(["set", "model"])
+    qr = pd.read_csv(Q / "quota_sensitivity_rank_agreement.csv").set_index(["pair", "analysis"]).spearman_rho
+    qb = pd.read_csv(Q / "paired_vs_best.csv").set_index(["family", "model"])
+    qp = pd.read_csv(Q / "paired_comparisons.csv")
+    qm = pd.read_csv(Q / "manifest_butqdb_1000_cohort.csv")
+    added = pd.read_csv(Q / "quota_sensitivity_added_windows.csv")
+    removed = pd.read_csv(Q / "quota_sensitivity_removed_windows.csv")
+    assert len(removed) == 0 and (added.subject_id == 105).all() and (added.label == 1).all()
+    prim = pd.read_csv(R / "manifest_butqdb_1000_cohort.csv")
+    assert len(qm) == len(prim) + len(added) and set(qm.segment_id) == set(prim.segment_id) | set(added.segment_id)
+    c.append((f"a sensitivity cohort of {len(qm):,} windows ({int(qm.label.sum())} unusable) that differs from the primary cohort only by "
+              f"{len(added)} added unusable windows of subject 105", MAIN))
+    QB, Q11, Q17 = "BUT QDB", "CinC 2011 lead II", "CinC 2017"
+    sa = lambda s, m: f3(qa.loc[(s, m), "auroc_sensitivity"])  # noqa: E731
+    pa = lambda s, m: f3(qa.loc[(s, m), "auroc_primary"])  # noqa: E731
+    for s, fam in [(QB, BUT), (Q11, C11), (Q17, C17)]:  # the primary column of the sensitivity table is the primary analysis
+        for m in qa.loc[s].index:
+            assert abs(qa.loc[(s, m), "auroc_primary"] - auroc(fam, m)) < 1e-12, (s, m)
+    d_in = qa.loc[QB].delta
+    assert (d_in > 0).all() and qa.loc[QB].auroc_sensitivity.idxmax() == CNN2 and (qb.loc[BUT].best == CNN2).all()
+    c.append((f"In-domain AUROC rose for every model, by {f3(d_in.min())}–{f3(d_in.max())}, and the 2D CNN remained first ({sa(QB, CNN2)})", MAIN))
+    hq = lambda fam, m: f3(qb.loc[(fam, m), "p_holm_all_pairs"])  # noqa: E731
+    sig = qb.loc[BUT].p_holm_all_pairs < 0.05
+    assert list(sig[sig].index) == [ZS] and holm_best(BUT, LR) < 0.05 and holm_best(BUT, MLP) < 0.05 and holm_best(BUT, ZS) >= 0.05
+    c.append((f"Logistic regression ({sa(QB, LR)}) and the MLP ({sa(QB, MLP)}) were no longer significantly below it (p_Holm = {hq(BUT, LR)} and "
+              f"{hq(BUT, MLP)}), whereas zero-shot d1-3B was ({sa(QB, ZS)}; p_Holm = {hq(BUT, ZS)})", MAIN))
+    assert qa.loc[Q11].auroc_sensitivity.idxmax() == PROBE and qa.loc[Q17].auroc_sensitivity.idxmax() == PROBE
+    x = qp[(qp.family == C11) & (qp.model_a == CNN2) & (qp.model_b == PROBE)]
+    assert len(x) == 1
+    x = x.iloc[0]
+    c.append((f"remained first ({sa(Q11, PROBE)}) and significantly above the 2D CNN ({sa(Q11, CNN2)}; difference {f3(-x.delta)}, 95% CI "
+              f"{f3(-x.ci_hi)}–{f3(-x.ci_lo)}; p_Holm = {f3(x.p_holm)})", MAIN))
+    h11, h17 = qa.loc[(Q11, HUB)], qa.loc[(Q17, HUB)]
+    sig17 = qb.loc[C17].p_holm_all_pairs
+    assert set(sig17[sig17 >= 0.05].index) == {GBM, HEUR} and h11.rank_sensitivity == 4 and h17.rank_sensitivity == 4 and h17.rank_primary == 1
+    c.append((f"its AUROC rose from {pa(Q11, HUB)} to {sa(Q11, HUB)} on CinC 2011 (difference {f3(h11.delta)}, 95% CI {f3(h11.delta_ci_lo)}–"
+              f"{f3(h11.delta_ci_hi)}) and fell from {pa(Q17, HUB)} to {sa(Q17, HUB)} on CinC 2017, where the d1-3B probe became first "
+              f"({sa(Q17, PROBE)}) and the HuBERT-ECG probe was significantly below it (p_Holm = {hq(C17, HUB)}); LightGBM and the rule "
+              f"heuristic were again not significantly different from the leader (p_Holm = {hq(C17, GBM)} and {hq(C17, HEUR)})", MAIN))
+    others = qa.loc[[Q11, Q17]].drop(index=HUB, level="model").delta.abs()
+    c.append((f"No other external AUROC changed by more than {f3(others.max())}.", MAIN))
+    rq = lambda pair_, an: qr.loc[(pair_, an)]  # noqa: E731
+    p1, p2, p3 = f"{QB} vs {Q11}", f"{QB} vs {Q17}", f"{Q11} vs {Q17}"
+    assert abs(rq(p1, "primary") - r11) < 1e-12 and abs(rq(p2, "primary") - r17) < 1e-12 and abs(rq(p3, "primary") - rx) < 1e-12
+    assert rq(p2, "primary") < 0 < rq(p2, "sensitivity")
+    c.append((f"were {rq(p1, 'sensitivity'):.2f} on CinC 2011 and {rq(p2, 'sensitivity'):.2f} on CinC 2017, and between the two external datasets "
+              f"{rq(p3, 'sensitivity'):.2f}, against {rq(p1, 'primary'):.2f}, −{-rq(p2, 'primary'):.2f} and {rq(p3, 'primary'):.2f} in the primary analysis", MAIN))
+    c.append((f"the same probe reached {sa(Q11, HUB)} on CinC 2011 and was fourth on CinC 2017", MAIN))
+    c.append((f"the correlation with CinC 2017 remained low ({rq(p2, 'sensitivity'):.2f})", MAIN))
     return c
 
 
