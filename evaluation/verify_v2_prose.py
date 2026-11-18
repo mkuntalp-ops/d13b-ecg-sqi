@@ -326,7 +326,7 @@ def checks() -> list:
     # bootstrap p floor: MLP and logistic regression versus the best model on BUT QDB
     hb = [holm_best(BUT, m) for m in (MLP, LR)]
     assert hb[0] == hb[1] and pair(BUT, CNN2, MLP).p == pair(BUT, CNN2, LR).p == 1 / 2000
-    c.append((f"(both p_Holm = {f3(hb[0])}; no resample reversed the sign, so the unadjusted p is at its floor of 0.0005)", MAIN))
+    c.append((f"(both p_Holm = {f3(hb[0])}): no resample reversed the sign, so the unadjusted p is the 1/n floor of 0.0005", MAIN))
     # CinC 2011 without constant lead II
     nc = pd.read_csv(R / "cinc2011_nonconstant_paired.csv")
     assert set(nc.best_model) == {PROBE} and set(nc.n_constant_removed) == {73} and set(nc.n_constant_unacceptable) == {73}
@@ -415,7 +415,18 @@ def checks() -> list:
               f"{int(lp.loc['REFERENCE-v2.csv', 'noisy_records'])})", MAIN))
     pa = pd.read_csv(R / "butqdb_bootstrap_p_audit.csv")
     assert (pa.n_valid == 2000).all()
-    c.append(("contain only one class discarded (none were, in the comparisons with the best model)", MAIN))
+    # ---- round V11 (review PAPER-001/009): all 55 pairs, floor-dependent significance
+    ap = pd.read_csv(R / "butqdb_bootstrap_p_audit_all_pairs.csv")
+    assert len(ap) == 55 and (ap.n_valid == 2000).all()
+    assert int((ap.p_holm < 0.05).sum()) == 4 and int((ap.p_plus1_holm < 0.05).sum()) == 0
+    sig = ap[ap.p_holm < 0.05]
+    assert (sig[["n_delta_le0", "n_delta_ge0"]].min(axis=1) == 0).all()  # every significant pair is at the floor
+    assert round(55 * 0.0005, 4) == 0.0275 and round(55 * 2 / 2001, 3) == 0.055
+    vb = ap[(ap.model_b == "2D_CNN_Image") & ap.model_a.isin([LR, MLP])]
+    assert len(vb) == 2 and np.allclose(vb.p_holm, 0.0275)
+    c.append(("contain only one class discarded (none were, in any of the 55 pairs)", MAIN))
+    c.append(("the smallest attainable Holm-adjusted value over 55 pairs is 0.0275 under this floor and 0.055 if one is added", MAIN))
+    c.append(("no BUT QDB pair could reach p_Holm < 0.05 with 2,000 resamples (smallest attainable value 0.055", MAIN))
     f17 = 100 * tt[tt.dataset == "CinC2017 all (record max)"].fpr
     f11 = 100 * tt[tt.dataset == "CinC2011 all 998 records (lead II)"].fpr
     assert len(f17) == len(f11) == 11
@@ -592,7 +603,7 @@ def checks() -> list:
     sig = qb.loc[BUT].p_holm_all_pairs < 0.05
     assert list(sig[sig].index) == [ZS] and holm_best(BUT, LR) < 0.05 and holm_best(BUT, MLP) < 0.05 and holm_best(BUT, ZS) >= 0.05
     c.append((f"Logistic regression ({sa(QB, LR)}) and the MLP ({sa(QB, MLP)}) were no longer significantly below it (p_Holm = {hq(BUT, LR)} and "
-              f"{hq(BUT, MLP)}), whereas zero-shot d1-3B was ({sa(QB, ZS)}; p_Holm = {hq(BUT, ZS)})", MAIN))
+              f"{hq(BUT, MLP)}), whereas zero-shot d1-3B was, again at the 1/n floor ({sa(QB, ZS)}; p_Holm = {hq(BUT, ZS)})", MAIN))
     assert qa.loc[Q11].auroc_sensitivity.idxmax() == PROBE and qa.loc[Q17].auroc_sensitivity.idxmax() == PROBE
     x = qp[(qp.family == C11) & (qp.model_a == CNN2) & (qp.model_b == PROBE)]
     assert len(x) == 1

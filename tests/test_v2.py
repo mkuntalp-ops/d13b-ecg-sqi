@@ -539,6 +539,15 @@ class TestBootstrapPAudit(unittest.TestCase):
             self.assertGreaterEqual(n_le + n_ge, n)
             self.assertGreaterEqual(p, 1.0 / n)
 
+    def test_plus_one_convention(self):
+        """Round V11: with no reversed resample the plus-one value is 2/(n+1), and it is never below the floor value."""
+        sys.path.insert(0, str(ROOT / "evaluation"))
+        import bootstrap_p_audit as bpa
+        self.assertAlmostEqual(bpa.p_plus1(2000, 2000, 0), 2 / 2001)
+        self.assertEqual(bpa.p_plus1(2000, 1500, 1500), 1.0)
+        for k in (0, 1, 10, 500):
+            self.assertGreaterEqual(bpa.p_plus1(2000, 2000 - k, k), max(2 * k / 2000, 1 / 2000))
+
 
 if __name__ == "__main__":
     unittest.main()

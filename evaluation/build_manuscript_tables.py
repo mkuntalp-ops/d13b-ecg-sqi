@@ -1364,6 +1364,30 @@ def table_29() -> str:
     return "\n".join(out)
 
 
+def table_31() -> str:
+    """All 55 BUT QDB paired cluster-bootstrap comparisons: resample counts, unrounded p-values and Holm adjustment under
+    the 1/n floor and under the plus-one convention (evaluation/bootstrap_p_audit.py; round V11, PAPER-001 / PAPER-009)."""
+    path = RESULTS / "butqdb_bootstrap_p_audit_all_pairs.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    if len(d) != 55 or not (d.n_valid == 2000).all():
+        raise ValueError("bootstrap p audit: expected 55 pairs, each with 2,000 valid resamples")
+    d = d.sort_values(["p_unadjusted", "model_a", "model_b"], kind="mergesort")
+
+    def g(x):
+        return f"{x:.4f}".rstrip("0").rstrip(".") if x < 1 else "1"
+
+    out = ["| Model A | Model B | AUROC A | AUROC B | Δ (A − B) | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | "
+           "p (1/n floor) | p_Holm (1/n floor) | p (plus one) | p_Holm (plus one) |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    for _, r in d.iterrows():
+        out.append(f"| {labels[r.model_a]} | {labels[r.model_b]} | {r.auroc_a:.4f} | {r.auroc_b:.4f} | {r.delta_a_minus_b:+.4f} | "
+                   f"{int(r.n_delta_le0)} | {int(r.n_delta_ge0)} | {g(r.p_unadjusted)} | {g(r.p_holm)} | {g(r.p_plus1)} | {g(r.p_plus1_holm)} |")
+    return "\n".join(out)
+
+
 def table_30() -> str:
     """CinC 2017 label provenance: the label file used against the four published label versions
     (evaluation/cinc2017_label_provenance.py; round V10, review finding PAPER-004)."""
@@ -1444,6 +1468,7 @@ def main():
         ("Table 28", table_28()),
         ("Table 29", table_29()),
         ("Table 30", table_30()),
+        ("Table 31", table_31()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")

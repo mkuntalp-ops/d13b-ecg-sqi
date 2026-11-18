@@ -977,3 +977,63 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | REFERENCE-v2.csv | 995a380d29f7aa45 | 8,528 | 284 | 8,380 | 283 |
 | REFERENCE-v3.csv | ae517e474b0bc89a | 8,528 | 279 | 8,528 | 278 |
 
+## Table 31
+
+| Model A | Model B | AUROC A | AUROC B | Δ (A − B) | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | p (1/n floor) | p_Holm (1/n floor) | p (plus one) | p_Holm (plus one) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Independent SQI MLP | 1D CNN (Raw Signal) | 0.9042 | 0.9831 | -0.0789 | 2000 | 0 | 0.0005 | 0.0275 | 0.001 | 0.055 |
+| Independent SQI MLP | 2D CNN (Rendered Image) | 0.9042 | 0.9850 | -0.0808 | 2000 | 0 | 0.0005 | 0.0275 | 0.001 | 0.055 |
+| Logistic Regression (SQI) | 2D CNN (Rendered Image) | 0.8989 | 0.9850 | -0.0861 | 2000 | 0 | 0.0005 | 0.0275 | 0.001 | 0.055 |
+| Logistic Regression (SQI) | Rule-Based SQI Heuristic | 0.8989 | 0.9709 | -0.0720 | 2000 | 0 | 0.0005 | 0.0275 | 0.001 | 0.055 |
+| 1D CNN (Raw Signal) | LiquidAI d1-3B (Zero-Shot) | 0.9831 | 0.8277 | +0.1554 | 1 | 2000 | 0.001 | 0.051 | 0.002 | 0.1019 |
+| 2D CNN (Rendered Image) | LiquidAI d1-3B (Zero-Shot) | 0.9850 | 0.8277 | +0.1573 | 1 | 2000 | 0.001 | 0.051 | 0.002 | 0.1019 |
+| Independent SQI MLP | Rule-Based SQI Heuristic | 0.9042 | 0.9709 | -0.0667 | 1999 | 1 | 0.001 | 0.051 | 0.002 | 0.1019 |
+| Logistic Regression (SQI) | 1D CNN (Raw Signal) | 0.8989 | 0.9831 | -0.0842 | 1998 | 2 | 0.002 | 0.096 | 0.003 | 0.1439 |
+| Logistic Regression (SQI) | SinglePass Multimodal Net | 0.8989 | 0.9656 | -0.0667 | 1996 | 4 | 0.004 | 0.188 | 0.005 | 0.2349 |
+| Independent SQI MLP | d1-3B image-token probe | 0.9042 | 0.9707 | -0.0665 | 1995 | 5 | 0.005 | 0.23 | 0.006 | 0.2759 |
+| Rule-Based SQI Heuristic | LiquidAI d1-3B (Zero-Shot) | 0.9709 | 0.8277 | +0.1432 | 6 | 1995 | 0.006 | 0.27 | 0.007 | 0.3148 |
+| LiquidAI d1-3B (Zero-Shot) | d1-3B image-token probe | 0.8277 | 0.9707 | -0.1430 | 1991 | 10 | 0.01 | 0.44 | 0.011 | 0.4838 |
+| Logistic Regression (SQI) | LightGBM (SQI) | 0.8989 | 0.9566 | -0.0577 | 1990 | 10 | 0.01 | 0.44 | 0.011 | 0.4838 |
+| LightGBM (SQI) | Independent SQI MLP | 0.9566 | 0.9042 | +0.0524 | 12 | 1988 | 0.012 | 0.504 | 0.013 | 0.5457 |
+| LightGBM (SQI) | Rule-Based SQI Heuristic | 0.9566 | 0.9709 | -0.0143 | 1986 | 15 | 0.015 | 0.615 | 0.016 | 0.6557 |
+| 2D CNN (Rendered Image) | HuBERT-ECG probe | 0.9850 | 0.9385 | +0.0465 | 16 | 1984 | 0.016 | 0.64 | 0.017 | 0.6797 |
+| SinglePass Multimodal Net | LiquidAI d1-3B (Zero-Shot) | 0.9656 | 0.8277 | +0.1379 | 20 | 1980 | 0.02 | 0.78 | 0.021 | 0.8186 |
+| LiquidAI d1-3B (Zero-Shot) | TabPFN (SQI) | 0.8277 | 0.9562 | -0.1285 | 1976 | 24 | 0.024 | 0.912 | 0.025 | 0.9495 |
+| Independent SQI MLP | SinglePass Multimodal Net | 0.9042 | 0.9656 | -0.0614 | 1965 | 35 | 0.035 | 1 | 0.036 | 1 |
+| LightGBM (SQI) | LiquidAI d1-3B (Zero-Shot) | 0.9566 | 0.8277 | +0.1289 | 35 | 1966 | 0.035 | 1 | 0.036 | 1 |
+| Logistic Regression (SQI) | d1-3B image-token probe | 0.8989 | 0.9707 | -0.0718 | 1963 | 37 | 0.037 | 1 | 0.038 | 1 |
+| Logistic Regression (SQI) | TabPFN (SQI) | 0.8989 | 0.9562 | -0.0573 | 1960 | 40 | 0.04 | 1 | 0.041 | 1 |
+| Independent SQI MLP | TabPFN (SQI) | 0.9042 | 0.9562 | -0.0520 | 1958 | 42 | 0.042 | 1 | 0.043 | 1 |
+| 2D CNN (Rendered Image) | SinglePass Multimodal Net | 0.9850 | 0.9656 | +0.0194 | 43 | 1957 | 0.043 | 1 | 0.044 | 1 |
+| 1D CNN (Raw Signal) | TabPFN (SQI) | 0.9831 | 0.9562 | +0.0269 | 79 | 1921 | 0.079 | 1 | 0.08 | 1 |
+| LightGBM (SQI) | 2D CNN (Rendered Image) | 0.9566 | 0.9850 | -0.0283 | 1921 | 80 | 0.08 | 1 | 0.081 | 1 |
+| 2D CNN (Rendered Image) | TabPFN (SQI) | 0.9850 | 0.9562 | +0.0287 | 93 | 1909 | 0.093 | 1 | 0.094 | 1 |
+| Rule-Based SQI Heuristic | HuBERT-ECG probe | 0.9709 | 0.9385 | +0.0325 | 107 | 1893 | 0.107 | 1 | 0.1079 | 1 |
+| 1D CNN (Raw Signal) | d1-3B image-token probe | 0.9831 | 0.9707 | +0.0124 | 119 | 1882 | 0.119 | 1 | 0.1199 | 1 |
+| Logistic Regression (SQI) | HuBERT-ECG probe | 0.8989 | 0.9385 | -0.0396 | 1870 | 130 | 0.13 | 1 | 0.1309 | 1 |
+| LiquidAI d1-3B (Zero-Shot) | HuBERT-ECG probe | 0.8277 | 0.9385 | -0.1108 | 1855 | 145 | 0.145 | 1 | 0.1459 | 1 |
+| Rule-Based SQI Heuristic | TabPFN (SQI) | 0.9709 | 0.9562 | +0.0147 | 160 | 1840 | 0.16 | 1 | 0.1609 | 1 |
+| 2D CNN (Rendered Image) | Rule-Based SQI Heuristic | 0.9850 | 0.9709 | +0.0140 | 184 | 1817 | 0.184 | 1 | 0.1849 | 1 |
+| 1D CNN (Raw Signal) | HuBERT-ECG probe | 0.9831 | 0.9385 | +0.0446 | 196 | 1804 | 0.196 | 1 | 0.1969 | 1 |
+| LightGBM (SQI) | 1D CNN (Raw Signal) | 0.9566 | 0.9831 | -0.0265 | 1794 | 208 | 0.208 | 1 | 0.2089 | 1 |
+| 2D CNN (Rendered Image) | d1-3B image-token probe | 0.9850 | 0.9707 | +0.0142 | 237 | 1763 | 0.237 | 1 | 0.2379 | 1 |
+| Independent SQI MLP | LiquidAI d1-3B (Zero-Shot) | 0.9042 | 0.8277 | +0.0765 | 251 | 1749 | 0.251 | 1 | 0.2519 | 1 |
+| Logistic Regression (SQI) | LiquidAI d1-3B (Zero-Shot) | 0.8989 | 0.8277 | +0.0712 | 259 | 1741 | 0.259 | 1 | 0.2599 | 1 |
+| SinglePass Multimodal Net | HuBERT-ECG probe | 0.9656 | 0.9385 | +0.0271 | 330 | 1670 | 0.33 | 1 | 0.3308 | 1 |
+| Independent SQI MLP | HuBERT-ECG probe | 0.9042 | 0.9385 | -0.0343 | 1656 | 344 | 0.344 | 1 | 0.3448 | 1 |
+| LightGBM (SQI) | HuBERT-ECG probe | 0.9566 | 0.9385 | +0.0181 | 416 | 1585 | 0.416 | 1 | 0.4168 | 1 |
+| 1D CNN (Raw Signal) | SinglePass Multimodal Net | 0.9831 | 0.9656 | +0.0175 | 429 | 1571 | 0.429 | 1 | 0.4298 | 1 |
+| d1-3B image-token probe | TabPFN (SQI) | 0.9707 | 0.9562 | +0.0145 | 431 | 1569 | 0.431 | 1 | 0.4318 | 1 |
+| 1D CNN (Raw Signal) | Rule-Based SQI Heuristic | 0.9831 | 0.9709 | +0.0122 | 455 | 1546 | 0.455 | 1 | 0.4558 | 1 |
+| d1-3B image-token probe | HuBERT-ECG probe | 0.9707 | 0.9385 | +0.0323 | 485 | 1515 | 0.485 | 1 | 0.4858 | 1 |
+| LightGBM (SQI) | d1-3B image-token probe | 0.9566 | 0.9707 | -0.0141 | 1437 | 563 | 0.563 | 1 | 0.5637 | 1 |
+| TabPFN (SQI) | HuBERT-ECG probe | 0.9562 | 0.9385 | +0.0177 | 593 | 1407 | 0.593 | 1 | 0.5937 | 1 |
+| LightGBM (SQI) | SinglePass Multimodal Net | 0.9566 | 0.9656 | -0.0090 | 1389 | 612 | 0.612 | 1 | 0.6127 | 1 |
+| SinglePass Multimodal Net | TabPFN (SQI) | 0.9656 | 0.9562 | +0.0094 | 625 | 1375 | 0.625 | 1 | 0.6257 | 1 |
+| SinglePass Multimodal Net | d1-3B image-token probe | 0.9656 | 0.9707 | -0.0051 | 1157 | 845 | 0.845 | 1 | 0.8456 | 1 |
+| Logistic Regression (SQI) | Independent SQI MLP | 0.8989 | 0.9042 | -0.0053 | 1124 | 876 | 0.876 | 1 | 0.8766 | 1 |
+| 1D CNN (Raw Signal) | 2D CNN (Rendered Image) | 0.9831 | 0.9850 | -0.0019 | 1102 | 900 | 0.9 | 1 | 0.9005 | 1 |
+| SinglePass Multimodal Net | Rule-Based SQI Heuristic | 0.9656 | 0.9709 | -0.0053 | 1062 | 939 | 0.939 | 1 | 0.9395 | 1 |
+| LightGBM (SQI) | TabPFN (SQI) | 0.9566 | 0.9562 | +0.0004 | 941 | 1060 | 0.941 | 1 | 0.9415 | 1 |
+| Rule-Based SQI Heuristic | d1-3B image-token probe | 0.9709 | 0.9707 | +0.0002 | 1003 | 997 | 0.997 | 1 | 0.9975 | 1 |
+
