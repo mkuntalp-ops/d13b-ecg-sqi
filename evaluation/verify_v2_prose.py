@@ -424,6 +424,13 @@ def checks() -> list:
     assert round(55 * 0.0005, 4) == 0.0275 and round(55 * 2 / 2001, 3) == 0.055
     vb = ap[(ap.model_b == "2D_CNN_Image") & ap.model_a.isin([LR, MLP])]
     assert len(vb) == 2 and np.allclose(vb.p_holm, 0.0275)
+    # round V12: Table 1 / Fig. 2 (two significant comparisons with the best, both at the floor) and the quota cohort
+    assert int((ap[(ap.model_a == "2D_CNN_Image") | (ap.model_b == "2D_CNN_Image")].p_holm < 0.05).sum()) == 2
+    qp = pd.read_csv(R.parent / f"{R.name}_quota_sensitivity" / "paired_comparisons.csv")
+    qp = qp[qp.family.str.startswith("BUT")]
+    assert len(qp) == 55 and (qp[qp.p_holm < 0.05].p == 0.0005).all()
+    c.append(("On BUT QDB the two open markers rest on the 1/n floor of the bootstrap p-value", MAIN))
+    c.append(("in both cohorts every such in-domain decision rests on the 1/n floor of the bootstrap p-value", MAIN))
     c.append(("contain only one class discarded (none were, in any of the 55 pairs)", MAIN))
     c.append(("the smallest attainable Holm-adjusted value over 55 pairs is 0.0275 under this floor and 0.055 if one is added", MAIN))
     c.append(("no BUT QDB pair could reach p_Holm < 0.05 with 2,000 resamples (smallest attainable value 0.055", MAIN))
