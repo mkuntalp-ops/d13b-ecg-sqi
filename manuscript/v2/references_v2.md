@@ -12,7 +12,7 @@ silva2011: Silva I, Moody GB, Celi L. Improving the quality of ECGs collected us
 cinc2011protocol: PhysioNet/Computing in Cardiology Challenge 2011: challenge protocol. https://moody-challenge.physionet.org/2011/
 subbaswamy: Subbaswamy A, Saria S. From development to deployment: dataset shift, causality, and shift-stable models in health AI. Biostatistics. 2020;21(2):345–352. doi:10.1093/biostatistics/kxz041
 guo2022: Guo LL, et al. Evaluation of domain generalization and adaptation on improving model robustness to temporal dataset shift in clinical medicine. Sci Rep. 2022;12:2726. doi:10.1038/s41598-022-06484-1
-benchecg: Lunelli R, Nicolson A, Pröll SM, Reinstadler SJ, Bauer A, Dlaska C. BenchECG and xECG: a benchmark and baseline for ECG foundation models. NPJ Digit Med. 2026 (accepted article, published online 14 Sep 2026). doi:10.1038/s41746-026-03196-y
+benchecg: Lunelli R, Nicolson A, Pröll SM, Reinstadler SJ, Bauer A, Dlaska C. BenchECG and xECG: a benchmark and baseline for ECG foundation models. NPJ Digit Med. 2026. doi:10.1038/s41746-026-03196-y
 moeyersons: Moeyersons J, Smets E, Morales J, et al. Artefact detection and quality assessment of ambulatory ECG signals. Comput Methods Programs Biomed. 2019;182:105050. doi:10.1016/j.cmpb.2019.105050
 tabpfn: Hollmann N, Müller S, Purucker L, et al. Accurate predictions on small data with a tabular foundation model. Nature. 2025;637(8045):319–326. doi:10.1038/s41586-024-08328-6
 hubert: Coppola E, Savardi M, Massussi M, Adamo M, Metra M, Signoroni A. HuBERT-ECG base (model weights and code). Hugging Face; 2024. Revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465; licence CC BY-NC 4.0. https://huggingface.co/Edoardo-Coppola/hubert-ecg-base

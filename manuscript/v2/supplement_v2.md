@@ -521,7 +521,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | TabPFN: fit on 988 windows (once per model) | 156.21 ms | 118.95–473.35 ms | 156.21 ms |
 | TabPFN: prediction of one window, CPU | 3786.46 ms | 3773.02–3788.83 ms | 3800.81 ms |
 
-## Table S26. CinC 2011 records with a constant lead II (73 of 225 unacceptable records; post hoc, descriptive). Number flagged at τ = 0.50 and AUROC with and without these records; models trained on BUT QDB only.
+## Table S26. CinC 2011 records with a constant lead II (73 of 225 unacceptable records; post hoc, descriptive). Number flagged at τ = 0.50 and AUROC with and without these records; fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted).
 
 | Model | Constant-lead records flagged at τ = 0.50 | AUROC, all 998 records | AUROC without the 73 constant-lead records |
 | :--- | :---: | :---: | :---: |
@@ -549,7 +549,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | **SinglePass Multimodal Net** | 0.799 [0.781 – 0.817] | 0.088 [0.076 – 0.106] | 92.8% / 45.6% | 0.064 / 0.996 | 0.882 |
 | **Rule-Based SQI Heuristic** | 0.887 [0.867 – 0.905] | 0.182 [0.155 – 0.217] | 18.3% / 2.5% | 0.199 / 0.973 | 0.933 |
 
-## Table S28. Discrimination of every model in each primary evaluation set: AUROC and average precision with 95% bootstrap confidence intervals (2,000 resamples, seed 42; resampling unit subject on BUT QDB and recording externally). Models trained on BUT QDB only; external sets scored with the pre-specified recording maximum. Intervals differ slightly from Tables S1 and S27, which used other resampling runs.
+## Table S28. Discrimination of every model in each primary evaluation set: AUROC and average precision with 95% bootstrap confidence intervals (2,000 resamples, seed 42; resampling unit subject on BUT QDB and recording externally). Fitted fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted) (the rule heuristic and zero-shot d1-3B were not fitted); external sets scored with the pre-specified recording maximum. Intervals differ slightly from Tables S1 and S27, which used other resampling runs.
 
 | Model | BUT_QDB (5-fold subject CV) | CinC2011 lead II (998 records) | CinC2017 (8,512 recordings) | CinC2017 balanced subset (556 recordings) |
 | :--- | :---: | :---: | :---: | :---: |
@@ -812,7 +812,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | secondary | LiquidAI d1-3B (Zero-Shot) | Mean | 0.592 | 0.184 | +0.408 (+0.348 to +0.468) | <0.001 | <0.001 |
 | secondary | HuBERT-ECG probe | Mean | 0.592 | 0.694 | -0.101 (-0.136 to -0.067) | <0.001 | <0.001 |
 
-## Table S40. CinC 2011 lead II without the 73 records whose lead II is constant (925 records, 152 unacceptable): comparisons with the highest-AUROC model (DeLong). Post hoc sensitivity analysis added after an independent audit; models trained on BUT QDB only. Holm adjustment over all 55 pairs, as in the primary family, and over the 10 comparisons with the best model.
+## Table S40. CinC 2011 lead II without the 73 records whose lead II is constant (925 records, 152 unacceptable): comparisons with the highest-AUROC model (DeLong). Post hoc sensitivity analysis added after an independent audit; fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted). Holm adjustment over all 55 pairs, as in the primary family, and over the 10 comparisons with the best model.
 
 | Model | AUROC | Difference from the best [95% CI] | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -844,7 +844,7 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | **Logistic Regression (SQI)** | 0.947 | 1.000 | 0.760 | 0.975 | 1.000 | 0.933 | 0.917 | 0.908 | 0.899 |
 | **LiquidAI d1-3B (Zero-Shot)** | 0.540 | 1.000 | 0.752 | 1.000 | 1.000 | 0.755 | 0.885 | 0.820 | 0.828 |
 
-## Table S42. CinC 2017: AUROC by number of 10-s windows per recording (noisy / all recordings in parentheses) for the recording maximum (primary rule) and mean; with one window the two rules coincide. Last row: AUROC of the number of windows alone. Descriptive; no tests. Models trained on BUT QDB only.
+## Table S42. CinC 2017: AUROC by number of 10-s windows per recording (noisy / all recordings in parentheses) for the recording maximum (primary rule) and mean; with one window the two rules coincide. Last row: AUROC of the number of windows alone. Descriptive; no tests. Fitted fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted) (the rule heuristic and zero-shot d1-3B were not fitted).
 
 | Model | All recordings (278 / 8512), maximum | All recordings (278 / 8512), mean | 1 window (110 / 600) | 2 windows (25 / 351), maximum | 2 windows (25 / 351), mean | 3 windows (143 / 7561), maximum | 3 windows (143 / 7561), mean |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -988,3 +988,37 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | BUT QDB vs CinC 2011 lead II | 11 | +0.61 | +0.57 |
 | BUT QDB vs CinC 2017 | 11 | -0.02 | +0.14 |
 | CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.45 |
+
+## Table S49. BUT QDB: resample counts and unrounded p-values of the paired cluster-bootstrap comparisons with the best in-domain model (added in review from saved out-of-fold predictions; no model refitted). Each of 2,000 resamples draws 15 subjects with replacement; a resample whose subjects contain only one class would be discarded, which did not occur. Δ = AUROC of the model − AUROC of the 2D CNN. A resample with Δ = 0 is counted in both columns. p = max(2 × min(share with Δ ≤ 0, share with Δ ≥ 0), 1/n), the percentile-bootstrap p-value used throughout; it inverts the percentile interval and does not resample under a null hypothesis. The recomputed p-values equal the stored ones exactly. p_Holm: Holm adjustment over all 55 pairs of the BUT QDB family (the criterion used in the text) and over the ten comparisons with the best model (sensitivity analysis). The intervals and tests are conditional on the fitted models and do not include refitting variability. Source: results/v2_2026-11/butqdb_bootstrap_p_audit.csv (evaluation/bootstrap_p_audit.py).
+
+| Model | AUROC | Δ AUROC vs 2D CNN (Rendered Image) | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1D CNN (Raw Signal)** | 0.9831 | -0.0019 | 2000 of 2000 | 1102 | 900 | 0.9 | 1 | 0.9 |
+| **Rule-Based SQI Heuristic** | 0.9709 | -0.0140 | 2000 of 2000 | 1817 | 184 | 0.184 | 1 | 0.552 |
+| **d1-3B image-token probe** | 0.9707 | -0.0142 | 2000 of 2000 | 1763 | 237 | 0.237 | 1 | 0.552 |
+| **SinglePass Multimodal Net** | 0.9656 | -0.0194 | 2000 of 2000 | 1957 | 43 | 0.043 | 1 | 0.258 |
+| **LightGBM (SQI)** | 0.9566 | -0.0283 | 2000 of 2000 | 1921 | 80 | 0.08 | 1 | 0.4 |
+| **TabPFN (SQI)** | 0.9562 | -0.0287 | 2000 of 2000 | 1909 | 93 | 0.093 | 1 | 0.4 |
+| **HuBERT-ECG probe** | 0.9385 | -0.0465 | 2000 of 2000 | 1984 | 16 | 0.016 | 0.64 | 0.112 |
+| **Independent SQI MLP** | 0.9042 | -0.0808 | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
+| **Logistic Regression (SQI)** | 0.8989 | -0.0861 | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.8277 | -0.1573 | 2000 of 2000 | 2000 | 1 | 0.001 | 0.051 | 0.008 |
+
+## Table S50. Documented pre-training data of the pre-trained checkpoints and their exposure to the evaluation datasets (model documentation checked on 18 November 2026). "Unknown" means that the documentation neither lists nor excludes the dataset; no exact or near-duplicate search against the pre-training data was possible. CinC 2017 has no patient identifiers, so repeated recordings of one person cannot be excluded.
+
+| Checkpoint | Documented pre-training data | Exposure to BUT QDB, CinC 2011, CinC 2017, PTB-XL and NSTDB |
+| :--- | :--- | :--- |
+| HuBERT-ECG base (revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465) | 9.1 million 12-lead ECGs from four countries (model card); the datasets are not listed on the model card, and the dataset list of the accompanying preprint was not checked against this checkpoint | Unknown for all five |
+| LiquidAI d1-3B (revision 051bcc464b01b9f92942b364d9586b0ef5912432), post-trained from LFM2.5-VL-3B | Training data not described on the model card | Unknown for all five |
+| TabPFN-3 classifier checkpoint tabpfn-v3-classifier-v3_default.ckpt | "Trained purely on synthetic tabular tasks" (model card) | None documented: no real data in pre-training |
+| Models fitted in this study (tabular models, networks, probe heads) | No pre-training | BUT QDB development windows only; in leave-one-dataset-out training also the two non-held-out datasets (CinC 2017: 1,278 recordings) |
+
+## Table S51. CinC 2017 label file: the file read by the extraction script compared record by record with the four label versions published with the challenge (https://physionet.org/files/challenge-2017/1.0.0/, downloaded 18 November 2026). The file used and REFERENCE-v3.csv give the same label for all 8,528 recordings; their SHA-256 values differ because the files are not byte-identical. The saved labels of the 8,512 analysed recordings equal those of the file used. Source: results/v2_2026-11/cinc2017_label_provenance.csv (evaluation/cinc2017_label_provenance.py).
+
+| Label file | SHA-256 (first 16 hex digits) | Records | Noisy records | Records with the same label as the file used | Noisy among the 8,512 analysed recordings |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| used by the extraction script | 0413324b869b168b | 8,528 | 279 | 8,528 | 278 |
+| REFERENCE-v0.csv | bb80d19c91239fc4 | 8,528 | 46 | 8,116 | 46 |
+| REFERENCE-v1.csv | 8575c3c4ebc43aed | 8,528 | 283 | 8,330 | 282 |
+| REFERENCE-v2.csv | 995a380d29f7aa45 | 8,528 | 284 | 8,380 | 283 |
+| REFERENCE-v3.csv | ae517e474b0bc89a | 8,528 | 279 | 8,528 | 278 |

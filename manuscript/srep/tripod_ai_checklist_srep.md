@@ -4,7 +4,7 @@
 
 **Study type.** Development (D) and evaluation (E): model development with patient-independent internal validation, and external evaluation on three datasets.
 
-**Locations.** Section names refer to the accompanying main manuscript (Scientific Reports version, unnumbered sections); Supplementary Tables S1–S49, the Supplementary Methods, Supplementary Results and Supplementary Note refer to the accompanying Supplementary Information.
+**Locations.** Section names refer to the accompanying main manuscript (Scientific Reports version, unnumbered sections); Supplementary Tables S1–S52, the Supplementary Methods, Supplementary Results and Supplementary Note refer to the accompanying Supplementary Information.
 
 **Status codes.**
 - Reported: the item is fully addressed.

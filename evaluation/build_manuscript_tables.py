@@ -1341,6 +1341,46 @@ def table_28() -> str:
     return "\n".join(out)
 
 
+def table_29() -> str:
+    """Unrounded BUT QDB paired cluster-bootstrap p-values against the in-domain best, with the resample counts behind
+    them (evaluation/bootstrap_p_audit.py; round V10, review finding PAPER-001)."""
+    path = RESULTS / "butqdb_bootstrap_p_audit.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    if len(d) != 10 or d.best.nunique() != 1:
+        raise ValueError("bootstrap p audit: expected ten comparisons with one best model")
+
+    def g(x):
+        return f"{x:.4f}".rstrip("0").rstrip(".") if x < 1 else "1"
+
+    out = [f"| Model | AUROC | Δ AUROC vs {labels[d.best.iloc[0]]} | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | "
+           "p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    for _, r in d.iterrows():
+        out.append(f"| **{labels[r.model]}** | {r.auroc:.4f} | {r.delta_model_minus_best:+.4f} | {int(r.n_valid)} of {int(r.n_resamples)} | "
+                   f"{int(r.n_delta_le0)} | {int(r.n_delta_ge0)} | {g(r.p_unadjusted)} | {g(r.p_holm_all_pairs)} | {g(r.p_holm_vs_best)} |")
+    return "\n".join(out)
+
+
+def table_30() -> str:
+    """CinC 2017 label provenance: the label file used against the four published label versions
+    (evaluation/cinc2017_label_provenance.py; round V10, review finding PAPER-004)."""
+    path = RESULTS / "cinc2017_label_provenance.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    used = d[d.file == "used by the extraction script"]
+    if len(used) != 1 or int(used.noisy_among_8512_analysed.iloc[0]) != 278:
+        raise ValueError("label provenance: the file used must give 278 noisy recordings among the 8,512 analysed")
+    out = ["| Label file | SHA-256 (first 16 hex digits) | Records | Noisy records | Records with the same label as the file used | Noisy among the 8,512 analysed recordings |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    for _, r in d.iterrows():
+        out.append(f"| {r.file} | {r.sha256[:16]} | {r.records:,} | {r.noisy_records} | {r.records_agreeing_with_used_file:,} | {r.noisy_among_8512_analysed} |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = cinc_frame()
@@ -1402,6 +1442,8 @@ def main():
         ("Table 26", table_26()),
         ("Table 27", table_27()),
         ("Table 28", table_28()),
+        ("Table 29", table_29()),
+        ("Table 30", table_30()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")

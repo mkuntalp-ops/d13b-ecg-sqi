@@ -520,5 +520,25 @@ class TestQuotaSensitivityCohort(unittest.TestCase):
             self.qs.carry_folds(pd.DataFrame({"subject_id": [999]}), primary)
 
 
+
+class TestBootstrapPAudit(unittest.TestCase):
+    """evaluation/bootstrap_p_audit.py reproduces the p-value of paired_comparisons.cluster_bootstrap_paired (synthetic data)."""
+
+    def test_counts_reproduce_p(self):
+        sys.path.insert(0, str(ROOT / "evaluation"))
+        import bootstrap_p_audit as bpa
+        import paired_comparisons as pc
+        rng = np.random.default_rng(0)
+        cluster = np.repeat(np.arange(12), 20)
+        y = (rng.random(240) < 0.3).astype(int)
+        for shift in (0.0, 0.3, 2.0):  # no difference, a moderate one, and one that no resample reverses (p at the floor)
+            a = y * shift + rng.normal(size=240)
+            b = rng.normal(size=240)
+            n, n_le, n_ge, p = bpa.bootstrap_counts(y, a, b, cluster, B=400)
+            self.assertEqual(p, pc.cluster_bootstrap_paired(y, a, b, cluster, B=400)[3])
+            self.assertGreaterEqual(n_le + n_ge, n)
+            self.assertGreaterEqual(p, 1.0 / n)
+
+
 if __name__ == "__main__":
     unittest.main()

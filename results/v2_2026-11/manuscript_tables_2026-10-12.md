@@ -952,3 +952,28 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | BUT QDB vs CinC 2017 | 11 | -0.02 | +0.14 |
 | CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.45 |
 
+## Table 29
+
+| Model | AUROC | Δ AUROC vs 2D CNN (Rendered Image) | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1D CNN (Raw Signal)** | 0.9831 | -0.0019 | 2000 of 2000 | 1102 | 900 | 0.9 | 1 | 0.9 |
+| **Rule-Based SQI Heuristic** | 0.9709 | -0.0140 | 2000 of 2000 | 1817 | 184 | 0.184 | 1 | 0.552 |
+| **d1-3B image-token probe** | 0.9707 | -0.0142 | 2000 of 2000 | 1763 | 237 | 0.237 | 1 | 0.552 |
+| **SinglePass Multimodal Net** | 0.9656 | -0.0194 | 2000 of 2000 | 1957 | 43 | 0.043 | 1 | 0.258 |
+| **LightGBM (SQI)** | 0.9566 | -0.0283 | 2000 of 2000 | 1921 | 80 | 0.08 | 1 | 0.4 |
+| **TabPFN (SQI)** | 0.9562 | -0.0287 | 2000 of 2000 | 1909 | 93 | 0.093 | 1 | 0.4 |
+| **HuBERT-ECG probe** | 0.9385 | -0.0465 | 2000 of 2000 | 1984 | 16 | 0.016 | 0.64 | 0.112 |
+| **Independent SQI MLP** | 0.9042 | -0.0808 | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
+| **Logistic Regression (SQI)** | 0.8989 | -0.0861 | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.8277 | -0.1573 | 2000 of 2000 | 2000 | 1 | 0.001 | 0.051 | 0.008 |
+
+## Table 30
+
+| Label file | SHA-256 (first 16 hex digits) | Records | Noisy records | Records with the same label as the file used | Noisy among the 8,512 analysed recordings |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| used by the extraction script | 0413324b869b168b | 8,528 | 279 | 8,528 | 278 |
+| REFERENCE-v0.csv | bb80d19c91239fc4 | 8,528 | 46 | 8,116 | 46 |
+| REFERENCE-v1.csv | 8575c3c4ebc43aed | 8,528 | 283 | 8,330 | 282 |
+| REFERENCE-v2.csv | 995a380d29f7aa45 | 8,528 | 284 | 8,380 | 283 |
+| REFERENCE-v3.csv | ae517e474b0bc89a | 8,528 | 279 | 8,528 | 278 |
+

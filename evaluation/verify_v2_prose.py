@@ -343,7 +343,7 @@ def checks() -> list:
     aw = lambda m: f3(float(x.auroc_a if x.model_a == m else x.auroc_b))  # noqa: E731
     assert (aw(PROBE), aw(CNN2)) == ("0.740", "0.716")
     if VARIANT == "v2":  # abstract of the full-length version
-        c.append((f"(Holm-adjusted p = {f3(pair(C11, CNN2, PROBE).p_holm)} with them, {f3(x.p_holm)} without)", MAIN))
+        c.append((f"(Holm-adjusted p = {f3(pair(C11, CNN2, PROBE).p_holm)} with them, {f3(x.p_holm)} without", MAIN))
     c.append((f"({int(x.n_units)} records, {int(x.n_positive)} unacceptable)", SUPP))
     # BUT QDB per-subject AUROC
     ps = pd.read_csv(R / "butqdb_per_subject_auroc.csv", dtype={"subject": str})
@@ -379,9 +379,9 @@ def checks() -> list:
     assert r17 < 0
     c.append((f"was {r11:.2f} on CinC 2011 and −{-r17:.2f} on CinC 2017, and between the two external datasets {rx:.2f}", MAIN))
     if VARIANT == "v2":
-        c.append((f"(Spearman ρ = {r11:.2f}) and unrelated on CinC 2017 (ρ = −{-r17:.2f})", MAIN))
+        c.append((f"(Spearman ρ = {r11:.2f}), with no relation detected on CinC 2017 (ρ = −{-r17:.2f})", MAIN))
     else:  # Scientific Reports abstract
-        c.append((f"moderate on one dataset (Spearman ρ = {r11:.2f}) and absent on the other (ρ = −{-r17:.2f})", MAIN))
+        c.append((f"moderate on one dataset (Spearman ρ = {r11:.2f}) and not detected on the other (ρ = −{-r17:.2f})", MAIN))
         c.append(("a raw-signal network fell from second to tenth, and an ECG foundation-model probe rose from eighth to first", MAIN))
     rank = lambda m, f: int(rk.loc[m, f"rank | {f}"])  # noqa: E731
     assert [rank(CNN1, f) for f in (BUT, C11, C17)] == [2, 5, 10] and [rank(CNN2, f) for f in (BUT, C11, C17)] == [1, 2, 8]
@@ -390,6 +390,32 @@ def checks() -> list:
     c.append((f"the HuBERT-ECG probe, eighth in-domain ({f3(auroc(BUT, HUB))}), was ninth on CinC 2011 and first on CinC 2017", MAIN))
     tt = pd.read_csv(R / "threshold_transfer_summary.csv")
     tt = tt[tt.rule == "target1_fpr5"]
+    # ---- round V10 (review PAPER-002/004/006): observed ranks of the d1-3B probe, thresholds meeting the target, label file
+    assert [rank(PROBE, f) for f in (BUT, C11, C17)] == [4, 1, 2]
+    top4 = [m for m in rk.index if all(rank(m, f) <= 4 for f in (BUT, C11, C17))]
+    assert top4 == [PROBE], top4
+    c.append(("By observed rank, the d1-3B image probe was fourth in-domain, first on CinC 2011 and second on CinC 2017, "
+              "the only model in the top four of all three sets", MAIN))
+    qs = pd.read_csv(R.parent / f"{R.name}_quota_sensitivity" / "quota_sensitivity_auroc.csv").set_index(["set", "model"])
+    sets_qs = ["BUT QDB", "CinC 2011 lead II", "CinC 2017"]
+    top4_qs = sorted(m for m in qs.loc["BUT QDB"].index if all(qs.loc[(s, m)].rank_sensitivity <= 4 for s in sets_qs))
+    assert top4_qs == sorted([PROBE, HUB]), top4_qs
+    assert [int(qs.loc[(s, HUB)].rank_sensitivity) for s in sets_qs] == [3, 4, 4]
+    met = tt[(~tt.dataset.str.contains("BUT")) & (tt.fpr <= 0.05)]
+    assert len(tt[~tt.dataset.str.contains("BUT")]) == 22 and len(met) == 2
+    m11 = met[met.dataset.str.startswith("CinC2011")].iloc[0]
+    m17 = met[met.dataset.str.startswith("CinC2017")].iloc[0]
+    assert m11.model == "Independent_SQI_MLP" and m17.model == "LiquidAI_d1_3B_Neural"
+    c.append((f"Two of these 22 thresholds met the target: that of the MLP on CinC 2011 (false reject rate {100 * m11.fpr:.1f}%, "
+              f"sensitivity {100 * m11.sens:.1f}%) and that of zero-shot d1-3B on CinC 2017 ({100 * m17.fpr:.1f}%, {100 * m17.sens:.1f}%)", MAIN))
+    lp = pd.read_csv(R / "cinc2017_label_provenance.csv").set_index("file")
+    assert int(lp.loc["REFERENCE-v3.csv", "records_agreeing_with_used_file"]) == 8528
+    c.append((f"which marks {int(lp.loc['REFERENCE-v3.csv', 'noisy_records'])} recordings as noisy (the original labels, REFERENCE-v0.csv, "
+              f"mark {int(lp.loc['REFERENCE-v0.csv', 'noisy_records'])}, and REFERENCE-v2.csv, the file inside the training archive, "
+              f"{int(lp.loc['REFERENCE-v2.csv', 'noisy_records'])})", MAIN))
+    pa = pd.read_csv(R / "butqdb_bootstrap_p_audit.csv")
+    assert (pa.n_valid == 2000).all()
+    c.append(("contain only one class discarded (none were, in the comparisons with the best model)", MAIN))
     f17 = 100 * tt[tt.dataset == "CinC2017 all (record max)"].fpr
     f11 = 100 * tt[tt.dataset == "CinC2011 all 998 records (lead II)"].fpr
     assert len(f17) == len(f11) == 11

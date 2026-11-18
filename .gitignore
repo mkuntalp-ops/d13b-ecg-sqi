@@ -260,3 +260,6 @@ PMEA_submission_v*/*.docx
 PMEA_submission_v*/PDF_preview/
 PMEA_submission_v*/PMEA_Main_Figures/
 PMEA_submission_v*/markdown_sources/*.docx
+
+# Local-only notes (e.g. suggested reviewers): never commit
+manuscript/srep/*_LOCAL.md
