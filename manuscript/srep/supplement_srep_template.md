@@ -6,7 +6,7 @@ Mehmet Kuntalp, Department of Electrical and Electronics Engineering, Dokuz Eyl�
 
 <!-- Scientific Reports version. Template filled by evaluation/assemble_q1_manuscript.py --variant srep (writes manuscript/srep/supplement_srep.md). -->
 
-Every table is generated from saved outputs by evaluation/build_manuscript_tables.py (results/v2_2026-11/manuscript_tables_2026-10-12.md), except Supplementary Table S20, which is read from results/v2_2026-11/heuristic_refit_summary.csv, and Supplementary Methods, which are text. Positive class: unusable.
+Every table is generated from saved outputs by evaluation/build_manuscript_tables.py (results/v2_2026-11/manuscript_tables_2026-10-12.md), except Supplementary Table S20, which is read from results/v2_2026-11/heuristic_refit_summary.csv, and Supplementary Table S51, which summarises model documentation checked by hand. Where a table is computed by a separate script, its caption names the script and its output file (for example Supplementary Tables S50, S52 and S53). Supplementary Methods, Supplementary Results and the Supplementary Note are text. Positive class: unusable.
 
 ## Supplementary Methods
 
@@ -103,7 +103,7 @@ The hand-set heuristic outperformed its logistic-regression replacement in every
 
 ### Paired noise stress on NSTDB
 
-Under paired electrode-motion stress (Supplementary Tables S7 and S16), every trained model lowered its usable probability as noise increased. At 0 dB, the mean paired change was −0.94 for logistic regression, −0.90 for LightGBM, −0.84 for the multimodal net, −0.75 for the 2D CNN and −0.59 for the 1D CNN. Zero-shot d1-3B changed by at most 0.09 and did not track the noise.
+Under paired electrode-motion stress (Supplementary Tables S7 and S16), each of the five trained models evaluated on NSTDB (logistic regression, LightGBM, both CNNs and the multimodal net) lowered its usable probability as noise increased; the MLP, TabPFN and the two foundation-model probes were not evaluated on NSTDB, and the heuristic appears in Supplementary Table S16 only. At 0 dB, the mean paired change was −0.94 for logistic regression, −0.90 for LightGBM, −0.84 for the multimodal net, −0.75 for the 2D CNN and −0.59 for the 1D CNN. Zero-shot d1-3B changed by at most 0.09 and did not track the noise.
 
 ### Computational cost
 
@@ -130,9 +130,9 @@ The models differed at the decision level more than in ranking (Supplementary Ta
 
 ### In-domain rank did not reliably identify the models that transferred
 
-On CinC 2011 (Supplementary Table S13), where lead II is scored against 12-lead labels, the d1-3B image-token probe ranked recordings best (AUROC 0.824, 95% CI 0.789–0.856) and was significantly better than all ten other models, including the 2D CNN (0.787; difference 0.037, 95% CI 0.018–0.057; p_Holm = 0.003). The other foundation-model probe, HuBERT-ECG, was close to chance (0.562). The secondary probe of the d1-3B decision state was inverted (0.422; Supplementary Table S18), which suggests that the useful information is in the image tokens rather than in the decision state. The multimodal net gave every record the same score (0.500), and the SQI logistic regression was inverted (0.322), as was its replacement for the heuristic (0.330). Across seeds 1–4 the multimodal net reached 0.501–0.671 (Supplementary Table S9), so this value is seed-dependent. The constant score has an identifiable cause (descriptive diagnosis; Supplementary Table S36). Flatline fractions in BUT QDB are near zero (SD 0.00013) because of the Fourier resampling described below, so the quantization repeats of CinC 2011 lead II gave standardised flatline inputs with a median of 2,286 SDs, all 998 records lying beyond 10 SDs. With the SQI stream alone the net again returned one score for every record. With the image stream alone the same fitted net reached 0.801, and replacing only the flatline input by the quantization-insensitive measure gave 798 distinct scores and 0.719. The value of 0.500 is therefore an input-scaling artefact in this seed and says nothing about the image stream.
+On CinC 2011 (Supplementary Table S28), where lead II is scored against 12-lead labels, the d1-3B image-token probe ranked recordings best (AUROC 0.824, 95% CI 0.789–0.856) and was significantly better than all ten other models, including the 2D CNN (0.787; difference 0.037, 95% CI 0.018–0.057; p_Holm = 0.003). The other foundation-model probe, HuBERT-ECG, was close to chance (0.562). The secondary probe of the d1-3B decision state was inverted (0.422; Supplementary Table S18), which suggests that the useful information is in the image tokens rather than in the decision state. The multimodal net gave every record the same score (0.500), and the SQI logistic regression was inverted (0.322), as was its replacement for the heuristic (0.330). Across seeds 1–4 the multimodal net reached 0.501–0.671 (Supplementary Table S9), so this value is seed-dependent. The constant score has an identifiable cause (descriptive diagnosis; Supplementary Table S36). Flatline fractions in BUT QDB are near zero (SD 0.00013) because of the Fourier resampling described below, so the quantization repeats of CinC 2011 lead II gave standardised flatline inputs with a median of 2,286 SDs, all 998 records lying beyond 10 SDs. With the SQI stream alone the net again returned one score for every record. With the image stream alone the same fitted net reached 0.801, and replacing only the flatline input by the quantization-insensitive measure gave 798 distinct scores and 0.719. The value of 0.500 is therefore an input-scaling artefact in this seed and says nothing about the image stream.
 
-On CinC 2017 (Tables 2 and S27), a single-lead label at natural prevalence, the HuBERT-ECG probe had the highest AUROC (0.906, 95% CI 0.893–0.920). Here, as throughout CinC 2017, the intervals and tests treat recordings as independent, which cannot be verified without patient identifiers (Methods). Three models were not significantly different from it: the d1-3B probe (0.894, p_Holm = 0.844), LightGBM (0.891, p_Holm = 0.844) and the rule heuristic (0.887, p_Holm = 0.525). All others were significantly worse: the MLP (0.876, p_Holm = 0.031), logistic regression (0.870, p_Holm = 0.004), TabPFN (0.853), the 2D CNN (0.850), the multimodal net (0.799), the 1D CNN (0.768) and zero-shot d1-3B (0.757). The 1D CNN had been second in-domain. With the recording mean instead of the maximum, every model's AUROC rose, by 0.025–0.083 (Table 2); the HuBERT-ECG probe (0.941), LightGBM (0.939) and the d1-3B probe (0.935) were highest. Recording length is confounded with the label under the maximum: 110 of the 278 noisy recordings but only 490 of the 8,234 others contributed a single window, and the number of windows alone gave an AUROC of 0.698 (Supplementary Table S42; descriptive). Among the 7,561 recordings with three windows (143 noisy), the maximum gave 0.953 for the HuBERT-ECG probe, 0.951 for the heuristic, 0.929 for logistic regression, 0.924 for the d1-3B probe and 0.923 for LightGBM, so both the absolute values and the order of the leading models depend on recording length as well as on the rule. On the balanced 556-recording subset (Supplementary Table S19), the HuBERT-ECG probe (0.916) was best, and the d1-3B probe (0.893), LightGBM (0.892), the heuristic (0.876) and the MLP (0.875) were not significantly different from it.
+On CinC 2017 (Table 2 and Supplementary Table S28), a single-lead label at natural prevalence, the HuBERT-ECG probe had the highest AUROC (0.906, 95% CI 0.893–0.920). Here, as throughout CinC 2017, the intervals and tests treat recordings as independent, which cannot be verified without patient identifiers (Methods). Three models were not significantly different from it: the d1-3B probe (0.894, p_Holm = 0.844), LightGBM (0.891, p_Holm = 0.844) and the rule heuristic (0.887, p_Holm = 0.525). All others were significantly worse: the MLP (0.876, p_Holm = 0.031), logistic regression (0.870, p_Holm = 0.004), TabPFN (0.853), the 2D CNN (0.850), the multimodal net (0.799), the 1D CNN (0.768) and zero-shot d1-3B (0.757). The 1D CNN had been second in-domain. With the recording mean instead of the maximum, every model's AUROC rose, by 0.025–0.083 (Table 2); the HuBERT-ECG probe (0.941), LightGBM (0.939) and the d1-3B probe (0.935) were highest. Recording length is confounded with the label under the maximum: 110 of the 278 noisy recordings but only 490 of the 8,234 others contributed a single window, and the number of windows alone gave an AUROC of 0.698 (Supplementary Table S42; descriptive). Among the 7,561 recordings with three windows (143 noisy), the maximum gave 0.953 for the HuBERT-ECG probe, 0.951 for the heuristic, 0.929 for logistic regression, 0.924 for the d1-3B probe and 0.923 for LightGBM, so both the absolute values and the order of the leading models depend on recording length as well as on the rule. On the balanced 556-recording subset (Supplementary Table S28), the HuBERT-ECG probe (0.916) was best, and the d1-3B probe (0.893), LightGBM (0.892), the heuristic (0.876) and the MLP (0.875) were not significantly different from it.
 
 By observed rank, the d1-3B image probe was fourth in-domain, first on CinC 2011 and second on CinC 2017, the only model in the top four of all three sets; with the 53 omitted development windows restored, the HuBERT-ECG probe was too (third, fourth and fourth; Supplementary Table S49). The probe was not significantly different from the best in-domain or on CinC 2017, but failing to reject a difference does not show equivalence, no margin of acceptable loss was specified, and the balanced CinC 2017 subset is part of the full set, so these results do not establish consistency or non-inferiority. On CinC 2011, the one set where the probe was significantly best, that significance depends on the 73 constant-lead records (Supplementary Table S40). It does not extend to the PTB-XL test (main text, PTB-XL results).
 
@@ -158,7 +158,7 @@ Among the other models, logistic regression improved on CinC 2011 (+0.076), alth
 
 Transferred operating points rarely met their target. Thresholds chosen on the pooled BUT QDB scores for a false reject rate of at most 5% (Target 1) gave false reject rates of 3.1–58.1% across the 11 models on CinC 2017 and 0.0–100.0% on CinC 2011 (Supplementary Table S4). Two of these 22 thresholds met the target: that of the MLP on CinC 2011 (false reject rate 0.0%, sensitivity 32.9%) and that of zero-shot d1-3B on CinC 2017 (3.1%, 19.8%), so meeting the false-reject target did not imply useful detection. On CinC 2017 the transfer also changed the evaluation unit from a window to the maximum over up to three windows of a recording, so these results do not separate dataset shift from the change of unit.
 
-At the 3.3% prevalence of CinC 2017, the positive predictive value at the default threshold was low for all 11 models (0.064–0.199; Table 2). The heuristic had the highest value (0.199), but at 18.3% sensitivity. Thresholds chosen on BUT QDB rarely met their target externally (Supplementary Table S4): of the 22 Target 1 thresholds (false reject rate ≤ 5% on BUT QDB), only that of the MLP on CinC 2011 (false reject rate 0.0%, sensitivity 32.9%) and that of zero-shot d1-3B on CinC 2017 (3.1%, 19.8%) met the target. On CinC 2017 the others gave false reject rates of 7.6–58.1% for the trained models and 6.2% for the heuristic, whose sensitivity fell to 52.9%. On CinC 2011, the same thresholds gave sensitivities between 32.9% (MLP) and 100% at a false reject rate of 99.6–100% (heuristic and multimodal net).
+At the 3.3% prevalence of CinC 2017, the positive predictive value at the default threshold was low for all 11 models (0.064–0.199; Table 2). The heuristic had the highest value (0.199), but at 18.3% sensitivity. Of the other Target 1 thresholds (Supplementary Table S4), those on CinC 2017 gave false reject rates of 7.6–58.1% for the trained models and 6.2% for the heuristic, whose sensitivity fell to 52.9%. On CinC 2011, the same thresholds gave sensitivities between 32.9% (MLP) and 100% at a false reject rate of 99.6–100% (heuristic and multimodal net).
 
 Calibration did not transfer either (Supplementary Table S32). On CinC 2017 the calibration intercept was negative for all 11 models (−2.47 to −14.75), indicating systematic overestimation of unusable risk after moving from 24.1% to 3.3% prevalence. Slopes ranged from 0.10 (1D CNN) to 2.87 (heuristic), and the HuBERT-ECG probe had the slope closest to 1 (0.93). On CinC 2011 the intercept ranged from −15.05 (multimodal net, which gave every record the same score) to 12.18 (MLP); the slope was not identifiable for the multimodal net and not estimable for logistic regression and the MLP: in both, every record off one clipping bound was unusable while the records at that bound were of both classes (logistic regression: all 76 records below the upper bound unusable, 149 of the 922 at it; MLP: all 75 records above the lower bound unusable, 150 of the 923 at it), a quasi-complete separation under which the maximum-likelihood slope does not exist.
 
@@ -183,7 +183,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 <!-- source: Table 1c -->
 {{Table 1c}}
 
-## Supplementary Table S3. BUT QDB precision metrics projected to the prevalence of Class 3 inside the official intervals (2.14%, primary) and over all annotated intervals including the excluded stretch (16.0%; tabulated for continuity with the earlier version, not interpreted). The projection changes the class ratio only and assumes that the score distributions within each class in the quota cohort hold for all eligible windows; the values are conditional projections, not estimates for the full eligible population (main text, Methods, Evaluation protocols; Supplementary Table S43).
+## Supplementary Table S3. BUT QDB precision metrics projected to the prevalence of Class 3 inside the official intervals (2.14%, primary) and over all annotated intervals including the excluded stretch (16.0%; tabulated for continuity with the earlier version, not interpreted). The projection changes the class ratio only and assumes that the score distributions within each class in the quota cohort hold for all eligible windows; the values are conditional projections, not estimates for the full eligible population (main text, Methods, Evaluation protocols; Supplementary Table S43). Eight approaches; TabPFN and the two foundation-model probes are not included.
 
 <!-- source: Table 1e -->
 {{Table 1e}}
@@ -203,7 +203,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 <!-- source: Table 2g -->
 {{Table 2g}}
 
-## Supplementary Table S7. NSTDB: paired change in usable probability relative to the clean partner window (mean ± SD).
+## Supplementary Table S7. NSTDB: paired change in usable probability relative to the clean partner window (mean ± SD). Six approaches; the MLP, TabPFN, the rule heuristic and the two foundation-model probes are not included.
 
 <!-- source: Table 3b -->
 {{Table 3b}}
@@ -233,7 +233,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 <!-- source: Table 1f -->
 {{Table 1f}}
 
-## Supplementary Table S13. CinC 2011 Set A, all 998 records, lead II.
+## Supplementary Table S13. CinC 2011 Set A, all 998 records, lead II. Eight approaches; AUROC and average precision of all 11 are in Supplementary Table S28.
 
 <!-- source: Table 2 -->
 {{Table 2}}
@@ -248,7 +248,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 <!-- source: Table 2c -->
 {{Table 2c}}
 
-## Supplementary Table S16. NSTDB: usable probability by nominal SNR.
+## Supplementary Table S16. NSTDB: usable probability by nominal SNR. Seven approaches; the MLP, TabPFN and the two foundation-model probes are not included.
 
 <!-- source: Table 3 -->
 {{Table 3}}
@@ -263,7 +263,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 <!-- source: Table 7b -->
 {{Table 7b}}
 
-## Supplementary Table S19. CinC 2017 balanced subset (278 noisy + 278 non-noisy recordings) including zero-shot d1-3B.
+## Supplementary Table S19. CinC 2017 balanced subset (278 noisy + 278 non-noisy recordings) including zero-shot d1-3B. Eight approaches; AUROC of all 11 is in Supplementary Table S28.
 
 <!-- source: Table 8b -->
 {{Table 8b}}
@@ -276,7 +276,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 {{Table 10b}}
 
-## Supplementary Table S22. Local recalibration on n = 25–200 randomly drawn labelled target recordings (500 draws each), evaluated on the remaining recordings. Prevalence-only Brier score: CinC 2011 0.175, CinC 2017 0.032. Zero-rejection draws: share of draws whose local threshold flagged no held-out recording, which meets the false-reject target trivially. FPR ≤ 5% and Sens. > 0: share of draws meeting the target while flagging at least one unusable recording (both columns post hoc, added in review).
+## Supplementary Table S22. Local recalibration on n = 25–200 randomly drawn labelled target recordings (500 draws each), evaluated on the remaining recordings. Prevalence-only Brier score: CinC 2011 0.175, CinC 2017 0.032. Zero-rejection draws: share of draws whose local threshold flagged no held-out recording, which meets the false-reject target trivially. FPR ≤ 5% and Sens. > 0: share of draws meeting the target while flagging at least one unusable recording (both columns post hoc, added in review). Draws counted under FPR ≤ 5% but in neither of these two columns rejected only usable recordings (0 < FPR ≤ 5%, sensitivity 0).
 
 {{Table 11b}}
 
@@ -296,11 +296,11 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 {{Table 2h}}
 
-## Supplementary Table S27. CinC 2017 at natural prevalence with bootstrap confidence intervals for AUROC and AP (confidence intervals of decision-level metrics: Supplementary Table S32), seven main models (recording maximum; mean in the last column).
+## Supplementary Table S27. CinC 2017 at natural prevalence with bootstrap confidence intervals for AUROC and AP (confidence intervals of decision-level metrics: Supplementary Table S32), seven main models (recording maximum; mean in the last column); all 11 are in Table 2 and Supplementary Table S28.
 
 {{Table 8}}
 
-## Supplementary Table S28. Discrimination of every model in each primary evaluation set: AUROC and average precision with 95% bootstrap confidence intervals (2,000 resamples, seed 42; resampling unit subject on BUT QDB and recording externally). Fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted); external sets scored with the pre-specified recording maximum. Intervals differ slightly from Supplementary Tables S1 and S27, which used other resampling runs.
+## Supplementary Table S28. Discrimination of every model in each primary evaluation set: AUROC and average precision with 95% bootstrap confidence intervals (2,000 resamples, seed 42; resampling unit subject on BUT QDB and recording externally). Fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted); external sets scored with the pre-specified recording maximum. Intervals differ slightly from Supplementary Tables S1 and S27, which used other resampling runs. On CinC 2017, 422 recordings have a 1D CNN score of exactly 1.0, all of them usable; because these tied scores belong to one class, AUROC and average precision do not depend on their order and would be the same on the logit scale.
 
 {{Table 1g}}
 
@@ -316,7 +316,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 {{Table 9b}}
 
-## Supplementary Table S32. Decision-level metrics at τ = 0.50 with 95% bootstrap confidence intervals (2,000 resamples; subject level on BUT QDB, recording level externally) and calibration intercept and slope on the logit scale. Calibration intercept is interpreted only for external sets. The intercept is the root of its score equation and is finite whenever both classes occur. Slope: not identifiable (constant score) when a model gives every unit the same score; not estimable (complete or quasi-complete separation) when a direct check of scores and labels finds a cut v with all unusable units on one side of v and all usable units on the other, with no unit at v (complete separation) or with units of either or both classes at v (quasi-complete separation; Albert and Anderson 1984); the log-likelihood then keeps increasing as the slope tends to +∞ or −∞ and approaches a finite supremum that no finite slope attains, so no finite maximum-likelihood slope exists. On CinC 2011 this holds for logistic regression (v at the upper clipping bound: all 76 records below it unusable, none above it, 149 unusable and 773 usable at it; slope → −∞) and the MLP (v at the lower bound: all 75 records above it unusable, none below it, 150 unusable and 773 usable at it; slope → +∞). The constant-score check precedes the separation check. A fit failing without separation would be labelled not converged (optimisation), which did not occur. Interval bounds are percentiles over the resamples with a finite estimate and are therefore conditional on those resamples; where some had none (in every case a diagnosed separation), the number with an estimate is given in parentheses, and the excluded resamples are not represented in the interval. Corrected after review: an earlier undamped Newton solver had reported four estimable CinC 2011 intercepts as not estimable.
+## Supplementary Table S32. Decision-level metrics at τ = 0.50 with 95% bootstrap confidence intervals (2,000 resamples; subject level on BUT QDB, recording level externally) and calibration intercept and slope on the logit scale. BUT QDB intervals differ slightly from Supplementary Table S1, which used another resampling run. Calibration intercept is interpreted only for external sets. The intercept is the root of its score equation and is finite whenever both classes occur. Slope: not identifiable (constant score) when a model gives every unit the same score; not estimable (complete or quasi-complete separation) when a direct check of scores and labels finds a cut v with all unusable units on one side of v and all usable units on the other, with no unit at v (complete separation) or with units of either or both classes at v (quasi-complete separation; Albert and Anderson 1984); the log-likelihood then keeps increasing as the slope tends to +∞ or −∞ and approaches a finite supremum that no finite slope attains, so no finite maximum-likelihood slope exists. On CinC 2011 this holds for logistic regression (v at the upper clipping bound: all 76 records below it unusable, none above it, 149 unusable and 773 usable at it; slope → −∞) and the MLP (v at the lower bound: all 75 records above it unusable, none below it, 150 unusable and 773 usable at it; slope → +∞). The constant-score check precedes the separation check. A fit failing without separation would be labelled not converged (optimisation), which did not occur. Interval bounds are percentiles over the resamples with a finite estimate and are therefore conditional on those resamples; where some had none (in every case a diagnosed separation), the number with an estimate is given in parentheses, and the excluded resamples are not represented in the interval. Corrected after review: an earlier undamped Newton solver had reported four estimable CinC 2011 intercepts as not estimable.
 
 {{Table 1h}}
 
@@ -344,7 +344,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 {{Table 19}}
 
-## Supplementary Table S39. Paired comparisons of AUROC on PTB-XL, global noise versus clean (DeLong). Primary: d1-3B image probe versus 2D CNN, Holm over two tests. Secondary: d1-3B image probe versus the other nine models under both rules, Holm over 18 tests.
+## Supplementary Table S39. Paired comparisons of AUROC on PTB-XL, global noise versus clean (DeLong). Primary: d1-3B image probe versus 2D CNN, Holm over two tests. Secondary: d1-3B image probe versus the other nine models under both rules, Holm over 18 tests. The secondary family includes the 2D CNN, so this comparison is tested in both families.
 
 {{Table 20}}
 

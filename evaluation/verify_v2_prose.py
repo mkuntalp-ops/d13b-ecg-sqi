@@ -415,6 +415,17 @@ def checks() -> list:
               f"{int(lp.loc['REFERENCE-v2.csv', 'noisy_records'])})", MAIN))
     pa = pd.read_csv(R / "butqdb_bootstrap_p_audit.csv")
     assert (pa.n_valid == 2000).all()
+    # round V18 (S28 caption, PAPER-003): 1D CNN scores of exactly 1.0 on CinC 2017 all belong to usable recordings
+    _w = pd.read_csv(R / "external_window_predictions.csv", low_memory=False)
+    _r = _w[_w.dataset == "CinC2017"].groupby("record_name").agg(s=("1D_CNN_RawECG", "max"), y=("label", "first"))
+    assert len(_r) == 8512 and int(_r[_r.s >= 1.0].y.sum()) == 0
+    if VARIANT == "srep":
+        c.append((f"On CinC 2017, {int((_r.s >= 1.0).sum())} recordings have a 1D CNN score of exactly 1.0, all of them usable", SUPP))
+    # round V18 (Methods, Inputs): acceptable records with a constant lead follow from the S35 caption counts
+    _s = SUPP.read_text()
+    assert "with and without the 135 records that have at least one constant lead (signal SD 0; 129 of them unacceptable)" in _s
+    if VARIANT == "srep":
+        c.append((f"135 records had at least one constant lead, {135 - 129} of them acceptable (Table S35)", MAIN))
     # round V17 (S50 caption): the "-0.000" upper limit of the multimodal net is a negative value that rounds to zero
     mm = pairs[pairs.family.str.startswith("BUT") & (pairs.model_a == "2D_CNN_Image") & (pairs.model_b == "Multimodal_Fusion")]
     assert len(mm) == 1 and -0.0005 < -mm.ci_lo.iloc[0] < 0
@@ -548,7 +559,8 @@ def checks() -> list:
         lo_, hi_ = ua(a_, b_, "regret_best_case"), ua(a_, b_, "regret_worst_case")
         assert max(abs(hi_.ci_lo - lo_.ci_lo), abs(hi_.ci_hi - lo_.ci_hi)) <= 0.002 and lo_.estimate == hi_.estimate
     if VARIANT == "srep":  # V15: tie counts left to the S44 caption and table
-        c.append((f"The in-domain leader also led CinC 2011 in 11 of 2,000 resamples ({100 * l1.prop_positive:.2f}%) and CinC 2017 in none of "
+        # V18: percentage dropped from the text (S44 prints it to one decimal); the count is derived
+        c.append((f"The in-domain leader also led CinC 2011 in {round(2000 * l1.prop_positive)} of 2,000 resamples and CinC 2017 in none of "
                   f"the 2,000 (not observed, which does not make the probability zero; tie handling in Table S44). Selecting the in-domain "
                   f"leader cost {g1.estimate:.3f} AUROC on CinC 2011 and {g2.estimate:.3f} on CinC 2017", MAIN))
     else:
