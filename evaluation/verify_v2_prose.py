@@ -415,6 +415,10 @@ def checks() -> list:
               f"{int(lp.loc['REFERENCE-v2.csv', 'noisy_records'])})", MAIN))
     pa = pd.read_csv(R / "butqdb_bootstrap_p_audit.csv")
     assert (pa.n_valid == 2000).all()
+    # round V17 (S50 caption): the "-0.000" upper limit of the multimodal net is a negative value that rounds to zero
+    mm = pairs[pairs.family.str.startswith("BUT") & (pairs.model_a == "2D_CNN_Image") & (pairs.model_b == "Multimodal_Fusion")]
+    assert len(mm) == 1 and -0.0005 < -mm.ci_lo.iloc[0] < 0
+    c.append((f"the upper limit for the multimodal net is {-mm.ci_lo.iloc[0]:.4f}, so its interval excludes zero", SUPP))
     # ---- round V11 (review PAPER-001/009): all 55 pairs, floor-dependent significance
     ap = pd.read_csv(R / "butqdb_bootstrap_p_audit_all_pairs.csv")
     assert len(ap) == 55 and (ap.n_valid == 2000).all()
