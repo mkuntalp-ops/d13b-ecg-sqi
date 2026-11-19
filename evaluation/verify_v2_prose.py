@@ -430,7 +430,8 @@ def checks() -> list:
     qp = qp[qp.family.str.startswith("BUT")]
     assert len(qp) == 55 and (qp[qp.p_holm < 0.05].p == 0.0005).all()
     c.append(("On BUT QDB the two open markers rest on the 1/n floor of the bootstrap p-value", MAIN))
-    c.append(("in both cohorts every such in-domain decision rests on the 1/n floor of the bootstrap p-value", MAIN))
+    if VARIANT == "v2":  # V15: the srep Discussion no longer repeats this (its Results and Fig. 2 legend keep it)
+        c.append(("in both cohorts every such in-domain decision rests on the 1/n floor of the bootstrap p-value", MAIN))
     # round V13 (statistics review): AUROC differences from the in-domain best with their cluster-bootstrap intervals
     fam_b = "BUT_QDB (5-fold subject CV)"
 
@@ -516,7 +517,8 @@ def checks() -> list:
     c.append((f"was {a.spearman_harmonised:.2f} on CinC 2011 and −{-b_.spearman_harmonised:.2f} on CinC 2017, against {a.spearman_original:.2f} and "
               f"−{-b_.spearman_original:.2f} with the original pipeline, while the agreement between the two external datasets rose from "
               f"{x_.spearman_original:.2f} to {x_.spearman_harmonised:.2f}", MAIN))
-    c.append((f"lead II AUROC was {hh(D, HUB)} (Table S46)", MAIN))
+    c.append((f"lead II AUROC was {hh(D, HUB)} (Table S46)" if VARIANT == "v2" else
+              f"raised its CinC 2011 lead II AUROC to {hh(D, HUB)} (Table S46)", MAIN))
     # ---- third review (2026-11-13): PAPER-001/002 rank uncertainty, PAPER-003 calibration, PAPER-004 demographics,
     # PAPER-006 zero-rejection thresholds, PAPER-012 pairwise comparisons among the eight in-domain leaders
     u = pd.read_csv(R / "rank_uncertainty.csv").set_index(["model_set", "set_a", "set_b", "statistic"])
@@ -541,7 +543,12 @@ def checks() -> list:
     for a_, b_ in (("BUT QDB", "CinC 2011"), ("BUT QDB", "CinC 2017"), ("CinC 2011", "CinC 2017")):
         lo_, hi_ = ua(a_, b_, "regret_best_case"), ua(a_, b_, "regret_worst_case")
         assert max(abs(hi_.ci_lo - lo_.ci_lo), abs(hi_.ci_hi - lo_.ci_hi)) <= 0.002 and lo_.estimate == hi_.estimate
-    c.append((f"The in-domain leader also led CinC 2011 in 11 of 2,000 resamples ({100 * l1.prop_positive:.2f}%) and CinC 2017 in none of the 2,000 "
+    if VARIANT == "srep":  # V15: tie counts left to the S44 caption and table
+        c.append((f"The in-domain leader also led CinC 2011 in 11 of 2,000 resamples ({100 * l1.prop_positive:.2f}%) and CinC 2017 in none of "
+                  f"the 2,000 (not observed, which does not make the probability zero; tie handling in Table S44). Selecting the in-domain "
+                  f"leader cost {g1.estimate:.3f} AUROC on CinC 2011 and {g2.estimate:.3f} on CinC 2017", MAIN))
+    else:
+      c.append((f"The in-domain leader also led CinC 2011 in 11 of 2,000 resamples ({100 * l1.prop_positive:.2f}%) and CinC 2017 in none of the 2,000 "
               f"(not observed, which does not make the probability zero). Models tied for the highest AUROC in 7 in-domain resamples and in 1 CinC 2017 "
               f"resample; ties were broken by a fixed model order, and breaking every tie in favour of agreement would give {any1} and {any2} of 2,000. "
               f"Selecting the in-domain leader cost {g1.estimate:.3f} AUROC on CinC 2011 and {g2.estimate:.3f} on CinC 2017", MAIN))
@@ -566,7 +573,8 @@ def checks() -> list:
     c.append((f"flagged no held-out recording in {100 * t17.zero_rejection.min():.0f}–{100 * t17.zero_rejection.max():.0f}% of these draws, depending on the model, "
               f"so a false reject rate of at most 5% together with a sensitivity above zero was reached in only {100 * t17.useful_control.min():.0f}–"
               f"{100 * t17.useful_control.max():.0f}% of them", MAIN))
-    c.append((f"and in {100 * t11.loc[CNN1, 'zero_rejection']:.0f}% of draws for the 1D CNN", MAIN))
+    if VARIANT == "v2":  # V15: per-model detail left to Table S22 in the srep version
+        c.append((f"and in {100 * t11.loc[CNN1, 'zero_rejection']:.0f}% of draws for the 1D CNN", MAIN))
     dc = pd.read_csv(R / "decision_calibration.csv")
     d11 = dc[dc.family == C11].set_index("model")
     assert (dc.calibration_intercept_status == "estimated").all() and d11.calibration_intercept.idxmin() == MM and d11.calibration_intercept.idxmax() == MLP
@@ -631,31 +639,71 @@ def checks() -> list:
     hq = lambda fam, m: f3(qb.loc[(fam, m), "p_holm_all_pairs"])  # noqa: E731
     sig = qb.loc[BUT].p_holm_all_pairs < 0.05
     assert list(sig[sig].index) == [ZS] and holm_best(BUT, LR) < 0.05 and holm_best(BUT, MLP) < 0.05 and holm_best(BUT, ZS) >= 0.05
-    c.append((f"Logistic regression ({sa(QB, LR)}) and the MLP ({sa(QB, MLP)}) were no longer significantly below it (p_Holm = {hq(BUT, LR)} and "
+    v2c = []
+    v2c.append((f"Logistic regression ({sa(QB, LR)}) and the MLP ({sa(QB, MLP)}) were no longer significantly below it (p_Holm = {hq(BUT, LR)} and "
               f"{hq(BUT, MLP)}), whereas zero-shot d1-3B was, again at the 1/n floor ({sa(QB, ZS)}; p_Holm = {hq(BUT, ZS)})", MAIN))
     assert qa.loc[Q11].auroc_sensitivity.idxmax() == PROBE and qa.loc[Q17].auroc_sensitivity.idxmax() == PROBE
     x = qp[(qp.family == C11) & (qp.model_a == CNN2) & (qp.model_b == PROBE)]
     assert len(x) == 1
     x = x.iloc[0]
-    c.append((f"remained first ({sa(Q11, PROBE)}) and significantly above the 2D CNN ({sa(Q11, CNN2)}; difference {f3(-x.delta)}, 95% CI "
+    v2c.append((f"remained first ({sa(Q11, PROBE)}) and significantly above the 2D CNN ({sa(Q11, CNN2)}; difference {f3(-x.delta)}, 95% CI "
               f"{f3(-x.ci_hi)}–{f3(-x.ci_lo)}; p_Holm = {f3(x.p_holm)})", MAIN))
     h11, h17 = qa.loc[(Q11, HUB)], qa.loc[(Q17, HUB)]
     sig17 = qb.loc[C17].p_holm_all_pairs
     assert set(sig17[sig17 >= 0.05].index) == {GBM, HEUR} and h11.rank_sensitivity == 4 and h17.rank_sensitivity == 4 and h17.rank_primary == 1
-    c.append((f"its AUROC rose from {pa(Q11, HUB)} to {sa(Q11, HUB)} on CinC 2011 (difference {f3(h11.delta)}, 95% CI {f3(h11.delta_ci_lo)}–"
+    v2c.append((f"its AUROC rose from {pa(Q11, HUB)} to {sa(Q11, HUB)} on CinC 2011 (difference {f3(h11.delta)}, 95% CI {f3(h11.delta_ci_lo)}–"
               f"{f3(h11.delta_ci_hi)}) and fell from {pa(Q17, HUB)} to {sa(Q17, HUB)} on CinC 2017, where the d1-3B probe became first "
               f"({sa(Q17, PROBE)}) and the HuBERT-ECG probe was significantly below it (p_Holm = {hq(C17, HUB)}); LightGBM and the rule "
               f"heuristic were again not significantly different from the leader (p_Holm = {hq(C17, GBM)} and {hq(C17, HEUR)})", MAIN))
     others = qa.loc[[Q11, Q17]].drop(index=HUB, level="model").delta.abs()
-    c.append((f"No other external AUROC changed by more than {f3(others.max())}.", MAIN))
+    v2c.append((f"No other external AUROC changed by more than {f3(others.max())}.", MAIN))
     rq = lambda pair_, an: qr.loc[(pair_, an)]  # noqa: E731
     p1, p2, p3 = f"{QB} vs {Q11}", f"{QB} vs {Q17}", f"{Q11} vs {Q17}"
     assert abs(rq(p1, "primary") - r11) < 1e-12 and abs(rq(p2, "primary") - r17) < 1e-12 and abs(rq(p3, "primary") - rx) < 1e-12
     assert rq(p2, "primary") < 0 < rq(p2, "sensitivity")
-    c.append((f"were {rq(p1, 'sensitivity'):.2f} on CinC 2011 and {rq(p2, 'sensitivity'):.2f} on CinC 2017, and between the two external datasets "
+    v2c.append((f"were {rq(p1, 'sensitivity'):.2f} on CinC 2011 and {rq(p2, 'sensitivity'):.2f} on CinC 2017, and between the two external datasets "
               f"{rq(p3, 'sensitivity'):.2f}, against {rq(p1, 'primary'):.2f}, −{-rq(p2, 'primary'):.2f} and {rq(p3, 'primary'):.2f} in the primary analysis", MAIN))
-    c.append((f"the same probe reached {sa(Q11, HUB)} on CinC 2011 and was fourth on CinC 2017", MAIN))
-    c.append((f"the correlation with CinC 2017 remained low ({rq(p2, 'sensitivity'):.2f})", MAIN))
+    v2c.append((f"the same probe reached {sa(Q11, HUB)} on CinC 2011 and was fourth on CinC 2017", MAIN))
+    v2c.append((f"the correlation with CinC 2017 remained low ({rq(p2, 'sensitivity'):.2f})", MAIN))
+    if VARIANT == "srep":  # V15: shortened paragraph; the AUROCs and intervals dropped here stay in Table S49
+        c.append((f"logistic regression and the MLP were no longer significantly below it (p_Holm = {hq(BUT, LR)} and {hq(BUT, MLP)}), "
+                  f"whereas zero-shot d1-3B was, again at the 1/n floor (p_Holm = {hq(BUT, ZS)})", MAIN))
+        c.append((f"remained first and significantly above the 2D CNN (p_Holm = {f3(x.p_holm)})", MAIN))
+        c.append((f"its AUROC rose from {pa(Q11, HUB)} to {sa(Q11, HUB)} on CinC 2011 and fell from {pa(Q17, HUB)} to {sa(Q17, HUB)} on CinC "
+                  f"2017, where the d1-3B probe became first ({sa(Q17, PROBE)}) and the HuBERT-ECG probe was significantly below it "
+                  f"(p_Holm = {hq(C17, HUB)})", MAIN))
+        c.append((f"were {rq(p1, 'sensitivity'):.2f} on CinC 2011 and {rq(p2, 'sensitivity'):.2f} on CinC 2017, and between the two "
+                  f"external datasets {rq(p3, 'sensitivity'):.2f}.", MAIN))
+        c.append((f"the correlation with CinC 2017 remained low ({rq(p2, 'sensitivity'):.2f}; Table S49)", MAIN))
+    # "No other external AUROC" is checked for both variants
+    c.extend(v2c if VARIANT == "v2" else [x_ for x_ in v2c if x_[0].startswith("No other external AUROC")])
+    if VARIANT == "srep":
+        # V15: p-values added where 'significant' had none nearby (Scientific Reports guidance)
+        hb = lambda fam, m: f3(holm_best(fam, m))  # noqa: E731
+        assert (vs_best[vs_best.family == C17].set_index("model").best == HUB).all()
+        rest17 = [m for m in vs_best[vs_best.family == C17].model if m not in (HUB, PROBE, GBM, HEUR)]
+        assert len(rest17) == 7 and all(holm_best(C17, m) < 0.05 for m in rest17)
+        assert all(holm_best(C17, m) >= 0.05 for m in (PROBE, GBM, HEUR))
+        c.append((f"were not significantly different from it (p_Holm = {hb(C17, PROBE)}, {hb(C17, GBM)} and {hb(C17, HEUR)}), and all "
+                  f"others were significantly worse (all p_Holm ≤ {f3(max(holm_best(C17, m) for m in rest17))})", MAIN))
+        c.append((f"not significantly different from the best in-domain or on CinC 2017 (p_Holm = {hb(BUT, PROBE)} and {hb(C17, PROBE)})", MAIN))
+        assert (vs_best[vs_best.family == C11].set_index("model").best == PROBE).all()
+        c.append((f"the one set where the probe was significantly best (p_Holm = {hb(C11, CNN2)})", MAIN))
+        rest11 = [m for m in vs_best[vs_best.family == C11].model if m != PROBE]
+        assert len(rest11) == 10
+        c.append((f"significantly better than all ten other models (all p_Holm ≤ {f3(max(holm_best(C11, m) for m in rest11))})", MAIN))
+        assert holm_best(C17, CNN2) < 0.001
+        c.append(("the 2D CNN was significantly behind the leader (p_Holm < 0.001)", MAIN))
+        ncx = pd.read_csv(R / "cinc2011_nonconstant_paired.csv")
+        ncx = ncx[((ncx.model_a == PROBE) & (ncx.model_b == CNN2)) | ((ncx.model_a == CNN2) & (ncx.model_b == PROBE))]
+        assert len(ncx) == 1
+        c.append((f"a constant lead II (p_Holm = {hb(C11, CNN2)}; without them {f3(ncx.iloc[0].p_holm)})", MAIN))
+        pxx = pd.read_csv(R / "ptbxl_frozen_comparisons.csv").set_index("comparison").p_holm
+        sec = [pxx[f"probe vs {m} ({a})"] for m in ("LightGBM_SQI", "HuBERT_ECG_probe") for a in ("max_12", "mean_12")]
+        assert max(sec) < 0.001
+        c.append(("and LightGBM (0.689; both p_Holm < 0.001; Table S39)", MAIN))
+        c.append(("significantly behind two models on the PTB-XL proxy outcome (both p_Holm < 0.001)", MAIN))
+        c.append((f"after multiplicity adjustment (all p_Holm ≥ {np.floor(1000 * t8.p_holm.min()) / 1000:.3f}), yet", MAIN))
     return c
 
 
