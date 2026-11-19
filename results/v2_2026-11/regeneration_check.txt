@@ -1,0 +1,13 @@
+Regeneration check, 2026-11-19 15:56 UTC
+Code: commit 363ced83bbae55d5d972dca4134180a5fda51a32; scripts unmodified
+Python 3.12.13, numpy 2.5.3, pandas 3.0.6
+Scripts rerun (no model fitted): evaluation/paired_comparisons.py, evaluation/bootstrap_p_audit.py, evaluation/local_threshold_triviality.py
+Committed outputs: results/v2_2026-11
+
+file                                       result             sha256 of committed file
+paired_comparisons.csv                     IDENTICAL          625e56fe3eae880e4cb1831c111d4da349c0fa72bd753f7d3db69cc7593d77a0
+butqdb_bootstrap_p_audit.csv               IDENTICAL          81357d011cdd9420414602f344b66040fdcf9f17258d67a888ed421309418c1f
+butqdb_bootstrap_p_audit_all_pairs.csv     IDENTICAL          69e68c9078b883913057b313e9034db930ed9df17716d3c78228d275de500e9f
+local_threshold_triviality.csv             IDENTICAL          539319ec42e1acd4fbcecdd214c342dc36956e7cf0e65ee09d3fa3a85cef6d7b
+
+ALL MATCH
