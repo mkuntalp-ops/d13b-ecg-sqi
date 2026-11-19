@@ -1355,11 +1355,30 @@ def table_29() -> str:
     def g(x):
         return f"{x:.4f}".rstrip("0").rstrip(".") if x < 1 else "1"
 
-    out = [f"| Model | AUROC | Δ AUROC vs {labels[d.best.iloc[0]]} | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | "
+    # 95% percentile interval of Δ from the stored paired comparisons (round V13), oriented as model − best
+    pc_path = RESULTS / "paired_comparisons.csv"
+    if not pc_path.exists():
+        return _missing(pc_path)
+    pc = pd.read_csv(pc_path)
+    pc = pc[pc.family.str.startswith("BUT_QDB")]
+    best = d.best.iloc[0]
+    ci = {}
+    for _, r in d.iterrows():
+        a = pc[(pc.model_a == r.model) & (pc.model_b == best)]
+        b = pc[(pc.model_a == best) & (pc.model_b == r.model)]
+        if len(a) + len(b) != 1:
+            raise ValueError(f"bootstrap p audit: expected one stored BUT QDB pair for {r.model} vs {best}")
+        lo, hi, delta = ((a.ci_lo.iloc[0], a.ci_hi.iloc[0], a.delta.iloc[0]) if len(a)
+                         else (-b.ci_hi.iloc[0], -b.ci_lo.iloc[0], -b.delta.iloc[0]))
+        if abs(delta - r.delta_model_minus_best) > 1e-12:
+            raise ValueError(f"bootstrap p audit: stored Δ differs for {r.model}")
+        ci[r.model] = (lo, hi)
+
+    out = [f"| Model | AUROC | Δ AUROC vs {labels[d.best.iloc[0]]} [95% CI] | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | "
            "p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |",
            "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
     for _, r in d.iterrows():
-        out.append(f"| **{labels[r.model]}** | {r.auroc:.4f} | {r.delta_model_minus_best:+.4f} | {int(r.n_valid)} of {int(r.n_resamples)} | "
+        out.append(f"| **{labels[r.model]}** | {r.auroc:.4f} | {r.delta_model_minus_best:+.4f} [{ci[r.model][0]:.3f} to {ci[r.model][1]:.3f}] | {int(r.n_valid)} of {int(r.n_resamples)} | "
                    f"{int(r.n_delta_le0)} | {int(r.n_delta_ge0)} | {g(r.p_unadjusted)} | {g(r.p_holm_all_pairs)} | {g(r.p_holm_vs_best)} |")
     return "\n".join(out)
 

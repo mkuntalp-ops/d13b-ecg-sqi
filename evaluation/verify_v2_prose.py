@@ -126,7 +126,7 @@ def fill() -> None:
 def checks() -> list:
     c = []
     for fam, models in [(BUT, {CNN2: "The 2D CNN reached {}", CNN1: "the 1D CNN {}", MM: "the multimodal net {}", GBM: "LightGBM {}", TAB: "TabPFN {}", HUB: "HuBERT-ECG probe {}",
-                               MLP: "The MLP ({})", LR: "logistic regression ({})", ZS: "Zero-shot d1-3B reached {}"}),
+                               MLP: "The MLP ({};", LR: "logistic regression ({};", ZS: "Zero-shot d1-3B reached {}"}),
                         (C11, {PROBE: "ranked recordings best (AUROC {}", CNN2: "including the 2D CNN ({};", HUB: "close to chance ({})", MM: "same score ({})", LR: "was inverted ({})"}),
                         (C17, {HUB: "highest AUROC ({},", PROBE: "the d1-3B probe ({},", GBM: "LightGBM ({},", HEUR: "the rule heuristic ({},", MLP: "the MLP ({},", LR: "logistic regression ({},",
                                TAB: "TabPFN ({})", CNN2: "the 2D CNN ({})", MM: "the multimodal net ({})", CNN1: "the 1D CNN ({})", ZS: "zero-shot d1-3B ({})"}),
@@ -431,6 +431,28 @@ def checks() -> list:
     assert len(qp) == 55 and (qp[qp.p_holm < 0.05].p == 0.0005).all()
     c.append(("On BUT QDB the two open markers rest on the 1/n floor of the bootstrap p-value", MAIN))
     c.append(("in both cohorts every such in-domain decision rests on the 1/n floor of the bootstrap p-value", MAIN))
+    # round V13 (statistics review): AUROC differences from the in-domain best with their cluster-bootstrap intervals
+    fam_b = "BUT_QDB (5-fold subject CV)"
+
+    def vs_cnn2(m):  # (Δ, lo, hi) oriented as model − 2D CNN
+        r = pair(fam_b, m, CNN2)
+        return (r.delta, r.ci_lo, r.ci_hi) if r.model_a == m else (-r.delta, -r.ci_hi, -r.ci_lo)
+
+    seven = [CNN1, HEUR, PROBE, MM, GBM, TAB, HUB]
+    assert all(holm_best(fam_b, m) >= 0.64 for m in seven)
+    sd = [vs_cnn2(m) for m in seven]
+    def n3(v):
+        return f"{v:.3f}".replace("-", "−")
+
+    c.append((f"The AUROC differences of these seven from the 2D CNN ranged from {n3(min(x[0] for x in sd))} to "
+              f"{n3(max(x[0] for x in sd))}, and the lower limits of their unadjusted 95% cluster-bootstrap intervals ranged "
+              f"from {n3(min(x[1] for x in sd))} to {n3(max(x[1] for x in sd))}", MAIN))
+    dm, dl = vs_cnn2(MLP), vs_cnn2(LR)
+    assert dm[2] < 0 and dl[2] < 0  # both intervals exclude zero
+    c.append((f"The MLP (0.904; difference {n3(dm[0])}, 95% CI {n3(dm[1])} to {n3(dm[2])}) and logistic regression (0.899; "
+              f"{n3(dl[0])}, 95% CI {n3(dl[1])} to {n3(dl[2])})", MAIN))
+    c.append(("Their 95% intervals, which do not depend on this convention, exclude zero but are wide.", MAIN))
+    c.append(("as throughout CinC 2017, the intervals and tests treat recordings as independent", MAIN))
     c.append(("contain only one class discarded (none were, in any of the 55 pairs)", MAIN))
     c.append(("the smallest attainable Holm-adjusted value over 55 pairs is 0.0275 under this floor and 0.055 if one is added", MAIN))
     c.append(("no BUT QDB pair could reach p_Holm < 0.05 with 2,000 resamples (smallest attainable value 0.055", MAIN))

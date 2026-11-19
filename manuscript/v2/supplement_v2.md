@@ -989,20 +989,20 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | BUT QDB vs CinC 2017 | 11 | -0.02 | +0.14 |
 | CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.45 |
 
-## Table S49. BUT QDB: resample counts and unrounded p-values of the paired cluster-bootstrap comparisons with the best in-domain model (added in review from saved out-of-fold predictions; no model refitted). Each of 2,000 resamples draws 15 subjects with replacement; a resample whose subjects contain only one class would be discarded, which did not occur. Δ = AUROC of the model − AUROC of the 2D CNN. A resample with Δ = 0 is counted in both columns. p = max(2 × min(share with Δ ≤ 0, share with Δ ≥ 0), 1/n), the percentile-bootstrap p-value used throughout: an approximate percentile-tail calculation that does not resample under a null hypothesis. A p of 0.0005 is the 1/n floor reached when no resample reversed the sign, a reporting convention rather than a calibrated exact value; Table S52 gives all 55 pairs and the plus-one convention. The recomputed p-values equal the stored ones exactly. p_Holm: Holm adjustment over all 55 pairs of the BUT QDB family (the criterion used in the text) and over the ten comparisons with the best model (sensitivity analysis). The intervals and tests are conditional on the fitted models and do not include refitting variability. Source: results/v2_2026-11/butqdb_bootstrap_p_audit.csv (evaluation/bootstrap_p_audit.py).
+## Table S49. BUT QDB: resample counts and unrounded p-values of the paired cluster-bootstrap comparisons with the best in-domain model (added in review from saved out-of-fold predictions; no model refitted). Each of 2,000 resamples draws 15 subjects with replacement; a resample whose subjects contain only one class would be discarded, which did not occur. Δ = AUROC of the model − AUROC of the 2D CNN. A resample with Δ = 0 is counted in both columns. p = max(2 × min(share with Δ ≤ 0, share with Δ ≥ 0), 1/n), the percentile-bootstrap p-value used throughout: an approximate percentile-tail calculation that does not resample under a null hypothesis. A p of 0.0005 is the 1/n floor reached when no resample reversed the sign, a reporting convention rather than a calibrated exact value; Table S52 gives all 55 pairs and the plus-one convention. The recomputed p-values equal the stored ones exactly. p_Holm: Holm adjustment over all 55 pairs of the BUT QDB family (the criterion used in the text) and over the ten comparisons with the best model (sensitivity analysis). The intervals and tests are conditional on the fitted models and do not include refitting variability. The 95% CI of Δ is the percentile interval stored with the original comparison, unadjusted for multiplicity and independent of the p-value convention. Source: results/v2_2026-11/butqdb_bootstrap_p_audit.csv (evaluation/bootstrap_p_audit.py) and, for the intervals, results/v2_2026-11/paired_comparisons.csv.
 
-| Model | AUROC | Δ AUROC vs 2D CNN (Rendered Image) | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |
+| Model | AUROC | Δ AUROC vs 2D CNN (Rendered Image) [95% CI] | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **1D CNN (Raw Signal)** | 0.9831 | -0.0019 | 2000 of 2000 | 1102 | 900 | 0.9 | 1 | 0.9 |
-| **Rule-Based SQI Heuristic** | 0.9709 | -0.0140 | 2000 of 2000 | 1817 | 184 | 0.184 | 1 | 0.552 |
-| **d1-3B image-token probe** | 0.9707 | -0.0142 | 2000 of 2000 | 1763 | 237 | 0.237 | 1 | 0.552 |
-| **SinglePass Multimodal Net** | 0.9656 | -0.0194 | 2000 of 2000 | 1957 | 43 | 0.043 | 1 | 0.258 |
-| **LightGBM (SQI)** | 0.9566 | -0.0283 | 2000 of 2000 | 1921 | 80 | 0.08 | 1 | 0.4 |
-| **TabPFN (SQI)** | 0.9562 | -0.0287 | 2000 of 2000 | 1909 | 93 | 0.093 | 1 | 0.4 |
-| **HuBERT-ECG probe** | 0.9385 | -0.0465 | 2000 of 2000 | 1984 | 16 | 0.016 | 0.64 | 0.112 |
-| **Independent SQI MLP** | 0.9042 | -0.0808 | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
-| **Logistic Regression (SQI)** | 0.8989 | -0.0861 | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
-| **LiquidAI d1-3B (Zero-Shot)** | 0.8277 | -0.1573 | 2000 of 2000 | 2000 | 1 | 0.001 | 0.051 | 0.008 |
+| **1D CNN (Raw Signal)** | 0.9831 | -0.0019 [-0.047 to 0.025] | 2000 of 2000 | 1102 | 900 | 0.9 | 1 | 0.9 |
+| **Rule-Based SQI Heuristic** | 0.9709 | -0.0140 [-0.059 to 0.004] | 2000 of 2000 | 1817 | 184 | 0.184 | 1 | 0.552 |
+| **d1-3B image-token probe** | 0.9707 | -0.0142 [-0.061 to 0.010] | 2000 of 2000 | 1763 | 237 | 0.237 | 1 | 0.552 |
+| **SinglePass Multimodal Net** | 0.9656 | -0.0194 [-0.050 to -0.000] | 2000 of 2000 | 1957 | 43 | 0.043 | 1 | 0.258 |
+| **LightGBM (SQI)** | 0.9566 | -0.0283 [-0.089 to 0.002] | 2000 of 2000 | 1921 | 80 | 0.08 | 1 | 0.4 |
+| **TabPFN (SQI)** | 0.9562 | -0.0287 [-0.078 to 0.003] | 2000 of 2000 | 1909 | 93 | 0.093 | 1 | 0.4 |
+| **HuBERT-ECG probe** | 0.9385 | -0.0465 [-0.142 to -0.002] | 2000 of 2000 | 1984 | 16 | 0.016 | 0.64 | 0.112 |
+| **Independent SQI MLP** | 0.9042 | -0.0808 [-0.204 to -0.017] | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
+| **Logistic Regression (SQI)** | 0.8989 | -0.0861 [-0.184 to -0.021] | 2000 of 2000 | 2000 | 0 | 0.0005 | 0.0275 | 0.005 |
+| **LiquidAI d1-3B (Zero-Shot)** | 0.8277 | -0.1573 [-0.304 to -0.045] | 2000 of 2000 | 2000 | 1 | 0.001 | 0.051 | 0.008 |
 
 ## Table S50. Documented pre-training data of the pre-trained checkpoints and their exposure to the evaluation datasets (model documentation checked on 18 November 2026). "Unknown" means that the documentation neither lists nor excludes the dataset; no exact or near-duplicate search against the pre-training data was possible. CinC 2017 has no patient identifiers, so repeated recordings of one person cannot be excluded.
 
