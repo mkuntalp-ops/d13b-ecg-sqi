@@ -9,12 +9,15 @@
 # so earlier exports stay as the record of their round.
 # Tools: pandoc (markdown -> DOCX, markdown -> standalone HTML with evaluation/pmea_print.css),
 #        Google Chrome headless (HTML -> PDF). Override Chrome with $CHROME.
+#        V14: evaluation/docx_layout.py adds page numbers (and line numbers in main_srep) to the srep DOCX files;
+#        the print CSS adds page numbers to every PDF.
 set -euo pipefail
 
 ROUND="${1:?usage: export_manuscript.sh <round number>}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 CSS="$ROOT/evaluation/pmea_print.css"
+PYTHON="${PYTHON:-python3}"   # evaluation/docx_layout.py uses the standard library only
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
@@ -60,7 +63,7 @@ for variant in srep v2; do
     echo "# SHA-256  file"
   } > "$manifest"
   ( cd "$src" && shasum -a 256 $(for n in $(files_of $variant); do echo "$n.md"; done) ) | sed 's/^/source  /' >> "$manifest"
-  ( cd "$ROOT" && shasum -a 256 evaluation/pmea_print.css ) | sed 's/^/source  /' >> "$manifest"
+  ( cd "$ROOT" && shasum -a 256 evaluation/pmea_print.css evaluation/docx_layout.py ) | sed 's/^/source  /' >> "$manifest"
   # figures embedded by pandoc (V4 follow-up: hash them at export time too), paths relative to the repository root
   for n in $(files_of $variant); do { grep -oE '!\[[^]]*\]\([^) ]+\)' "$src/$n.md" || true; } | sed -E 's/.*\(([^) ]+)\)/\1/'; done | sort -u |
   while read -r fig; do
@@ -70,6 +73,11 @@ for variant in srep v2; do
   for n in $(files_of $variant); do
     ( cd "$src"
       pandoc "$n.md" --from "$(reader_of $variant)" -o "$out/${n}_v$ROUND.docx"
+      # V14: page numbers (and line numbers for the main text) in the Scientific Reports DOCX files
+      case "$n" in
+        main_srep) "$PYTHON" "$ROOT/evaluation/docx_layout.py" "$out/${n}_v$ROUND.docx" --line-numbers ;;
+        supplement_srep|tripod_ai_checklist_srep) "$PYTHON" "$ROOT/evaluation/docx_layout.py" "$out/${n}_v$ROUND.docx" ;;
+      esac
       pandoc "$n.md" --from "$(reader_of $variant)" --standalone --embed-resources --css "$CSS" \
         --metadata pagetitle="$n" -o "$TMP/${n}_v$ROUND.html" )
     "$CHROME" --headless=new --disable-gpu --no-pdf-header-footer \
