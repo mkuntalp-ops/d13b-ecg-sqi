@@ -935,6 +935,31 @@ def commit_pin() -> int:
     return len(bad)
 
 
+def checklist_consistency(assembled_main: str) -> int:
+    """Round V25 (review of v24, PAPER-014): the TRIPOD+AI checklist gives the same commits as Code availability, the
+    abstract word count of the assembled main text and the last item of Deviations from the analysis plan."""
+    tri = (ROOT / "manuscript" / "srep" / "tripod_ai_checklist_srep.md").read_text(encoding="utf-8")
+    fails = 0
+    analysis = "a21e70b89d2448565624f15be6d6ec98caebdaca"
+    for h in (analysis, PIN_COMMIT):
+        if h not in tri or h not in assembled_main:
+            print(f"CHECKLIST: commit {h[:7]} missing from the checklist or from Code availability")
+            fails += 1
+    abstract = assembled_main[assembled_main.index("## Abstract") + len("## Abstract"):assembled_main.index("**Keywords")]
+    n = len(abstract.split())
+    if f"Unstructured abstract ({n} words;" not in tri:
+        print(f"CHECKLIST: item 2 does not give the abstract length of {n} words")
+        fails += 1
+    dev = assembled_main[assembled_main.index("### Deviations from the analysis plan"):]
+    dev = dev[:dev.index("\n### ")]
+    last = max(int(x) for x in re.findall(r"\((\d{1,2})\) [A-Z]", dev))
+    if f"items 11–{last} there" not in tri:
+        print(f"CHECKLIST: item 18c does not end at Deviations item {last}")
+        fails += 1
+    print(f"checklist: commits, abstract length ({n} words) and Deviations items (1–{last}) checked, {fails} failed")
+    return fails
+
+
 def SREP_REQUIRED(main_t: str, supp_t: str) -> list:
     """Statements the Scientific Reports version must keep (it is shortened, so the v2 sentences differ)."""
     return [("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
@@ -1039,6 +1064,7 @@ def main() -> int:
             print("REFERENCE LIST: expected exactly one preprint, the HuBERT-ECG preprint, in the assembled main text")
             fails += 1
         fails += commit_pin()
+        fails += checklist_consistency(_asm)
     for w, text in required:
         if w not in text:
             print("MISSING WORDING:", w)
