@@ -577,11 +577,20 @@ def table_10() -> str:
     if not path.exists():
         return _missing(path)
     s = pd.read_csv(path)
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from paired_comparisons import holm
+    # V23 (review PAPER-004): Holm within each held-out dataset of the p-values with the 1/n floor that the BUT QDB
+    # comparisons use (evaluation/bootstrap_null_centred.py reproduces every stored p_boot and applies the floor).
+    # Up to round V22 the unfloored values were adjusted and p = 0 was printed as "p_Holm < 0.001".
+    npath = RESULTS / "bootstrap_null_centred.csv"
+    if not npath.exists():
+        raise FileNotFoundError(f"{npath} is required for the Table 3 p-values (run evaluation/bootstrap_null_centred.py)")
+    nc = pd.read_csv(npath)
+    nc = nc[nc.analysis == "Table 3 (LODO)"].set_index(["family", "model_a"])
     s["p_holm"] = np.nan
-    for key, g in s[s.p_boot.notna()].groupby("test"):  # Holm within each held-out dataset
-        s.loc[g.index, "p_holm"] = holm(g.p_boot.values)
+    for i, r in s[s.p_boot.notna()].iterrows():
+        n = nc.loc[(r.test, r.model)]
+        if abs(n.p_percentile_raw - r.p_boot) > 1e-12:
+            raise ValueError(f"{r.test} {r.model}: bootstrap_null_centred.csv does not match lodo_summary.csv")
+        s.loc[i, "p_holm"] = n.p_floor_holm
     labels = {**MODEL_LABELS, "TabPFN_SQI": "TabPFN (SQI)", "HuBERT_ECG_probe": "HuBERT-ECG probe", "d1_image_probe": "d1-3B image-token probe"}
     tests = [("BUT_QDB", "BUT QDB (train: CinC 2011 + CinC 2017)"), ("CinC2011", "CinC 2011 (train: BUT QDB + CinC 2017)"),
              ("CinC2017", "CinC 2017 (train: BUT QDB + CinC 2011)")]
@@ -598,7 +607,8 @@ def table_10() -> str:
                 cells.append(f"{r.auroc_single:.3f} (fixed rule)")
                 continue
             sign = "+" if r.delta >= 0 else "−"
-            p = "p_Holm < 0.001" if r.p_holm < 0.001 else f"p_Holm = {r.p_holm:.3f}"
+            # V23: four decimals below 0.01, so the floor value 9 x 1/2,000 = 0.0045 is not rounded either way
+            p = f"p_Holm = {r.p_holm:.4f}" if r.p_holm < 0.01 else f"p_Holm = {r.p_holm:.3f}"
             sub = " †" if key == "CinC2017" and r.n_units < 1000 else ""  # CinC 2017 balanced subset
             cells.append(f"{r.auroc_multi:.3f} [{r.auroc_multi_lo:.3f}–{r.auroc_multi_hi:.3f}]; Δ {sign}{abs(r.delta):.3f} ({p}){sub}")
         out.append(f"| **{label}** | " + " | ".join(cells) + " |")
@@ -1211,6 +1221,12 @@ def table_25() -> str:
     if not unc_path.exists():
         return _missing(unc_path)
     u = pd.read_csv(unc_path)
+    # V23 (review PAPER-006): the same statistics without the d1-3B image-token probe and without the probe and the
+    # heuristic (evaluation/rank_sensitivity_probe.py, which first reproduces the two model sets above exactly)
+    probe_path = RESULTS / "rank_sensitivity_probe.csv"
+    if not probe_path.exists():
+        return _missing(probe_path)
+    u = pd.concat([u, pd.read_csv(probe_path)], ignore_index=True)
     out += ["", "| Models | Selection set → target set | Spearman ρ [95% bootstrap interval] (share of resamples with ρ > 0) | "
             "Leader of selection set also leads target set (share of resamples) | AUROC lost by selecting the leader of the selection set [95% bootstrap interval] | "
             "Resamples with a tied leader: selection set / target set (of 2,000) | Same leader, least to most favourable tie-break (resamples of 2,000) |",
@@ -1665,6 +1681,48 @@ def table_39() -> str:
     return "\n".join(out)
 
 
+def _p3(p: float) -> str:
+    return f"{p:.4f}" if p < 0.01 else f"{p:.3f}"
+
+
+def table_40() -> str:
+    """Null-centred bootstrap p-values next to the percentile p-values: BUT QDB comparisons with the 2D CNN in both
+    cohorts and the 27 comparisons of Table 3 (evaluation/bootstrap_null_centred.py; round V23, review PAPER-004)."""
+    path = RESULTS / "bootstrap_null_centred.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    out = ["| Comparison | Δ AUROC | Valid resamples | p, percentile (1/n floor) | p_Holm, percentile | Resamples with ∣Δ* − Δ∣ ≥ ∣Δ∣ | "
+           "p, null-centred | p_Holm, null-centred |", "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    best = "2D_CNN_Image"
+    for cohort in ("primary cohort (988 windows)", "sensitivity cohort (1,041 windows)"):
+        g = d[(d.analysis == f"BUT QDB, {cohort}") & ((d.model_a == best) | (d.model_b == best))]
+        if len(g) != 10:
+            raise ValueError(f"{cohort}: expected 10 comparisons with the 2D CNN")
+        rows = []
+        for _, r in g.iterrows():
+            m, sign = (r.model_b, -1) if r.model_a == best else (r.model_a, 1)
+            rows.append((sign * r.delta_a_minus_b, m, r))
+        for delta, m, r in sorted(rows, key=lambda x: -x[0]):
+            ds = f"{delta:+.3f}".replace("-", "−")
+            out.append(f"| BUT QDB, {cohort.split(' (')[1][:-1]}: {labels[m]} − 2D CNN | {ds} | {int(r.n_valid):,} | "
+                       f"{r.p_percentile_floor:.4f} | {r.p_percentile_holm:.3f} | {int(r.n_centred):,} | {r.p_centred:.4f} | "
+                       f"{r.p_centred_holm:.3f} |")
+        a = d[d.analysis == f"BUT QDB, {cohort}"]
+        out.append(f"| BUT QDB, {cohort.split(' (')[1][:-1]}: pairs with p_Holm < 0.05 among all 55 | | | | "
+                   f"{int((a.p_percentile_holm < 0.05).sum())} | | | {int((a.p_centred_holm < 0.05).sum())} |")
+    names = {"BUT_QDB": "BUT QDB held out", "CinC2011": "CinC 2011 held out", "CinC2017": "CinC 2017 held out"}
+    g = d[d.analysis == "Table 3 (LODO)"]
+    if len(g) != 27:
+        raise ValueError("expected 27 Table 3 comparisons")
+    for _, r in g.iterrows():
+        out.append(f"| Table 3, {names[r.family]}: {labels[r.model_a]}, multi-source − BUT-only | " + f"{r.delta_a_minus_b:+.3f}".replace("-", "−") + " | "
+                   f"{int(r.n_valid):,} | {r.p_percentile_floor:.4f} | {_p3(r.p_floor_holm)} | {int(r.n_centred):,} | "
+                   f"{r.p_centred:.4f} | {_p3(r.p_centred_holm)} |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = cinc_frame()
@@ -1737,6 +1795,7 @@ def main():
         ("Table 37", table_37()),
         ("Table 38", table_38()),
         ("Table 39", table_39()),
+        ("Table 40", table_40()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")

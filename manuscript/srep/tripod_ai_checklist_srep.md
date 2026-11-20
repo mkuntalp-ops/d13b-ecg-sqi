@@ -4,7 +4,7 @@
 
 **Study type.** Development (D) and evaluation (E): model development with patient-independent internal validation, and external evaluation on three datasets.
 
-**Locations.** Section names refer to the accompanying main manuscript (Scientific Reports version, unnumbered sections); Supplementary Tables S1–S61, the Supplementary Methods, Supplementary Results and Supplementary Note refer to the accompanying Supplementary Information.
+**Locations.** Section names refer to the accompanying main manuscript (Scientific Reports version, unnumbered sections); Supplementary Tables S1–S62, the Supplementary Methods, Supplementary Results and Supplementary Note refer to the accompanying Supplementary Information.
 
 **Status codes.**
 - Reported: the item is fully addressed.
@@ -20,15 +20,15 @@
 | 3b | Target population, intended purpose, intended users | Reported | Introduction: automatic gate before downstream ECG analysis; output used by developers and operators of analysis pipelines to discard a segment or request a new recording; not a replacement for clinical interpretation. |
 | 3c | Known health inequalities | Not reported | The background does not discuss known inequalities in ECG signal quality (for example by skin, body habitus or device population). Discussion (limitations paragraph) states only that known inequalities in signal acquisition could not be examined. This item is separate from our subgroup analysis, which was not performed (Discussion (limitations paragraph); item 14). |
 | 4 | Development, evaluation or both | Reported | Introduction (contributions); Methods (Evaluation protocols) |
-| 5a | Data sources, rationale, representativeness | Reported | Methods (Datasets), Figure 1; representativeness in Discussion (limitations paragraph) (limitations) |
-| 5b | Dates of data collection | Not reported | Dataset versions and references are given; collection dates are not. |
+| 5a | Data sources, rationale, representativeness | Reported | Methods (Datasets), Figure 1 (BUT QDB: healthy volunteers recruited by convenience sampling); representativeness in Discussion (limitations paragraph) |
+| 5b | Dates of data collection | Partly | Methods (Datasets, Evaluation protocols): BUT QDB was recorded in 2018 and 2019 (Smital et al. 2026) and PTB-XL between October 1989 and June 1996 (Wagner et al. 2020); collection dates are not reported for CinC 2011, CinC 2017 and NSTDB. |
 | 6a | Setting, number and location of centres | Partly | Methods (Datasets) gives the recording settings (free-living wearable, mobile phone, handheld device). Centres are not detailed. |
 | 6b | Eligibility criteria | Reported | Methods (Datasets): quota sample over all annotated intervals, then restriction to the official annotation intervals (the quota was applied before the restriction; Supplementary Table S43); recordings shorter than 10 s excluded |
 | 6c | Treatments | N/A | Signal-quality task |
 | 7 | Data preprocessing and quality checks | Reported | Methods (Datasets) and Methods (Inputs): resampling, unit harmonisation, and the deterministic handling of edge cases. The extractor sets non-finite values to 0, clips spectral ratios and moments (counts given), and assigns constant windows flatline and saturation fractions of 1. Supplementary Methods (Signal quality indices). |
 | 8a | Outcome definition and assessment | Reported | Methods (Datasets): Class 3 vs 1–2, 12-lead acceptability and "too noisy" labels; recording maximum |
-| 8b | Outcome assessors' qualifications | Partly | BUT QDB uses a consensus of three experts (Smital et al. 2020 and the dataset descriptor, Smital et al. 2026; cited in Methods (Datasets) of the main manuscript). Qualifications are not restated; the CinC labels follow the challenge papers. |
-| 8c | Blinding of outcome assessment | Not reported | Not known for the public labels. |
+| 8b | Outcome assessors' qualifications | Partly | BUT QDB uses a consensus of three experts (Smital et al. 2020 and the dataset descriptor, Smital et al. 2026; cited in Methods (Datasets) of the main manuscript). BUT QDB annotators: postdoctoral researchers with more than 5 years of clinical experience in Holter ECG evaluation (Methods, Datasets). The CinC labels follow the challenge papers, whose annotator qualifications are not restated. |
+| 8c | Blinding of outcome assessment | Partly | The public reference labels were assigned before, and independently of, the models evaluated here, so the assessors had no access to model outputs; the BUT QDB annotators did not see the accelerometer signals (Methods, Datasets). Other blinding is not reported for the public labels. |
 | 9a | How predictors were chosen | Reported | Methods (Inputs) (SQIs from the literature) |
 | 9b | Predictor definitions and measurement | Reported | Methods (Inputs); Supplementary Methods (Signal quality indices) |
 | 9c | Assessors of subjective predictors | N/A | Predictors are computed automatically. |

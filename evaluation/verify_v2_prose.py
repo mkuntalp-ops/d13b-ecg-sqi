@@ -435,7 +435,8 @@ def checks() -> list:
     floor_min = 2 * 55 / 20001
     assert abs(bb.p_plus1_holm.min() - floor_min) < 1e-12 and int((bb.p_plus1_holm < 0.05).sum()) == 4
     if VARIANT == "srep":
-        c.append((f"but with 20,000 both comparisons remained significant (p_Holm = {h_mlp} and {h_lr}; Table S54)", MAIN))
+        assert float(h_mlp) < 0.05 and float(h_lr) < 0.05  # V23: the values themselves stay in the Table 1 caption
+        c.append(("and both remained significant with 20,000 resamples (Table S54)", MAIN))
         c.append((f"gave {h_mlp} for the MLP and {h_lr} for logistic regression", MAIN))
         c.append((f"whose smallest attainable Holm-adjusted value is {floor_min:.4f} (Table S54)", MAIN))
         c.append((f"the MLP against the 1D CNN ({bb.loc[('Independent_SQI_MLP', '1D_CNN_RawECG'), 'p_plus1_holm']:.4f}), against the 2D CNN "
@@ -813,8 +814,14 @@ def checks() -> list:
         rest11 = [m for m in vs_best[vs_best.family == C11].model if m != PROBE]
         assert len(rest11) == 10
         c.append((f"significantly better than all ten other models (all p_Holm ≤ {f3(max(holm_best(C11, m) for m in rest11))})", MAIN))
-        assert holm_best(C17, CNN2) < 0.001
-        c.append(("the 2D CNN was significantly behind the leader (p_Holm < 0.001)", MAIN))
+        # V23: the Discussion gives the CinC 2017 ranks of the two highest in-domain models instead of the test
+        ra = pd.read_csv(R / "rank_agreement.csv").set_index("model")
+        top2 = ra.sort_values("rank | BUT_QDB (5-fold subject CV)").index[:2].tolist()
+        assert top2 == [CNN2, "1D_CNN_RawECG"]
+        _r17 = ra["rank | CinC2017 (8,512 recordings)"]
+        _ord = {8: "eighth", 10: "tenth"}
+        c.append((f"the two highest in-domain models, the 2D and 1D CNNs, were {_ord[int(_r17[CNN2])]} and "
+                  f"{_ord[int(_r17['1D_CNN_RawECG'])]} on CinC 2017", MAIN))
         ncx = pd.read_csv(R / "cinc2011_nonconstant_paired.csv")
         ncx = ncx[((ncx.model_a == PROBE) & (ncx.model_b == CNN2)) | ((ncx.model_a == CNN2) & (ncx.model_b == PROBE))]
         assert len(ncx) == 1
@@ -825,6 +832,49 @@ def checks() -> list:
         c.append(("and LightGBM (0.689; both p_Holm < 0.001; Table S39)", MAIN))
         c.append(("significantly behind two models on the PTB-XL proxy outcome (both p_Holm < 0.001)", MAIN))
         c.append((f"after multiplicity adjustment (all p_Holm ≥ {np.floor(1000 * t8.p_holm.min()) / 1000:.3f}), yet", MAIN))
+        # round V23 (PAPER-004): null-centred bootstrap p-values and the 1/n floor for Table 3
+        _vn = pd.read_csv(R / "bootstrap_null_centred.csv")
+        _vp = _vn[_vn.analysis == "BUT QDB, primary cohort (988 windows)"].set_index(["model_a", "model_b"])
+        _vs = _vn[_vn.analysis == "BUT QDB, sensitivity cohort (1,041 windows)"].set_index(["model_a", "model_b"])
+        _vl = _vn[_vn.analysis == "Table 3 (LODO)"].set_index(["family", "model_a"])
+        assert len(_vp) == 55 and len(_vs) == 55 and len(_vl) == 27
+        _hl = [f"{_vp.loc[(m, CNN2), 'p_centred_holm']:.3f}" for m in ("Independent_SQI_MLP", "Logistic_Regression_SQI")]
+        assert _hl[0] == _hl[1]
+        c.append((f"With a null-centred bootstrap p-value, however, neither was (both p_Holm = {_hl[0]})", MAIN))
+        assert (_vp.p_centred_holm >= 0.05).all() and (_vs.p_centred_holm >= 0.05).all()
+        c.append(("and no in-domain pair was significant in either cohort (Table S62)", MAIN))
+        c.append(("with a null-centred bootstrap p-value no BUT QDB comparison was significant in either cohort, Table S62)", MAIN))
+        c.append(("but not with a null-centred bootstrap p-value (Table S62)", MAIN))
+        assert _vs.loc[(CNN2, "LiquidAI_d1_3B_Neural"), "p_percentile_holm"] < 0.05
+        c.append((f"though not with the null-centred p-value (p_Holm = {_vs.loc[(CNN2, 'LiquidAI_d1_3B_Neural'), 'p_centred_holm']:.3f}; "
+                  f"Table S62)", MAIN))
+        _p4 = lambda x: f"{x:.4f}" if x < 0.01 else f"{x:.3f}"  # the Table 3 format
+        c.append((f"from 0.562 to 0.802 (p_Holm = {_p4(_vl.loc[('CinC2011', HUB), 'p_floor_holm'])})", MAIN))
+        c.append((f"(0.922, Δ +0.028, p_Holm = {_p4(_vl.loc[('CinC2017', PROBE), 'p_floor_holm'])})", MAIN))
+        assert ((_vl.p_floor_holm < 0.05) == (_vl.p_percentile_holm < 0.05)).all()  # the floor changed no decision
+        _min = _vl.p_floor_holm.min()
+        assert abs(_min - 9 / 2000) < 1e-12
+        c.append((f"so the smallest attainable Holm-adjusted value is {_min:.4f}", MAIN))
+        _chg = _vl[(_vl.p_floor_holm < 0.05) != (_vl.p_centred_holm < 0.05)]
+        assert sorted(_chg.index) == [("BUT_QDB", "Independent_SQI_MLP"), ("CinC2011", CNN2)]
+        assert _chg.loc[("BUT_QDB", "Independent_SQI_MLP"), "p_centred_holm"] >= 0.05 and _chg.loc[("CinC2011", CNN2), "p_centred_holm"] < 0.05
+        c.append(("except for the MLP with BUT QDB held out (not significant) and the 2D CNN with CinC 2011 held out (significant; Table S62)", MAIN))
+        # round V23 (PAPER-006): rank agreement without the d1-3B image-token probe
+        _rq = pd.read_csv(R / "rank_sensitivity_probe.csv")
+        _rq = _rq[_rq.model_set == "d1-3B image-token probe excluded"].set_index(["set_a", "set_b", "statistic"])
+        _f2 = lambda x: f"{x:.2f}".replace("-", "−")
+        _rho = [_rq.loc[(a, b, "spearman_rho"), "estimate"] for a, b in
+                (("BUT QDB", "CinC 2011"), ("BUT QDB", "CinC 2017"), ("CinC 2011", "CinC 2017"))]
+        c.append((f"the three correlations were {_f2(_rho[0])}, {_f2(_rho[1])} and {_f2(_rho[2])}", MAIN))
+        assert _rq.loc[("BUT QDB", "CinC 2011", "spearman_rho"), "leader_a"] == CNN2 == _rq.loc[("BUT QDB", "CinC 2011", "spearman_rho"), "leader_b"]
+        _ru = pd.read_csv(R / "rank_uncertainty.csv")
+        _ru = _ru[_ru.model_set == "all 11 models"].set_index(["set_a", "set_b", "statistic"])
+        assert _ru.loc[("BUT QDB", "CinC 2011", "regret_auroc"), "estimate"] > 0 == _rq.loc[("BUT QDB", "CinC 2011", "regret_auroc"), "estimate"]
+        assert abs(_ru.loc[("BUT QDB", "CinC 2017", "regret_auroc"), "estimate"] - _rq.loc[("BUT QDB", "CinC 2017", "regret_auroc"), "estimate"]) < 1e-12
+        c.append(("so the CinC 2011 selection loss depended on the probe, unlike that on CinC 2017 (Table S44)", MAIN))
+        assert _ru.loc[("BUT QDB", "CinC 2017", "same_leader"), "prop_positive"] == 0 and _ru.loc[("BUT QDB", "CinC 2011", "same_leader"), "prop_positive"] < 0.01
+        assert 0.4 < _rq.loc[("BUT QDB", "CinC 2011", "same_leader"), "prop_positive"] < 0.6
+        c.append(("and CinC 2011 in almost none, though in about half once the post hoc d1-3B probe was excluded (Table S44)", MAIN))
     return c
 
 
@@ -841,9 +891,11 @@ def SREP_REQUIRED(main_t: str, supp_t: str) -> list:
 
 
 def number_provenance(main_t: str, supp_t: str) -> int:
-    """Every number in the srep main prose must occur in the checked v2 manuscript or in the srep supplement."""
+    """Every number in the srep main prose must occur in the checked v2 manuscript or in the srep supplement (template text,
+    and from V23 also the assembled supplement, whose generated tables are written from saved outputs only)."""
     v2 = "".join((ROOT / "manuscript" / "v2" / f).read_text(encoding="utf-8") for f in ("main_v2.md", "supplement_v2.md"))
-    pool = set(re.findall(r"\d[\d,]*(?:\.\d+)?", v2 + supp_t))
+    rendered = (ROOT / "manuscript" / "srep" / "supplement_srep.md").read_text(encoding="utf-8")
+    pool = set(re.findall(r"\d[\d,]*(?:\.\d+)?", v2 + supp_t + rendered))
     main_t = main_t[main_t.index("## Abstract"):]  # the title page (address, ORCID) carries no results
     prose = "\n".join(ln for ln in main_t.splitlines()
                       if not ln.startswith(("|", "![", "<!--", "{{", "#")) and "@" not in ln[:1])
@@ -890,7 +942,7 @@ def main() -> int:
                  "which the public datasets could not support", "brought false rejections close to the target",
                  # V3 (2026-11-13)
                  "mattered more than the model class", "Rankings are reported only where", "not converged (separation)",
-                 "did not converge for logistic regression", "CinC 2017 in 0.0%", "medRxiv", "arXiv:2605", "Preprint at",
+                 "did not converge for logistic regression", "CinC 2017 in 0.0%", "arXiv:2605", "Preprint at",
                  "the 74 records at one clipping bound", "have no peer-reviewed version", "an implementation following Pan and Tompkins",
                  "[COMMIT HASH AND ARCHIVE DOI", "increases without bound"]
     required = SREP_REQUIRED(main_t, supp_t) if VARIANT == "srep" else [
@@ -915,6 +967,11 @@ def main() -> int:
         if w in both:
             print("FORBIDDEN WORDING:", w)
             fails += 1
+    # V23 (review PAPER-009): preprints stay out of the main text and its bibliography (project policy since V3); the
+    # HuBERT-ECG preprint is cited in full, as a non-peer-reviewed source, only in Supplementary Table S51.
+    if VARIANT == "srep" and ("medRxiv" in main_t or supp_t.count("medRxiv") != 1):
+        print("FORBIDDEN WORDING: medRxiv outside the one citation in Supplementary Table S51")
+        fails += 1
     for w, text in required:
         if w not in text:
             print("MISSING WORDING:", w)

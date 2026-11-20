@@ -5,7 +5,7 @@
 Mehmet Kuntalp, Department of Electrical and Electronics Engineering, Dokuz Eylül University, İzmir, Turkey
 
 
-Every table is generated from saved outputs by evaluation/build_manuscript_tables.py (results/v2_2026-11/manuscript_tables_2026-10-12.md), except Supplementary Table S20, which is read from results/v2_2026-11/heuristic_refit_summary.csv, Supplementary Table S51, which summarises model documentation checked by hand, and Supplementary Table S61, an inventory of the analyses compiled by hand from the Methods. Where a table is computed by a separate script, its caption names the script and its output file (for example Supplementary Tables S50 and S52–S60). Supplementary Methods, Supplementary Results and the Supplementary Note are text. Positive class: unusable.
+Every table is generated from saved outputs by evaluation/build_manuscript_tables.py (results/v2_2026-11/manuscript_tables_2026-10-12.md), except Supplementary Table S20, which is read from results/v2_2026-11/heuristic_refit_summary.csv, Supplementary Table S51, which summarises model documentation checked by hand, and Supplementary Table S61, an inventory of the analyses compiled by hand from the Methods. Where a table is computed by a separate script, its caption names the script and its output file (for example Supplementary Tables S50, S52–S60 and S62). Supplementary Methods, Supplementary Results and the Supplementary Note are text. Positive class: unusable.
 
 ## Supplementary Methods
 
@@ -854,7 +854,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 | d1-3B image-token probe minus 2D CNN | +0.0075 (+0.0042 to +0.0110) | +0.0066 (+0.0024 to +0.0110) | +0.0052 (-0.0003 to +0.0112) |
 | d1-3B image-token probe minus HuBERT-ECG probe | +0.0070 (+0.0031 to +0.0108) | +0.0071 (+0.0026 to +0.0125) | +0.0035 (-0.0028 to +0.0103) |
 
-## Supplementary Table S38. Frozen test on PTB-XL v1.0.3 (one record per patient; models fitted on BUT QDB only). AUROC with 95% bootstrap interval. Global versus clean: 600 records, 300 global. Partial versus clean: 600 records, 300 partial. The outcome is annotated noise, a proxy for unusability, and the sampled prevalence is artificial. No record had a constant lead, so the planned analysis without such records is identical. The SQI inputs of this sample are described in Supplementary Table S56, and AUROCs by PTB-XL fold are in Supplementary Table S58.
+## Supplementary Table S38. Frozen test on PTB-XL v1.0.3 (recordings made between October 1989 and June 1996; one record per patient; models fitted on BUT QDB only). AUROC with 95% bootstrap interval. Global versus clean: 600 records, 300 global. Partial versus clean: 600 records, 300 partial. The outcome is annotated noise, a proxy for unusability, and the sampled prevalence is artificial. No record had a constant lead, so the planned analysis without such records is identical. The SQI inputs of this sample are described in Supplementary Table S56, and AUROCs by PTB-XL fold are in Supplementary Table S58.
 
 | Model Architecture | Global, lead II | Global, maximum | Global, mean | Partial, maximum | Partial, mean |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -956,7 +956,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 | 124 | 31 | 31 | 31 | 31 |
 | **Total** | 5,285 | 605 | 238 | 291 |
 
-## Supplementary Table S44. AUROC of each model in the four evaluation sets with its rank among the 11 models (1 = highest), and Spearman correlations of the AUROCs between sets. Descriptive and post hoc; the unit is the model (n = 11), so the correlations are imprecise. The two CinC 2017 sets are not independent of each other. In the bootstrap rows, the leader of a set is its model with the highest AUROC; when several models share that value exactly, the first in the fixed model order of the analysis code is taken (primary rule). Because this rule depends on that order, the number of resamples with such a tie and the same-leader count under the least and the most favourable tie-break are also given; the AUROC lost changed by at most 0.002 at either interval bound between the best and the worst tie-break.
+## Supplementary Table S44. AUROC of each model in the four evaluation sets with its rank among the 11 models (1 = highest), and Spearman correlations of the AUROCs between sets. Descriptive and post hoc; the unit is the model (n = 11), so the correlations are imprecise. The two CinC 2017 sets are not independent of each other. In the bootstrap rows, the leader of a set is its model with the highest AUROC; when several models share that value exactly, the first in the fixed model order of the analysis code is taken (primary rule). Because this rule depends on that order, the number of resamples with such a tie and the same-leader count under the least and the most favourable tie-break are also given; the AUROC lost changed by at most 0.002 at either interval bound between the best and the worst tie-break. The rows without the d1-3B image-token probe (10 models), which was chosen as the primary probe after both probes' results were known, and without the probe and the heuristic (9 models) were added in review from the same resamples (evaluation/rank_sensitivity_probe.py, which first reproduced the two other model sets exactly; results/v2_2026-11/rank_sensitivity_probe.csv).
 
 | Model | BUT QDB: AUROC (rank) | CinC2011 lead II: AUROC (rank) | CinC2017: AUROC (rank) | CinC2017 balanced subset: AUROC (rank) |
 | :--- | :---: | :---: | :---: | :---: |
@@ -989,6 +989,12 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 | heuristic excluded (10) | BUT QDB → CinC 2011 | +0.62 [+0.09 to +0.76] (99%) | no (0.5%) | 0.037 [0.019–0.160] | 7 / 0 | 11–13 |
 | heuristic excluded (10) | BUT QDB → CinC 2017 | -0.05 [-0.42 to +0.25] (30%) | no (0.1%) | 0.057 [0.041–0.149] | 7 / 1 | 2–2 |
 | heuristic excluded (10) | CinC 2011 → CinC 2017 | +0.19 [+0.08 to +0.32] (100%) | no (4.5%) | 0.013 [0.000–0.028] | 0 / 1 | 90–91 |
+| d1-3B image-token probe excluded (10) | BUT QDB → CinC 2011 | +0.60 [+0.14 to +0.75] (99%) | yes (50.7%) | 0.000 [0.000–0.127] | 5 / 0 | 1014–1017 |
+| d1-3B image-token probe excluded (10) | BUT QDB → CinC 2017 | -0.08 [-0.49 to +0.36] (32%) | no (0.0%) | 0.057 [0.027–0.149] | 5 / 0 | 0–1 |
+| d1-3B image-token probe excluded (10) | CinC 2011 → CinC 2017 | +0.02 [-0.12 to +0.18] (59%) | no (0.1%) | 0.057 [0.039–0.073] | 0 / 0 | 2–2 |
+| probe and heuristic excluded (9) | BUT QDB → CinC 2011 | +0.57 [+0.15 to +0.77] (99%) | yes (52.3%) | 0.000 [0.000–0.121] | 5 / 0 | 1045–1049 |
+| probe and heuristic excluded (9) | BUT QDB → CinC 2017 | -0.15 [-0.60 to +0.27] (22%) | no (0.1%) | 0.057 [0.041–0.149] | 5 / 0 | 2–2 |
+| probe and heuristic excluded (9) | CinC 2011 → CinC 2017 | +0.00 [-0.12 to +0.17] (41%) | no (0.1%) | 0.057 [0.038–0.073] | 0 / 0 | 2–2 |
 
 ## Supplementary Table S45. Per-window latency on an Apple M4 (median and 95th percentile of three runs of 25 windows), separating preprocessing from the forward pass. Every model is timed from the stored 500-Hz window to its decision; rendering is included for every model that needs a strip image, including the rule heuristic. (Table 5 of the main text in an earlier version.)
 
@@ -1098,7 +1104,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 | BUT QDB vs CinC 2017 | 11 | -0.02 | +0.14 |
 | CinC 2011 lead II vs CinC 2017 | 11 | +0.19 | +0.45 |
 
-## Supplementary Table S50. BUT QDB: resample counts and unrounded p-values of the paired cluster-bootstrap comparisons with the best in-domain model (added in review from saved out-of-fold predictions; no model refitted). Each of 2,000 resamples draws 15 subjects with replacement; a resample whose subjects contain only one class would be discarded, which did not occur. Δ = AUROC of the model − AUROC of the 2D CNN. A resample with Δ = 0 is counted in both columns. p = max(2 × min(share with Δ ≤ 0, share with Δ ≥ 0), 1/n), the percentile-bootstrap p-value used throughout: an approximate percentile-tail calculation that does not resample under a null hypothesis. A p of 0.0005 is the 1/n floor reached when no resample reversed the sign, a reporting convention rather than a calibrated exact value; Supplementary Table S53 gives all 55 pairs and the plus-one convention, and Supplementary Table S54 repeats them with 20,000 resamples. The recomputed p-values equal the stored ones exactly. p_Holm: Holm adjustment over all 55 pairs of the BUT QDB family (the criterion used in the text) and over the ten comparisons with the best model (sensitivity analysis). The intervals and tests are conditional on the fitted models and do not include refitting variability. The 95% CI of Δ is the percentile interval stored with the original comparison, unadjusted for multiplicity and independent of the p-value convention. -0.000 denotes a negative value that rounds to zero: the upper limit for the multimodal net is -0.0001, so its interval excludes zero. Source: results/v2_2026-11/butqdb_bootstrap_p_audit.csv (evaluation/bootstrap_p_audit.py) and, for the intervals, results/v2_2026-11/paired_comparisons.csv.
+## Supplementary Table S50. BUT QDB: resample counts and unrounded p-values of the paired cluster-bootstrap comparisons with the best in-domain model (added in review from saved out-of-fold predictions; no model refitted). Each of 2,000 resamples draws 15 subjects with replacement; a resample whose subjects contain only one class would be discarded, which did not occur. Δ = AUROC of the model − AUROC of the 2D CNN. A resample with Δ = 0 is counted in both columns. p = max(2 × min(share with Δ ≤ 0, share with Δ ≥ 0), 1/n), the percentile-bootstrap p-value used throughout: an approximate percentile-tail calculation that does not resample under a null hypothesis (null-centred p-values from the same resamples: Supplementary Table S62). A p of 0.0005 is the 1/n floor reached when no resample reversed the sign, a reporting convention rather than a calibrated exact value; Supplementary Table S53 gives all 55 pairs and the plus-one convention, and Supplementary Table S54 repeats them with 20,000 resamples. The recomputed p-values equal the stored ones exactly. p_Holm: Holm adjustment over all 55 pairs of the BUT QDB family (the criterion used in the text) and over the ten comparisons with the best model (sensitivity analysis). The intervals and tests are conditional on the fitted models and do not include refitting variability. The 95% CI of Δ is the percentile interval stored with the original comparison, unadjusted for multiplicity and independent of the p-value convention. -0.000 denotes a negative value that rounds to zero: the upper limit for the multimodal net is -0.0001, so its interval excludes zero. Source: results/v2_2026-11/butqdb_bootstrap_p_audit.csv (evaluation/bootstrap_p_audit.py) and, for the intervals, results/v2_2026-11/paired_comparisons.csv.
 
 | Model | AUROC | Δ AUROC vs 2D CNN (Rendered Image) [95% CI] | Valid resamples | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | p, unadjusted | p_Holm, all 55 pairs | p_Holm, 10 comparisons with the best |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -1117,7 +1123,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 | Checkpoint | Documented pre-training data | Exposure to BUT QDB, CinC 2011, CinC 2017, PTB-XL and NSTDB |
 | :--- | :--- | :--- |
-| HuBERT-ECG base (revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465) | 9.1 million 12-lead ECGs from four countries (model card). The developers' preprint (Coppola et al., https://doi.org/10.1101/2024.11.14.24317328, version 4, Methods, Data and Preprocessing) gives the same total and lists the self-supervised pre-training data: Ribeiro (CODE, except its public test set), CPSC and CPSC-Extra, PTB, PTB-XL, Georgia, Chapman-Shaoxing, Ningbo, the Tianchi arrhythmia competition data, Shandong Provincial Hospital and MIMIC-IV-ECG. The preprint does not name the checkpoint revision used here; labels were removed for pre-training | PTB-XL: listed. The developers follow the original PTB-XL split and test on partitions not used in pre-training, so the test fold (strat_fold 10) was probably not used; of the 600 records of the primary PTB-XL comparison (global noise versus clean), 73 are in fold 10 (40 global noise, 33 clean; AUROCs in Supplementary Table S58) and 527 in folds 1–9, 68 of them in fold 9, the validation fold, whose use is not stated (results/v2_2026-11/ptbxl_strat_fold_counts.csv, evaluation/ptbxl_fold_counts.py). BUT QDB, CinC 2011, CinC 2017 and NSTDB: not listed |
+| HuBERT-ECG base (revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465) | 9.1 million 12-lead ECGs from four countries (model card). The developers' preprint (Coppola, E. et al. HuBERT-ECG as a self-supervised foundation model for broad and scalable cardiac applications. *medRxiv*, preprint, not peer reviewed, https://doi.org/10.1101/2024.11.14.24317328, version 4, Methods, Data and Preprocessing) gives the same total and lists the self-supervised pre-training data: Ribeiro (CODE, except its public test set), CPSC and CPSC-Extra, PTB, PTB-XL, Georgia, Chapman-Shaoxing, Ningbo, the Tianchi arrhythmia competition data, Shandong Provincial Hospital and MIMIC-IV-ECG. The preprint does not name the checkpoint revision used here; labels were removed for pre-training | PTB-XL: listed. The developers follow the original PTB-XL split and test on partitions not used in pre-training, so the test fold (strat_fold 10) was probably not used; of the 600 records of the primary PTB-XL comparison (global noise versus clean), 73 are in fold 10 (40 global noise, 33 clean; AUROCs in Supplementary Table S58) and 527 in folds 1–9, 68 of them in fold 9, the validation fold, whose use is not stated (results/v2_2026-11/ptbxl_strat_fold_counts.csv, evaluation/ptbxl_fold_counts.py). BUT QDB, CinC 2011, CinC 2017 and NSTDB: not listed |
 | LiquidAI d1-3B (revision 051bcc464b01b9f92942b364d9586b0ef5912432), post-trained from LFM2.5-VL-3B | Training data not described on the model card | Unknown for all five |
 | TabPFN-3 classifier checkpoint tabpfn-v3-classifier-v3_default.ckpt | "Trained purely on synthetic tabular tasks" (model card) | None documented: no real data in pre-training |
 | Models fitted in this study (tabular models, networks, probe heads) | No pre-training | BUT QDB development windows only; in leave-one-dataset-out training also the two non-held-out datasets (CinC 2017: 1,278 recordings) |
@@ -1364,14 +1370,14 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 | Analysis (tables) | Development cohort | When decided (Deviations item) | Role |
 | :--- | :--- | :--- | :--- |
-| In-domain discrimination and paired comparisons (Table 1, Fig. 2; S1, S28, S50, S53, S54, S57) | 988; 1,041 in Table 1 and S49 | Original analyses; cohort corrected (1); S50, S53, S54 and S57 added in review (14, 15, 17) | Primary (988); S49 sensitivity; S54 and S57 sensitivity and descriptive |
+| In-domain discrimination and paired comparisons (Table 1, Fig. 2; S1, S28, S50, S53, S54, S57, S62) | 988; 1,041 in Table 1, S49 and S62 | Original analyses; cohort corrected (1); S50, S53, S54 and S57 added in review (14, 15, 17); null-centred p-values (18) | Primary (988); S49 sensitivity; S54, S57 and S62 sensitivity and descriptive |
 | External discrimination on CinC 2011 and CinC 2017 (Tables 1 and 2; S13, S27, S28) | 988; 1,041 in Table 1 and S49 | Original analyses; a CinC 2011 subset used during development was replaced by all 998 records (2) | Primary (988) |
 | TabPFN and the HuBERT-ECG probe | 988; 1,041 in Table 1 and S49 | Added after the single-source results were known (5) | Part of the primary comparison |
 | d1-3B image-token probe as the primary probe (S18) | 988; 1,041 in Table 1 and S49 | Introduced after the zero-shot results and chosen after both probes' results were known (4) | Primary probe |
-| Rank agreement and in-domain selection (S44) | 988; correlations for 1,041 in S49 | Question placed first after all results were known (9); bootstrap intervals added in review (12) | Descriptive, post hoc |
+| Rank agreement and in-domain selection (S44) | 988; correlations for 1,041 in S49 | Question placed first after all results were known (9); bootstrap intervals added in review (12); rows without the d1-3B probe (18) | Descriptive, post hoc |
 | Constant-lead analyses (S26, S35, S40, S59) | 988 | After the first results (5, 8, 17) | Descriptive; S40 sensitivity |
 | 12-lead scoring (S5) | 988 | Aggregation rules chosen after the main analysis (5) | Secondary |
-| Multi-source training (Table 3, Fig. 3; S21) | 988 | Added after the single-source results were known (5) | Secondary |
+| Multi-source training (Table 3, Fig. 3; S21, S62) | 988 | Added after the single-source results were known (5); 1/n floor and null-centred p-values (18) | Secondary |
 | Threshold transfer (S4; S60) | 988; 1,041 in S60 | Original analysis; S60 added in review (17) | Secondary |
 | Local threshold re-setting and recalibration (Fig. 4; S22, S48) and calibration (S32) | 988 | Original analyses; zero-rejection columns and calibration solver revised in review (12) | Secondary |
 | Quantization-insensitive flatline input (S34) | 988 | After the CinC 2011 results (6) | Exploratory |
@@ -1382,3 +1388,57 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 | NSTDB stress (S7, S16) | 988 | Original analyses | Secondary |
 | Quota sensitivity analysis (S49) | 1,041 | Plan written before the added windows were scored, with the primary results known (13) | Sensitivity |
 | bSQI diagnostic (S55) | 988 | Added in review (15) | Descriptive |
+
+## Supplementary Table S62. Null-centred bootstrap p-values beside the percentile p-values used in the text (post hoc, added in review; saved predictions only, no model refitted). evaluation/bootstrap_null_centred.py re-runs the resamples of the primary analyses (same generator, seed and pair order) and reproduced every stored p-value and difference exactly. Δ is the observed and Δ* a resampled AUROC difference. Percentile p = max(2 × min(share with Δ* ≤ 0, share with Δ* ≥ 0), 1/n), the value used in the text; null-centred p = max(share with ∣Δ* − Δ∣ ≥ ∣Δ∣, 1/n), in which Δ* − Δ approximates the distribution of the estimate under the null hypothesis (main text, Statistical analysis); n = valid resamples of 2,000. Holm adjustment within the families of the main analyses: all 55 BUT QDB pairs of each cohort (shown: the ten comparisons with the 2D CNN, the best model in both cohorts, and the number of the 55 pairs significant under each p-value) and the nine comparisons of each held-out dataset in Table 3. Resampling unit: BUT QDB subjects, also when BUT QDB is held out in Table 3; recordings for CinC 2011 and CinC 2017 held out. The Table 3 percentile values carry the 1/n floor from round V23 on; before, the unfloored values were adjusted and p-values of 0 were printed as p_Holm < 0.001 (no decision at the 0.05 level changed). Source: results/v2_2026-11/bootstrap_null_centred.csv.
+
+| Comparison | Δ AUROC | Valid resamples | p, percentile (1/n floor) | p_Holm, percentile | Resamples with ∣Δ* − Δ∣ ≥ ∣Δ∣ | p, null-centred | p_Holm, null-centred |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| BUT QDB, 988 windows: 1D CNN (Raw Signal) − 2D CNN | −0.002 | 2,000 | 0.9000 | 1.000 | 1,764 | 0.8820 | 1.000 |
+| BUT QDB, 988 windows: Rule-Based SQI Heuristic − 2D CNN | −0.014 | 2,000 | 0.1840 | 1.000 | 587 | 0.2935 | 1.000 |
+| BUT QDB, 988 windows: d1-3B image-token probe − 2D CNN | −0.014 | 2,000 | 0.2370 | 1.000 | 635 | 0.3175 | 1.000 |
+| BUT QDB, 988 windows: SinglePass Multimodal Net − 2D CNN | −0.019 | 2,000 | 0.0430 | 1.000 | 205 | 0.1025 | 1.000 |
+| BUT QDB, 988 windows: LightGBM (SQI) − 2D CNN | −0.028 | 2,000 | 0.0800 | 1.000 | 356 | 0.1780 | 1.000 |
+| BUT QDB, 988 windows: TabPFN (SQI) − 2D CNN | −0.029 | 2,000 | 0.0930 | 1.000 | 311 | 0.1555 | 1.000 |
+| BUT QDB, 988 windows: HuBERT-ECG probe − 2D CNN | −0.046 | 2,000 | 0.0160 | 0.640 | 277 | 0.1385 | 1.000 |
+| BUT QDB, 988 windows: Independent SQI MLP − 2D CNN | −0.081 | 2,000 | 0.0005 | 0.028 | 158 | 0.0790 | 1.000 |
+| BUT QDB, 988 windows: Logistic Regression (SQI) − 2D CNN | −0.086 | 2,000 | 0.0005 | 0.028 | 77 | 0.0385 | 1.000 |
+| BUT QDB, 988 windows: LiquidAI d1-3B (Zero-Shot) − 2D CNN | −0.157 | 2,000 | 0.0010 | 0.051 | 41 | 0.0205 | 1.000 |
+| BUT QDB, 988 windows: pairs with p_Holm < 0.05 among all 55 | | | | 4 | | | 0 |
+| BUT QDB, 1,041 windows: 1D CNN (Raw Signal) − 2D CNN | −0.005 | 2,000 | 0.7000 | 1.000 | 1,251 | 0.6255 | 1.000 |
+| BUT QDB, 1,041 windows: HuBERT-ECG probe − 2D CNN | −0.012 | 2,000 | 0.1340 | 1.000 | 461 | 0.2305 | 1.000 |
+| BUT QDB, 1,041 windows: d1-3B image-token probe − 2D CNN | −0.016 | 2,000 | 0.0760 | 1.000 | 355 | 0.1775 | 1.000 |
+| BUT QDB, 1,041 windows: Rule-Based SQI Heuristic − 2D CNN | −0.017 | 2,000 | 0.1350 | 1.000 | 492 | 0.2460 | 1.000 |
+| BUT QDB, 1,041 windows: SinglePass Multimodal Net − 2D CNN | −0.025 | 2,000 | 0.0290 | 1.000 | 196 | 0.0980 | 1.000 |
+| BUT QDB, 1,041 windows: LightGBM (SQI) − 2D CNN | −0.027 | 2,000 | 0.0850 | 1.000 | 360 | 0.1800 | 1.000 |
+| BUT QDB, 1,041 windows: TabPFN (SQI) − 2D CNN | −0.030 | 2,000 | 0.0460 | 1.000 | 264 | 0.1320 | 1.000 |
+| BUT QDB, 1,041 windows: Logistic Regression (SQI) − 2D CNN | −0.056 | 2,000 | 0.0180 | 0.702 | 222 | 0.1110 | 1.000 |
+| BUT QDB, 1,041 windows: Independent SQI MLP − 2D CNN | −0.061 | 2,000 | 0.0060 | 0.264 | 185 | 0.0925 | 1.000 |
+| BUT QDB, 1,041 windows: LiquidAI d1-3B (Zero-Shot) − 2D CNN | −0.143 | 2,000 | 0.0005 | 0.028 | 28 | 0.0140 | 0.756 |
+| BUT QDB, 1,041 windows: pairs with p_Holm < 0.05 among all 55 | | | | 5 | | | 0 |
+| Table 3, BUT QDB held out: Logistic Regression (SQI), multi-source − BUT-only | −0.228 | 2,000 | 0.4410 | 1.000 | 753 | 0.3765 | 1.000 |
+| Table 3, BUT QDB held out: LightGBM (SQI), multi-source − BUT-only | +0.007 | 2,000 | 0.7660 | 1.000 | 1,447 | 0.7235 | 1.000 |
+| Table 3, BUT QDB held out: Independent SQI MLP, multi-source − BUT-only | +0.074 | 2,000 | 0.0005 | 0.0045 | 151 | 0.0755 | 0.679 |
+| Table 3, BUT QDB held out: 1D CNN (Raw Signal), multi-source − BUT-only | +0.006 | 2,000 | 0.7710 | 1.000 | 1,338 | 0.6690 | 1.000 |
+| Table 3, BUT QDB held out: 2D CNN (Rendered Image), multi-source − BUT-only | +0.005 | 2,000 | 0.6520 | 1.000 | 1,073 | 0.5365 | 1.000 |
+| Table 3, BUT QDB held out: SinglePass Multimodal Net, multi-source − BUT-only | −0.230 | 2,000 | 0.5800 | 1.000 | 890 | 0.4450 | 1.000 |
+| Table 3, CinC 2011 held out: Logistic Regression (SQI), multi-source − BUT-only | +0.076 | 2,000 | 0.0010 | 0.0045 | 1 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: LightGBM (SQI), multi-source − BUT-only | −0.115 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: Independent SQI MLP, multi-source − BUT-only | −0.180 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: 1D CNN (Raw Signal), multi-source − BUT-only | +0.078 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: 2D CNN (Rendered Image), multi-source − BUT-only | −0.028 | 2,000 | 0.0190 | 0.057 | 27 | 0.0135 | 0.041 |
+| Table 3, CinC 2011 held out: SinglePass Multimodal Net, multi-source − BUT-only | −0.002 | 2,000 | 0.7350 | 0.735 | 1,062 | 0.5310 | 0.531 |
+| Table 3, CinC 2017 held out: Logistic Regression (SQI), multi-source − BUT-only | +0.020 | 2,000 | 0.0090 | 0.036 | 15 | 0.0075 | 0.030 |
+| Table 3, CinC 2017 held out: LightGBM (SQI), multi-source − BUT-only | +0.003 | 2,000 | 0.5250 | 1.000 | 995 | 0.4975 | 1.000 |
+| Table 3, CinC 2017 held out: Independent SQI MLP, multi-source − BUT-only | −0.004 | 2,000 | 0.5410 | 1.000 | 1,152 | 0.5760 | 1.000 |
+| Table 3, CinC 2017 held out: 1D CNN (Raw Signal), multi-source − BUT-only | +0.103 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: 2D CNN (Rendered Image), multi-source − BUT-only | −0.037 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: SinglePass Multimodal Net, multi-source − BUT-only | +0.070 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, BUT QDB held out: TabPFN (SQI), multi-source − BUT-only | −0.038 | 2,000 | 0.2580 | 1.000 | 366 | 0.1830 | 1.000 |
+| Table 3, CinC 2011 held out: TabPFN (SQI), multi-source − BUT-only | −0.049 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: TabPFN (SQI), multi-source − BUT-only | −0.000 | 2,000 | 0.9400 | 1.000 | 1,845 | 0.9225 | 1.000 |
+| Table 3, BUT QDB held out: HuBERT-ECG probe, multi-source − BUT-only | +0.050 | 2,000 | 0.0070 | 0.056 | 283 | 0.1415 | 1.000 |
+| Table 3, CinC 2011 held out: HuBERT-ECG probe, multi-source − BUT-only | +0.240 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: HuBERT-ECG probe, multi-source − BUT-only | −0.028 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, BUT QDB held out: d1-3B image-token probe, multi-source − BUT-only | −0.048 | 2,000 | 0.3910 | 1.000 | 538 | 0.2690 | 1.000 |
+| Table 3, CinC 2011 held out: d1-3B image-token probe, multi-source − BUT-only | −0.008 | 2,000 | 0.1430 | 0.286 | 278 | 0.1390 | 0.278 |
+| Table 3, CinC 2017 held out: d1-3B image-token probe, multi-source − BUT-only | +0.028 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |

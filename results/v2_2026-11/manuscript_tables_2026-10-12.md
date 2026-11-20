@@ -307,17 +307,17 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 
 | Model | BUT QDB (train: CinC 2011 + CinC 2017) | CinC 2011 (train: BUT QDB + CinC 2017) | CinC 2017 (train: BUT QDB + CinC 2011) |
 | :--- | :---: | :---: | :---: |
-| **Logistic Regression (SQI)** | 0.671 [0.278–0.963]; Δ −0.228 (p_Holm = 1.000) | 0.398 [0.351–0.449]; Δ +0.076 (p_Holm = 0.004) | 0.890 [0.870–0.908]; Δ +0.020 (p_Holm = 0.036) |
-| **LightGBM (SQI)** | 0.963 [0.922–0.988]; Δ +0.007 (p_Holm = 1.000) | 0.637 [0.599–0.674]; Δ −0.115 (p_Holm < 0.001) | 0.894 [0.879–0.908]; Δ +0.003 (p_Holm = 1.000) |
-| **Independent SQI MLP** | 0.978 [0.920–0.999]; Δ +0.074 (p_Holm < 0.001) | 0.494 [0.482–0.505]; Δ −0.180 (p_Holm < 0.001) | 0.872 [0.856–0.886]; Δ −0.004 (p_Holm = 1.000) |
-| **1D CNN (Raw Signal)** | 0.989 [0.975–0.999]; Δ +0.006 (p_Holm = 1.000) | 0.773 [0.735–0.809]; Δ +0.078 (p_Holm < 0.001) | 0.871 [0.856–0.885]; Δ +0.103 (p_Holm < 0.001) |
-| **2D CNN (Rendered Image)** | 0.990 [0.979–0.998]; Δ +0.005 (p_Holm = 1.000) | 0.758 [0.720–0.794]; Δ −0.028 (p_Holm = 0.057) | 0.813 [0.789–0.837]; Δ −0.037 (p_Holm < 0.001) |
-| **SinglePass Multimodal Net** | 0.736 [0.291–0.987]; Δ −0.230 (p_Holm = 1.000) | 0.498 [0.493–0.500]; Δ −0.002 (p_Holm = 0.735) | 0.870 [0.853–0.886]; Δ +0.070 (p_Holm < 0.001) |
+| **Logistic Regression (SQI)** | 0.671 [0.278–0.963]; Δ −0.228 (p_Holm = 1.000) | 0.398 [0.351–0.449]; Δ +0.076 (p_Holm = 0.0045) | 0.890 [0.870–0.908]; Δ +0.020 (p_Holm = 0.036) |
+| **LightGBM (SQI)** | 0.963 [0.922–0.988]; Δ +0.007 (p_Holm = 1.000) | 0.637 [0.599–0.674]; Δ −0.115 (p_Holm = 0.0045) | 0.894 [0.879–0.908]; Δ +0.003 (p_Holm = 1.000) |
+| **Independent SQI MLP** | 0.978 [0.920–0.999]; Δ +0.074 (p_Holm = 0.0045) | 0.494 [0.482–0.505]; Δ −0.180 (p_Holm = 0.0045) | 0.872 [0.856–0.886]; Δ −0.004 (p_Holm = 1.000) |
+| **1D CNN (Raw Signal)** | 0.989 [0.975–0.999]; Δ +0.006 (p_Holm = 1.000) | 0.773 [0.735–0.809]; Δ +0.078 (p_Holm = 0.0045) | 0.871 [0.856–0.885]; Δ +0.103 (p_Holm = 0.0045) |
+| **2D CNN (Rendered Image)** | 0.990 [0.979–0.998]; Δ +0.005 (p_Holm = 1.000) | 0.758 [0.720–0.794]; Δ −0.028 (p_Holm = 0.057) | 0.813 [0.789–0.837]; Δ −0.037 (p_Holm = 0.0045) |
+| **SinglePass Multimodal Net** | 0.736 [0.291–0.987]; Δ −0.230 (p_Holm = 1.000) | 0.498 [0.493–0.500]; Δ −0.002 (p_Holm = 0.735) | 0.870 [0.853–0.886]; Δ +0.070 (p_Holm = 0.0045) |
 | **Rule-Based SQI Heuristic** | 0.971 (fixed rule) | 0.678 (fixed rule) | 0.887 (fixed rule) |
 | **LiquidAI d1-3B (Zero-Shot)** | — | — | — |
-| **TabPFN (SQI)** | 0.918 [0.844–0.980]; Δ −0.038 (p_Holm = 1.000) | 0.682 [0.641–0.720]; Δ −0.049 (p_Holm < 0.001) | 0.852 [0.829–0.875]; Δ −0.000 (p_Holm = 1.000) |
-| **HuBERT-ECG probe** | 0.988 [0.975–0.998]; Δ +0.050 (p_Holm = 0.056) | 0.802 [0.763–0.838]; Δ +0.240 (p_Holm < 0.001) | 0.879 [0.861–0.896]; Δ −0.028 (p_Holm < 0.001) |
-| **d1-3B image-token probe** | 0.923 [0.870–0.990]; Δ −0.048 (p_Holm = 1.000) | 0.816 [0.780–0.849]; Δ −0.008 (p_Holm = 0.286) | 0.922 [0.911–0.933]; Δ +0.028 (p_Holm < 0.001) |
+| **TabPFN (SQI)** | 0.918 [0.844–0.980]; Δ −0.038 (p_Holm = 1.000) | 0.682 [0.641–0.720]; Δ −0.049 (p_Holm = 0.0045) | 0.852 [0.829–0.875]; Δ −0.000 (p_Holm = 1.000) |
+| **HuBERT-ECG probe** | 0.988 [0.975–0.998]; Δ +0.050 (p_Holm = 0.056) | 0.802 [0.763–0.838]; Δ +0.240 (p_Holm = 0.0045) | 0.879 [0.861–0.896]; Δ −0.028 (p_Holm = 0.0045) |
+| **d1-3B image-token probe** | 0.923 [0.870–0.990]; Δ −0.048 (p_Holm = 1.000) | 0.816 [0.780–0.849]; Δ −0.008 (p_Holm = 0.286) | 0.922 [0.911–0.933]; Δ +0.028 (p_Holm = 0.0045) |
 
 ## Table 10b
 
@@ -883,6 +883,12 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | heuristic excluded (10) | BUT QDB → CinC 2011 | +0.62 [+0.09 to +0.76] (99%) | no (0.5%) | 0.037 [0.019–0.160] | 7 / 0 | 11–13 |
 | heuristic excluded (10) | BUT QDB → CinC 2017 | -0.05 [-0.42 to +0.25] (30%) | no (0.1%) | 0.057 [0.041–0.149] | 7 / 1 | 2–2 |
 | heuristic excluded (10) | CinC 2011 → CinC 2017 | +0.19 [+0.08 to +0.32] (100%) | no (4.5%) | 0.013 [0.000–0.028] | 0 / 1 | 90–91 |
+| d1-3B image-token probe excluded (10) | BUT QDB → CinC 2011 | +0.60 [+0.14 to +0.75] (99%) | yes (50.7%) | 0.000 [0.000–0.127] | 5 / 0 | 1014–1017 |
+| d1-3B image-token probe excluded (10) | BUT QDB → CinC 2017 | -0.08 [-0.49 to +0.36] (32%) | no (0.0%) | 0.057 [0.027–0.149] | 5 / 0 | 0–1 |
+| d1-3B image-token probe excluded (10) | CinC 2011 → CinC 2017 | +0.02 [-0.12 to +0.18] (59%) | no (0.1%) | 0.057 [0.039–0.073] | 0 / 0 | 2–2 |
+| probe and heuristic excluded (9) | BUT QDB → CinC 2011 | +0.57 [+0.15 to +0.77] (99%) | yes (52.3%) | 0.000 [0.000–0.121] | 5 / 0 | 1045–1049 |
+| probe and heuristic excluded (9) | BUT QDB → CinC 2017 | -0.15 [-0.60 to +0.27] (22%) | no (0.1%) | 0.057 [0.041–0.149] | 5 / 0 | 2–2 |
+| probe and heuristic excluded (9) | CinC 2011 → CinC 2017 | +0.00 [-0.12 to +0.17] (41%) | no (0.1%) | 0.057 [0.038–0.073] | 0 / 0 | 2–2 |
 
 ## Table 26
 
@@ -1220,4 +1226,58 @@ HuBERT-ECG probe with the record's real 12 leads as one input (one score per rec
 | **d1-3B image-token probe** | 4.9% / 86.1% | 4.8% / 92.4% | 7.8% / 57.8% | 11.9% / 64.4% | 45.3% / 97.5% | 50.5% / 98.9% |
 | **TabPFN (SQI)** | 4.8% / 76.1% | 4.5% / 80.1% | 21.7% / 59.1% | 20.2% / 61.8% | 28.0% / 84.5% | 25.7% / 84.5% |
 | **HuBERT-ECG probe** | 4.9% / 79.0% | 4.7% / 87.6% | 45.9% / 51.1% | 29.1% / 72.4% | 58.1% / 99.6% | 37.4% / 93.5% |
+
+## Table 40
+
+| Comparison | Δ AUROC | Valid resamples | p, percentile (1/n floor) | p_Holm, percentile | Resamples with ∣Δ* − Δ∣ ≥ ∣Δ∣ | p, null-centred | p_Holm, null-centred |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| BUT QDB, 988 windows: 1D CNN (Raw Signal) − 2D CNN | −0.002 | 2,000 | 0.9000 | 1.000 | 1,764 | 0.8820 | 1.000 |
+| BUT QDB, 988 windows: Rule-Based SQI Heuristic − 2D CNN | −0.014 | 2,000 | 0.1840 | 1.000 | 587 | 0.2935 | 1.000 |
+| BUT QDB, 988 windows: d1-3B image-token probe − 2D CNN | −0.014 | 2,000 | 0.2370 | 1.000 | 635 | 0.3175 | 1.000 |
+| BUT QDB, 988 windows: SinglePass Multimodal Net − 2D CNN | −0.019 | 2,000 | 0.0430 | 1.000 | 205 | 0.1025 | 1.000 |
+| BUT QDB, 988 windows: LightGBM (SQI) − 2D CNN | −0.028 | 2,000 | 0.0800 | 1.000 | 356 | 0.1780 | 1.000 |
+| BUT QDB, 988 windows: TabPFN (SQI) − 2D CNN | −0.029 | 2,000 | 0.0930 | 1.000 | 311 | 0.1555 | 1.000 |
+| BUT QDB, 988 windows: HuBERT-ECG probe − 2D CNN | −0.046 | 2,000 | 0.0160 | 0.640 | 277 | 0.1385 | 1.000 |
+| BUT QDB, 988 windows: Independent SQI MLP − 2D CNN | −0.081 | 2,000 | 0.0005 | 0.028 | 158 | 0.0790 | 1.000 |
+| BUT QDB, 988 windows: Logistic Regression (SQI) − 2D CNN | −0.086 | 2,000 | 0.0005 | 0.028 | 77 | 0.0385 | 1.000 |
+| BUT QDB, 988 windows: LiquidAI d1-3B (Zero-Shot) − 2D CNN | −0.157 | 2,000 | 0.0010 | 0.051 | 41 | 0.0205 | 1.000 |
+| BUT QDB, 988 windows: pairs with p_Holm < 0.05 among all 55 | | | | 4 | | | 0 |
+| BUT QDB, 1,041 windows: 1D CNN (Raw Signal) − 2D CNN | −0.005 | 2,000 | 0.7000 | 1.000 | 1,251 | 0.6255 | 1.000 |
+| BUT QDB, 1,041 windows: HuBERT-ECG probe − 2D CNN | −0.012 | 2,000 | 0.1340 | 1.000 | 461 | 0.2305 | 1.000 |
+| BUT QDB, 1,041 windows: d1-3B image-token probe − 2D CNN | −0.016 | 2,000 | 0.0760 | 1.000 | 355 | 0.1775 | 1.000 |
+| BUT QDB, 1,041 windows: Rule-Based SQI Heuristic − 2D CNN | −0.017 | 2,000 | 0.1350 | 1.000 | 492 | 0.2460 | 1.000 |
+| BUT QDB, 1,041 windows: SinglePass Multimodal Net − 2D CNN | −0.025 | 2,000 | 0.0290 | 1.000 | 196 | 0.0980 | 1.000 |
+| BUT QDB, 1,041 windows: LightGBM (SQI) − 2D CNN | −0.027 | 2,000 | 0.0850 | 1.000 | 360 | 0.1800 | 1.000 |
+| BUT QDB, 1,041 windows: TabPFN (SQI) − 2D CNN | −0.030 | 2,000 | 0.0460 | 1.000 | 264 | 0.1320 | 1.000 |
+| BUT QDB, 1,041 windows: Logistic Regression (SQI) − 2D CNN | −0.056 | 2,000 | 0.0180 | 0.702 | 222 | 0.1110 | 1.000 |
+| BUT QDB, 1,041 windows: Independent SQI MLP − 2D CNN | −0.061 | 2,000 | 0.0060 | 0.264 | 185 | 0.0925 | 1.000 |
+| BUT QDB, 1,041 windows: LiquidAI d1-3B (Zero-Shot) − 2D CNN | −0.143 | 2,000 | 0.0005 | 0.028 | 28 | 0.0140 | 0.756 |
+| BUT QDB, 1,041 windows: pairs with p_Holm < 0.05 among all 55 | | | | 5 | | | 0 |
+| Table 3, BUT QDB held out: Logistic Regression (SQI), multi-source − BUT-only | −0.228 | 2,000 | 0.4410 | 1.000 | 753 | 0.3765 | 1.000 |
+| Table 3, BUT QDB held out: LightGBM (SQI), multi-source − BUT-only | +0.007 | 2,000 | 0.7660 | 1.000 | 1,447 | 0.7235 | 1.000 |
+| Table 3, BUT QDB held out: Independent SQI MLP, multi-source − BUT-only | +0.074 | 2,000 | 0.0005 | 0.0045 | 151 | 0.0755 | 0.679 |
+| Table 3, BUT QDB held out: 1D CNN (Raw Signal), multi-source − BUT-only | +0.006 | 2,000 | 0.7710 | 1.000 | 1,338 | 0.6690 | 1.000 |
+| Table 3, BUT QDB held out: 2D CNN (Rendered Image), multi-source − BUT-only | +0.005 | 2,000 | 0.6520 | 1.000 | 1,073 | 0.5365 | 1.000 |
+| Table 3, BUT QDB held out: SinglePass Multimodal Net, multi-source − BUT-only | −0.230 | 2,000 | 0.5800 | 1.000 | 890 | 0.4450 | 1.000 |
+| Table 3, CinC 2011 held out: Logistic Regression (SQI), multi-source − BUT-only | +0.076 | 2,000 | 0.0010 | 0.0045 | 1 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: LightGBM (SQI), multi-source − BUT-only | −0.115 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: Independent SQI MLP, multi-source − BUT-only | −0.180 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: 1D CNN (Raw Signal), multi-source − BUT-only | +0.078 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2011 held out: 2D CNN (Rendered Image), multi-source − BUT-only | −0.028 | 2,000 | 0.0190 | 0.057 | 27 | 0.0135 | 0.041 |
+| Table 3, CinC 2011 held out: SinglePass Multimodal Net, multi-source − BUT-only | −0.002 | 2,000 | 0.7350 | 0.735 | 1,062 | 0.5310 | 0.531 |
+| Table 3, CinC 2017 held out: Logistic Regression (SQI), multi-source − BUT-only | +0.020 | 2,000 | 0.0090 | 0.036 | 15 | 0.0075 | 0.030 |
+| Table 3, CinC 2017 held out: LightGBM (SQI), multi-source − BUT-only | +0.003 | 2,000 | 0.5250 | 1.000 | 995 | 0.4975 | 1.000 |
+| Table 3, CinC 2017 held out: Independent SQI MLP, multi-source − BUT-only | −0.004 | 2,000 | 0.5410 | 1.000 | 1,152 | 0.5760 | 1.000 |
+| Table 3, CinC 2017 held out: 1D CNN (Raw Signal), multi-source − BUT-only | +0.103 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: 2D CNN (Rendered Image), multi-source − BUT-only | −0.037 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: SinglePass Multimodal Net, multi-source − BUT-only | +0.070 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, BUT QDB held out: TabPFN (SQI), multi-source − BUT-only | −0.038 | 2,000 | 0.2580 | 1.000 | 366 | 0.1830 | 1.000 |
+| Table 3, CinC 2011 held out: TabPFN (SQI), multi-source − BUT-only | −0.049 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: TabPFN (SQI), multi-source − BUT-only | −0.000 | 2,000 | 0.9400 | 1.000 | 1,845 | 0.9225 | 1.000 |
+| Table 3, BUT QDB held out: HuBERT-ECG probe, multi-source − BUT-only | +0.050 | 2,000 | 0.0070 | 0.056 | 283 | 0.1415 | 1.000 |
+| Table 3, CinC 2011 held out: HuBERT-ECG probe, multi-source − BUT-only | +0.240 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, CinC 2017 held out: HuBERT-ECG probe, multi-source − BUT-only | −0.028 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
+| Table 3, BUT QDB held out: d1-3B image-token probe, multi-source − BUT-only | −0.048 | 2,000 | 0.3910 | 1.000 | 538 | 0.2690 | 1.000 |
+| Table 3, CinC 2011 held out: d1-3B image-token probe, multi-source − BUT-only | −0.008 | 2,000 | 0.1430 | 0.286 | 278 | 0.1390 | 0.278 |
+| Table 3, CinC 2017 held out: d1-3B image-token probe, multi-source − BUT-only | +0.028 | 2,000 | 0.0005 | 0.0045 | 0 | 0.0005 | 0.0045 |
 

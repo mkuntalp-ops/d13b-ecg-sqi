@@ -907,6 +907,12 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 | heuristic excluded (10) | BUT QDB → CinC 2011 | +0.62 [+0.09 to +0.76] (99%) | no (0.5%) | 0.037 [0.019–0.160] | 7 / 0 | 11–13 |
 | heuristic excluded (10) | BUT QDB → CinC 2017 | -0.05 [-0.42 to +0.25] (30%) | no (0.1%) | 0.057 [0.041–0.149] | 7 / 1 | 2–2 |
 | heuristic excluded (10) | CinC 2011 → CinC 2017 | +0.19 [+0.08 to +0.32] (100%) | no (4.5%) | 0.013 [0.000–0.028] | 0 / 1 | 90–91 |
+| d1-3B image-token probe excluded (10) | BUT QDB → CinC 2011 | +0.60 [+0.14 to +0.75] (99%) | yes (50.7%) | 0.000 [0.000–0.127] | 5 / 0 | 1014–1017 |
+| d1-3B image-token probe excluded (10) | BUT QDB → CinC 2017 | -0.08 [-0.49 to +0.36] (32%) | no (0.0%) | 0.057 [0.027–0.149] | 5 / 0 | 0–1 |
+| d1-3B image-token probe excluded (10) | CinC 2011 → CinC 2017 | +0.02 [-0.12 to +0.18] (59%) | no (0.1%) | 0.057 [0.039–0.073] | 0 / 0 | 2–2 |
+| probe and heuristic excluded (9) | BUT QDB → CinC 2011 | +0.57 [+0.15 to +0.77] (99%) | yes (52.3%) | 0.000 [0.000–0.121] | 5 / 0 | 1045–1049 |
+| probe and heuristic excluded (9) | BUT QDB → CinC 2017 | -0.15 [-0.60 to +0.27] (22%) | no (0.1%) | 0.057 [0.041–0.149] | 5 / 0 | 2–2 |
+| probe and heuristic excluded (9) | CinC 2011 → CinC 2017 | +0.00 [-0.12 to +0.17] (41%) | no (0.1%) | 0.057 [0.038–0.073] | 0 / 0 | 2–2 |
 
 ## Table S45. Per-window latency on an Apple M4 (median and 95th percentile of three runs of 25 windows), separating preprocessing from the forward pass. Every model is timed from the stored 500-Hz window to its decision; rendering is included for every model that needs a strip image, including the rule heuristic. (Table 5 of the main text in an earlier version.)
 

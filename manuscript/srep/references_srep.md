@@ -51,3 +51,5 @@ ribeiro: Ribeiro, A. H. et al. Automatic diagnosis of the 12-lead ECG using a de
 hannun: Hannun, A. Y. et al. Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network. *Nat. Med.* **25**, 65–69 (2019). https://doi.org/10.1038/s41591-018-0268-3
 drew: Drew, B. J. et al. Insights into the problem of alarm fatigue with physiologic monitor devices: a comprehensive observational study of consecutive intensive care unit patients. *PLoS One* **9**, e110274 (2014). https://doi.org/10.1371/journal.pone.0110274
 ptbxl: Wagner, P. et al. PTB-XL, a large publicly available electrocardiography dataset. *Sci. Data* **7**, 154 (2020). https://doi.org/10.1038/s41597-020-0495-6
+fan2026: Fan, J., Chang, H., Han, H. & Luo, J. Global-key region collaborative noise-aware for electrocardiogram signal quality assessment. *PLoS One* **21**, e0355335 (2026). https://doi.org/10.1371/journal.pone.0355335
+hallwilson: Hall, P. & Wilson, S. R. Two guidelines for bootstrap hypothesis testing. *Biometrics* **47**, 757 (1991). https://doi.org/10.2307/2532163

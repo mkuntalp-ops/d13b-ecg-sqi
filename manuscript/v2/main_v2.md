@@ -169,17 +169,17 @@ Further analyses are reported in the Supplementary Results: relabelling Class 2 
 
 | Model | BUT QDB (train: CinC 2011 + CinC 2017) | CinC 2011 (train: BUT QDB + CinC 2017) | CinC 2017 (train: BUT QDB + CinC 2011) |
 | :--- | :---: | :---: | :---: |
-| **Logistic Regression (SQI)** | 0.671 [0.278–0.963]; Δ −0.228 (p_Holm = 1.000) | 0.398 [0.351–0.449]; Δ +0.076 (p_Holm = 0.004) | 0.890 [0.870–0.908]; Δ +0.020 (p_Holm = 0.036) |
-| **LightGBM (SQI)** | 0.963 [0.922–0.988]; Δ +0.007 (p_Holm = 1.000) | 0.637 [0.599–0.674]; Δ −0.115 (p_Holm < 0.001) | 0.894 [0.879–0.908]; Δ +0.003 (p_Holm = 1.000) |
-| **Independent SQI MLP** | 0.978 [0.920–0.999]; Δ +0.074 (p_Holm < 0.001) | 0.494 [0.482–0.505]; Δ −0.180 (p_Holm < 0.001) | 0.872 [0.856–0.886]; Δ −0.004 (p_Holm = 1.000) |
-| **1D CNN (Raw Signal)** | 0.989 [0.975–0.999]; Δ +0.006 (p_Holm = 1.000) | 0.773 [0.735–0.809]; Δ +0.078 (p_Holm < 0.001) | 0.871 [0.856–0.885]; Δ +0.103 (p_Holm < 0.001) |
-| **2D CNN (Rendered Image)** | 0.990 [0.979–0.998]; Δ +0.005 (p_Holm = 1.000) | 0.758 [0.720–0.794]; Δ −0.028 (p_Holm = 0.057) | 0.813 [0.789–0.837]; Δ −0.037 (p_Holm < 0.001) |
-| **SinglePass Multimodal Net** | 0.736 [0.291–0.987]; Δ −0.230 (p_Holm = 1.000) | 0.498 [0.493–0.500]; Δ −0.002 (p_Holm = 0.735) | 0.870 [0.853–0.886]; Δ +0.070 (p_Holm < 0.001) |
+| **Logistic Regression (SQI)** | 0.671 [0.278–0.963]; Δ −0.228 (p_Holm = 1.000) | 0.398 [0.351–0.449]; Δ +0.076 (p_Holm = 0.0045) | 0.890 [0.870–0.908]; Δ +0.020 (p_Holm = 0.036) |
+| **LightGBM (SQI)** | 0.963 [0.922–0.988]; Δ +0.007 (p_Holm = 1.000) | 0.637 [0.599–0.674]; Δ −0.115 (p_Holm = 0.0045) | 0.894 [0.879–0.908]; Δ +0.003 (p_Holm = 1.000) |
+| **Independent SQI MLP** | 0.978 [0.920–0.999]; Δ +0.074 (p_Holm = 0.0045) | 0.494 [0.482–0.505]; Δ −0.180 (p_Holm = 0.0045) | 0.872 [0.856–0.886]; Δ −0.004 (p_Holm = 1.000) |
+| **1D CNN (Raw Signal)** | 0.989 [0.975–0.999]; Δ +0.006 (p_Holm = 1.000) | 0.773 [0.735–0.809]; Δ +0.078 (p_Holm = 0.0045) | 0.871 [0.856–0.885]; Δ +0.103 (p_Holm = 0.0045) |
+| **2D CNN (Rendered Image)** | 0.990 [0.979–0.998]; Δ +0.005 (p_Holm = 1.000) | 0.758 [0.720–0.794]; Δ −0.028 (p_Holm = 0.057) | 0.813 [0.789–0.837]; Δ −0.037 (p_Holm = 0.0045) |
+| **SinglePass Multimodal Net** | 0.736 [0.291–0.987]; Δ −0.230 (p_Holm = 1.000) | 0.498 [0.493–0.500]; Δ −0.002 (p_Holm = 0.735) | 0.870 [0.853–0.886]; Δ +0.070 (p_Holm = 0.0045) |
 | **Rule-Based SQI Heuristic** | 0.971 (fixed rule) | 0.678 (fixed rule) | 0.887 (fixed rule) |
 | **LiquidAI d1-3B (Zero-Shot)** | — | — | — |
-| **TabPFN (SQI)** | 0.918 [0.844–0.980]; Δ −0.038 (p_Holm = 1.000) | 0.682 [0.641–0.720]; Δ −0.049 (p_Holm < 0.001) | 0.852 [0.829–0.875]; Δ −0.000 (p_Holm = 1.000) |
-| **HuBERT-ECG probe** | 0.988 [0.975–0.998]; Δ +0.050 (p_Holm = 0.056) | 0.802 [0.763–0.838]; Δ +0.240 (p_Holm < 0.001) | 0.879 [0.861–0.896]; Δ −0.028 (p_Holm < 0.001) |
-| **d1-3B image-token probe** | 0.923 [0.870–0.990]; Δ −0.048 (p_Holm = 1.000) | 0.816 [0.780–0.849]; Δ −0.008 (p_Holm = 0.286) | 0.922 [0.911–0.933]; Δ +0.028 (p_Holm < 0.001) |
+| **TabPFN (SQI)** | 0.918 [0.844–0.980]; Δ −0.038 (p_Holm = 1.000) | 0.682 [0.641–0.720]; Δ −0.049 (p_Holm = 0.0045) | 0.852 [0.829–0.875]; Δ −0.000 (p_Holm = 1.000) |
+| **HuBERT-ECG probe** | 0.988 [0.975–0.998]; Δ +0.050 (p_Holm = 0.056) | 0.802 [0.763–0.838]; Δ +0.240 (p_Holm = 0.0045) | 0.879 [0.861–0.896]; Δ −0.028 (p_Holm = 0.0045) |
+| **d1-3B image-token probe** | 0.923 [0.870–0.990]; Δ −0.048 (p_Holm = 1.000) | 0.816 [0.780–0.849]; Δ −0.008 (p_Holm = 0.286) | 0.922 [0.911–0.933]; Δ +0.028 (p_Holm = 0.0045) |
 
 ![](../../results/v2_2026-11/figures/q1_figure2.png)
 
@@ -187,7 +187,7 @@ Further analyses are reported in the Supplementary Results: relabelling Class 2 
 
 Changing the training sources changed AUROC substantially, in both directions (Table 2). Across five training seeds (Table S21), five effects of the networks were consistent (medians over seeds): the 1D CNN gained 0.078 on CinC 2011 and 0.116 on CinC 2017, the multimodal net gained 0.053 on CinC 2017, the 2D CNN lost 0.037 on CinC 2017, and the MLP lost 0.186 on CinC 2011. The 2D CNN on CinC 2011 (median −0.019) and the multimodal net on CinC 2011 (median −0.002, range −0.129 to +0.201) were not consistent. On the BUT QDB test, the multimodal net varied widely between seeds (0.736–0.970).
 
-Among the other models, logistic regression improved on CinC 2011 (+0.076), although it remained below 0.5, and slightly on CinC 2017 (+0.020); LightGBM lost 0.115 on CinC 2011; and TabPFN lost 0.049 on CinC 2011. With only CinC data for training, logistic regression ranked BUT QDB windows poorly (0.671, 95% CI 0.278–0.963). The HuBERT-ECG probe gained most on CinC 2011, from 0.562 to 0.802 (p_Holm < 0.001), and lost slightly on CinC 2017 (−0.028, p_Holm < 0.001). The d1-3B probe was stable on CinC 2011 (0.816, Δ −0.008, p_Holm = 0.286) and gained on CinC 2017 (0.922, Δ +0.028, p_Holm < 0.001).
+Among the other models, logistic regression improved on CinC 2011 (+0.076), although it remained below 0.5, and slightly on CinC 2017 (+0.020); LightGBM lost 0.115 on CinC 2011; and TabPFN lost 0.049 on CinC 2011. With only CinC data for training, logistic regression ranked BUT QDB windows poorly (0.671, 95% CI 0.278–0.963). The HuBERT-ECG probe gained most on CinC 2011, from 0.562 to 0.802 (p_Holm = 0.0045), and lost slightly on CinC 2017 (−0.028, p_Holm = 0.0045). The d1-3B probe was stable on CinC 2011 (0.816, Δ −0.008, p_Holm = 0.286) and gained on CinC 2017 (0.922, Δ +0.028, p_Holm = 0.0045).
 
 ### 3.5 Operating points, calibration and prevalence
 
