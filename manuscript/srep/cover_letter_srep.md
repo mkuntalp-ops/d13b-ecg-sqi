@@ -5,7 +5,7 @@ Department of Electrical and Electronics Engineering, Dokuz Eylül University
 Tınaztepe Campus, Buca, 35160 İzmir, Turkey
 mehmet.kuntalp@deu.edu.tr · ORCID 0000-0002-3381-9026
 
-[DATE]
+21 November 2026
 
 The Editors
 *Scientific Reports*
