@@ -840,11 +840,13 @@ def checks() -> list:
         assert len(_vp) == 55 and len(_vs) == 55 and len(_vl) == 27
         _hl = [f"{_vp.loc[(m, CNN2), 'p_centred_holm']:.3f}" for m in ("Independent_SQI_MLP", "Logistic_Regression_SQI")]
         assert _hl[0] == _hl[1]
-        c.append((f"With a null-centred bootstrap p-value, however, neither was (both p_Holm = {_hl[0]})", MAIN))
+        c.append((f"With the post hoc null-centred p-value neither was (both p_Holm = {_hl[0]})", MAIN))  # V24 wording
         assert (_vp.p_centred_holm >= 0.05).all() and (_vs.p_centred_holm >= 0.05).all()
         c.append(("and no in-domain pair was significant in either cohort (Table S62)", MAIN))
-        c.append(("with a null-centred bootstrap p-value no BUT QDB comparison was significant in either cohort, Table S62)", MAIN))
-        c.append(("but not with a null-centred bootstrap p-value (Table S62)", MAIN))
+        c.append(("with the post hoc null-centred bootstrap p-value no BUT QDB comparison was significant in either cohort, Table S62, so "
+                  "BUT QDB values below 0.05 are not regarded as established)", MAIN))
+        c.append(("but not with the post hoc null-centred p-value, with which no BUT QDB comparison was significant (Table S62), so these "
+                  "two differences are not regarded as established", MAIN))
         assert _vs.loc[(CNN2, "LiquidAI_d1_3B_Neural"), "p_percentile_holm"] < 0.05
         c.append((f"though not with the null-centred p-value (p_Holm = {_vs.loc[(CNN2, 'LiquidAI_d1_3B_Neural'), 'p_centred_holm']:.3f}; "
                   f"Table S62)", MAIN))
@@ -875,7 +877,62 @@ def checks() -> list:
         assert _ru.loc[("BUT QDB", "CinC 2017", "same_leader"), "prop_positive"] == 0 and _ru.loc[("BUT QDB", "CinC 2011", "same_leader"), "prop_positive"] < 0.01
         assert 0.4 < _rq.loc[("BUT QDB", "CinC 2011", "same_leader"), "prop_positive"] < 0.6
         c.append(("and CinC 2011 in almost none, though in about half once the post hoc d1-3B probe was excluded (Table S44)", MAIN))
+        # round V24 (review of v23, PAPER-004): the percentile p-value is primary, the null-centred one a sensitivity analysis,
+        # and in-domain differences from the best that are significant with only one of them are not regarded as established
+        _hp = [_vp.loc[(m, CNN2), "p_percentile_holm"] for m in ("Independent_SQI_MLP", "Logistic_Regression_SQI")]
+        assert max(_hp) < 0.05 and f"{_hp[0]:.3f}" == f"{_hp[1]:.3f}"
+        c.append((f"With the primary percentile p-value they were significant (both p_Holm = {_hp[0]:.3f})", MAIN))
+        c.append(("so we do not regard them as established.", MAIN))
+        _best = _vp[(_vp.index.get_level_values(0) == CNN2) | (_vp.index.get_level_values(1) == CNN2)]
+        _only = _best[(_best.p_percentile_holm < 0.05) != (_best.p_centred_holm < 0.05)]
+        assert sorted(_only.index) == sorted([("Independent_SQI_MLP", CNN2), ("Logistic_Regression_SQI", CNN2)])
+        c.append(("with 15 clusters neither is known to control the type I error rate, so in-domain differences that are significant "
+                  "with only one of them are not regarded as established", MAIN))
+        c.append(("both hold the fitted models fixed and do not include variability from refitting, fold assignment or training seeds", MAIN))
+        c.append(("the main text does not regard BUT QDB differences that are significant with only one of them as established", SUPP))
+        # PAPER-012: Fig. 3 markers (evaluation/generate_q1_figures.py: Holm over the unfloored p_boot) give the same decisions as
+        # the floored Table 3 values, and the legend names the two markers that the null-centred p-value would change
+        _ls = pd.read_csv(R / "lodo_summary.csv")
+        _ls = _ls[_ls.p_boot.notna()].copy()
+        _ls["p_holm"] = np.nan
+        from paired_comparisons import holm as _holm  # the name pc is a local table inside checks()
+        for _, _g in _ls.groupby("test"):
+            _ls.loc[_g.index, "p_holm"] = _holm(_g.p_boot.values)
+        _ls = _ls.set_index(["test", "model"])
+        assert len(_ls) == 27 and all((_ls.loc[k, "p_holm"] < 0.05) == (_vl.loc[k, "p_floor_holm"] < 0.05) for k in _vl.index)
+        assert _ls.loc[("BUT_QDB", "Independent_SQI_MLP"), "p_holm"] < 0.05 <= _ls.loc[("CinC2011", CNN2), "p_holm"]
+        c.append(("with the post hoc null-centred p-value the MLP marker for BUT QDB would be open and the 2D CNN marker for CinC 2011 "
+                  "filled (Table S62)", MAIN))
+        # PAPER-009: the HuBERT-ECG developers' preprint is now a numbered reference (entry checked in main(), assembled file)
+        c.append(("which the HuBERT-ECG developers' preprint [@hubertpreprint] implies was not used in its pre-training", MAIN))
+        c.append(("(19) After a further review, no analysis was added;", MAIN))
+        # PAPER-013: every analysis script and saved output is pinned to the commit of round V23
+        c.append((f"Every analysis script and saved analysis output reported here is as in commit {PIN_COMMIT} of that branch; later "
+                  "commits changed only the manuscript files, the checks of their wording and the file manifest.", MAIN))
     return c
+
+
+# round V24 (PAPER-013): the commit named in Code availability. Every tracked file changed since then must be a manuscript file,
+# this checker or the file manifest, and no untracked file may sit among the analysis code and outputs.
+PIN_COMMIT = "b75120df79d23e50cfaec037b9079deb62ba6e3a"
+PIN_ALLOWED = {"evaluation/verify_v2_prose.py", "results/v2_2026-11/submission_manifest.csv"}
+
+
+def commit_pin() -> int:
+    import subprocess
+    if not (ROOT / ".git").exists():
+        print(f"commit pin check NOT RUN: no Git repository (compare the files with commit {PIN_COMMIT} by hand)")
+        return 0
+    run = lambda *a: subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True, check=True).stdout.split("\n")
+    changed = [p for p in run("diff", "--name-only", PIN_COMMIT) if p]
+    untracked = [p for p in run("ls-files", "--others", "--exclude-standard", "--", "evaluation", "experiments", "features",
+                                "models", "results") if p]
+    bad = [p for p in changed if not (p.startswith("manuscript/") or p in PIN_ALLOWED)] + untracked
+    for p in bad:
+        print(f"COMMIT PIN: {p} differs from commit {PIN_COMMIT[:7]} or is untracked")
+    print(f"commit pin: {len(changed)} files changed since {PIN_COMMIT[:7]}, {len(bad)} outside the manuscript files, "
+          f"this checker and the manifest")
+    return len(bad)
 
 
 def SREP_REQUIRED(main_t: str, supp_t: str) -> list:
@@ -967,11 +1024,21 @@ def main() -> int:
         if w in both:
             print("FORBIDDEN WORDING:", w)
             fails += 1
-    # V23 (review PAPER-009): preprints stay out of the main text and its bibliography (project policy since V3); the
-    # HuBERT-ECG preprint is cited in full, as a non-peer-reviewed source, only in Supplementary Table S51.
+    # V23 (review PAPER-009): the name of the preprint server stays out of the main text; the HuBERT-ECG preprint is cited
+    # in full, as a non-peer-reviewed source, in Supplementary Table S51 (from V24 also as a numbered reference, see below).
     if VARIANT == "srep" and ("medRxiv" in main_t or supp_t.count("medRxiv") != 1):
         print("FORBIDDEN WORDING: medRxiv outside the one citation in Supplementary Table S51")
         fails += 1
+    # V24 (review of v23, PAPER-009): the HuBERT-ECG preprint is the one preprint in the assembled reference list, in the
+    # journal's "Preprint at" format; the TabPFN-3 preprint stays out ("arXiv:2605" above)
+    if VARIANT == "srep":
+        _asm = (ROOT / "manuscript" / "srep" / "main_srep.md").read_text(encoding="utf-8")
+        _entry = ("Coppola, E. et al. HuBERT-ECG as a self-supervised foundation model for broad and scalable cardiac applications. "
+                  "Preprint at https://doi.org/10.1101/2024.11.14.24317328 (2026).")
+        if _asm.count("Preprint at") != 1 or _asm.count(_entry) != 1 or "medRxiv" in _asm[_asm.index("## Abstract"):]:
+            print("REFERENCE LIST: expected exactly one preprint, the HuBERT-ECG preprint, in the assembled main text")
+            fails += 1
+        fails += commit_pin()
     for w, text in required:
         if w not in text:
             print("MISSING WORDING:", w)
