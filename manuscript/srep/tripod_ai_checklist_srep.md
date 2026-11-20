@@ -4,7 +4,7 @@
 
 **Study type.** Development (D) and evaluation (E): model development with patient-independent internal validation, and external evaluation on three datasets.
 
-**Locations.** Section names refer to the accompanying main manuscript (Scientific Reports version, unnumbered sections); Supplementary Tables S1–S53, the Supplementary Methods, Supplementary Results and Supplementary Note refer to the accompanying Supplementary Information.
+**Locations.** Section names refer to the accompanying main manuscript (Scientific Reports version, unnumbered sections); Supplementary Tables S1–S61, the Supplementary Methods, Supplementary Results and Supplementary Note refer to the accompanying Supplementary Information.
 
 **Status codes.**
 - Reported: the item is fully addressed.
@@ -45,7 +45,7 @@
 | 14 | Fairness approaches | Not reported | Discussion (limitations paragraph: demographics and fairness) |
 | 15 | Model output and threshold selection | Reported | Methods (Evaluation protocols) (operating points: post hoc, nested, transferred, local); test-set isolation stated per analysis type (Methods (Models)) |
 | 16 | Differences between development and evaluation data | Reported | Methods (Datasets) and Results (label definitions, feature shift; Supplementary Table S6; recording length and number of windows on CinC 2017, Supplementary Table S42; input incompatibilities between datasets, examined with the harmonised pipeline, Supplementary Tables S46 and S47) |
-| 17 | Ethics approval and consent | Reported | Methods (Ethics): secondary analysis of public de-identified data; BUT QDB collected under IRB protocol EC:EK:05b/2018; ethical approval not required |
+| 17 | Ethics approval and consent | Reported | Methods (Ethics): secondary analysis of public de-identified data; BUT QDB collected under IRB protocol EC:EK:05b/2018; no additional ethical approval was sought for this secondary analysis |
 | 18a | Funding | Reported | Funding section (no specific grant) |
 | 18b | Conflicts of interest | Reported | Additional information (Competing interests: none declared) |
 | 18c | Protocol availability | Partly | A dated written analysis plan is kept with the code (Methods (Deviations from the analysis plan)). There is no protocol for the original analyses, and post hoc decisions are listed (Methods (Deviations from the analysis plan)), including the analyses added after an independent code audit (item 8 there), the change of framing after all results were known (item 9 there) and the analyses added after an independent scientific review, including the harmonised pipeline, whose safeguards were chosen with knowledge of the earlier external results (item 10 there). |

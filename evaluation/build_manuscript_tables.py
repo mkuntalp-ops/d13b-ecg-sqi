@@ -1576,6 +1576,95 @@ def table_35() -> str:
     return "\n".join(out)
 
 
+def table_36() -> str:
+    """BUT QDB subject influence: pooled AUROC with one subject left out of the evaluation, no refitting
+    (evaluation/subject_influence.py; round V21, review finding PAPER-003)."""
+    path = RESULTS / "butqdb_subject_influence.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    if len(d) != 16 or d.left_out.iloc[0] != "none":
+        raise ValueError("subject influence: expected the full cohort and 15 left-out subjects")
+    models = ["2D_CNN_Image", "1D_CNN_RawECG", "Logistic_Regression_SQI", "Independent_SQI_MLP"]  # all 11 in the source file
+    out = ["| Subject left out (unusable windows) | Highest AUROC | Rank of the 2D CNN | Δ logistic regression − 2D CNN | "
+           "Δ MLP − 2D CNN | Spearman ρ with the full cohort | " + " | ".join(labels[m] for m in models) + " |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | " + " | ".join([":---:"] * len(models)) + " |"]
+    for _, r in d.iterrows():
+        name = "None (all 15 subjects)" if r.left_out == "none" else f"{r.left_out} ({int(r.left_out_unusable)})"
+        out.append(f"| {name} | {labels[r.best_model]} | {int(r.rank_2D_CNN)} | {r.delta_LR_minus_2D_CNN:+.3f} | "
+                   f"{r.delta_MLP_minus_2D_CNN:+.3f} | {r.spearman_vs_full:.2f} | " + " | ".join(f"{r[f'auroc_{m}']:.3f}" for m in models) + " |")
+    return "\n".join(out)
+
+
+def table_37() -> str:
+    """PTB-XL AUROC, global noise versus clean, on strat_fold 10 and folds 1-9 (evaluation/ptbxl_fold10_subset.py;
+    round V21, review finding PAPER-004)."""
+    path = RESULTS / "ptbxl_fold10_subset.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    subsets = ["fold 10", "folds 1-9", "all"]
+    n = d.drop_duplicates("subset").set_index("subset")
+    head = []
+    for agg in ("Maximum", "Mean"):
+        for s in subsets:
+            head.append(f"{agg}, {s.replace('-', '–')} ({int(n.loc[s, 'n'])} records, {int(n.loc[s, 'n_global'])} global)")
+    out = ["| Model | " + " | ".join(head) + " |", "| :--- | " + " | ".join([":---:"] * len(head)) + " |"]
+    d = d.set_index(["aggregation", "subset", "model"])
+    for m in dict.fromkeys(d.index.get_level_values("model")):
+        cells = []
+        for agg in ("max", "mean"):
+            for s in subsets:
+                r = d.loc[(agg, s, m)]
+                cells.append(f"{r.auroc:.3f} [{r.ci_lo:.3f}–{r.ci_hi:.3f}]")
+        out.append(f"| **{labels[m]}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_38() -> str:
+    """CinC 2011 lead II: AUROC split into the contributions of flat and non-flat unacceptable records
+    (evaluation/flat_lead_decomposition.py; round V21, review finding PAPER-006)."""
+    path = RESULTS / "cinc2011_flat_lead_decomposition.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    out = ["| Model | AUROC, all 998 records | AUROC, 73 flat unacceptable vs 773 acceptable | AUROC, 152 non-flat unacceptable vs 773 acceptable | "
+           "Contribution of flat records (× 73/225) | Contribution of non-flat records (× 152/225) |",
+           "| :--- | :---: | :---: | :---: | :---: | :---: |"]
+    for _, r in d.sort_values("auroc_all", ascending=False).iterrows():
+        out.append(f"| **{labels[r.model]}** | {r.auroc_all:.3f} | {r.auroc_flat_vs_negatives:.3f} | {r.auroc_nonflat_vs_negatives:.3f} | "
+                   f"{r.contribution_flat:.3f} | {r.contribution_nonflat:.3f} |")
+    return "\n".join(out)
+
+
+def table_39() -> str:
+    """Target 1 threshold transfer with the models of the primary and of the quota sensitivity cohort
+    (evaluation/threshold_transfer_quota_sensitivity.py; round V21, review finding PAPER-002)."""
+    path = RESULTS / "threshold_transfer_quota_sensitivity.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    d = d[d.rule == "target1_fpr5"]
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    sets = [("BUT_QDB pooled OOF (selection set)", "BUT QDB (selection)"), ("CinC2011 all 998 records (lead II)", "CinC 2011 lead II"),
+            ("CinC2017 all (record max)", "CinC 2017")]
+    head = [f"{n}, {c}" for _, n in sets for c in ("988", "1,041")]
+    out = ["| Model | " + " | ".join(f"{h}: FR / Sens." for h in head) + " |", "| :--- | " + " | ".join([":---:"] * len(head)) + " |"]
+    d = d.set_index(["cohort", "dataset", "model"])
+    for m in dict.fromkeys(d.index.get_level_values("model")):
+        cells = []
+        for ds, _ in sets:
+            for c in ("primary", "sensitivity"):
+                r = d.loc[(c, ds, m)]
+                mark = "**" if ds != sets[0][0] and r.fpr <= 0.05 else ""
+                cells.append(f"{mark}{100 * r.fpr:.1f}% / {100 * r.sens:.1f}%{mark}")
+        out.append(f"| **{labels[m]}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = cinc_frame()
@@ -1644,6 +1733,10 @@ def main():
         ("Table 33", table_33()),
         ("Table 34", table_34()),
         ("Table 35", table_35()),
+        ("Table 36", table_36()),
+        ("Table 37", table_37()),
+        ("Table 38", table_38()),
+        ("Table 39", table_39()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")

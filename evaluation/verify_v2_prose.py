@@ -486,7 +486,51 @@ def checks() -> list:
     assert n_prim == 600 and int(fc.records.sum()) == 900
     if VARIANT == "srep":
         c.append((f"probably except the test fold that holds {n_f10} of the {n_prim} primary PTB-XL records", MAIN))
-        c.append((f"{n_f10} are in fold 10 and {n_prim - n_f10} in folds 1–9, {n_f9} of them in fold 9", SUPP))
+        f10 = prim[prim.strat_fold == 10].set_index("stratum").records
+        c.append((f"{n_f10} are in fold 10 ({f10['global']} global noise, {f10['clean']} clean; AUROCs in Table S58) and "
+                  f"{n_prim - n_f10} in folds 1–9, {n_f9} of them in fold 9", SUPP))
+    # round V21 (PAPER-003): subject influence, evaluation only
+    _vsi = pd.read_csv(R / "butqdb_subject_influence.csv")
+    _vlo = _vsi[_vsi.left_out != "none"]
+    assert len(_vlo) == 15 and (_vsi.delta_LR_minus_2D_CNN < 0).all() and (_vsi.delta_MLP_minus_2D_CNN < 0).all()
+    if VARIANT == "srep":
+        c.append((f"the 2D CNN kept the highest AUROC in {int((_vlo.best_model == '2D_CNN_Image').sum())} of 15 cases", SUPP))
+        c.append((f"ranged from {_vlo.delta_LR_minus_2D_CNN.min():.3f} to {_vlo.delta_LR_minus_2D_CNN.max():.3f} and those of the MLP from "
+                  f"{_vlo.delta_MLP_minus_2D_CNN.min():.3f} to {_vlo.delta_MLP_minus_2D_CNN.max():.3f}".replace("-", "−"), SUPP))
+        c.append((f"with those of the full cohort was at least {np.floor(_vlo.spearman_vs_full.min() * 100) / 100:.2f}", SUPP))
+        assert set(_vlo[_vlo.best_model != "2D_CNN_Image"].left_out.astype(int)) == {100, 125}
+    # round V21 (PAPER-004): PTB-XL AUROC on the test fold
+    _vf10 = pd.read_csv(R / "ptbxl_fold10_subset.csv").set_index(["aggregation", "subset", "model"])
+    _vhf = _vf10.loc[("max", "fold 10", "HuBERT_ECG_probe")]
+    if VARIANT == "srep":
+        c.append((f"on which its AUROC was {_vhf.auroc:.3f} (95% CI {_vhf.ci_lo:.3f}–{_vhf.ci_hi:.3f}; Table S58)", MAIN))
+        c.append((f"reached an AUROC of {_vhf.auroc:.3f} (95% CI {_vhf.ci_lo:.3f}–{_vhf.ci_hi:.3f}) with the maximum, against "
+                  f"{_vf10.loc[('max', 'folds 1-9', 'HuBERT_ECG_probe')].auroc:.3f} on the {int(_vf10.loc[('max', 'folds 1-9', 'HuBERT_ECG_probe')].n)} "
+                  f"records of folds 1–9, and LightGBM {_vf10.loc[('max', 'fold 10', 'LightGBM_SQI')].auroc:.3f}", SUPP))
+    # round V21 (PAPER-006): decomposition of the CinC 2011 margin by flat records
+    _vfd = pd.read_csv(R / "cinc2011_flat_lead_decomposition.csv").set_index("model")
+    _vpr, _vcn = _vfd.loc["d1_image_probe"], _vfd.loc["2D_CNN_Image"]
+    _vdm, _vdfl, _vdnf = _vpr.auroc_all - _vcn.auroc_all, _vpr.contribution_flat - _vcn.contribution_flat, _vpr.contribution_nonflat - _vcn.contribution_nonflat
+    _vdsub = _vpr.auroc_nonflat_vs_negatives - _vcn.auroc_nonflat_vs_negatives
+    if VARIANT == "srep":
+        c.append((f"Of the probe's margin of {_vdm:.3f}, {_vdfl:.3f} came from the flat records and {_vdnf:.3f} from the others (Table S59)", MAIN))
+        c.append((f"the leaders' AUROC difference fell from {_vdm:.3f} to {_vdsub:.3f}, losing significance", MAIN))
+        c.append((f"against which the probe reached {_vpr.auroc_flat_vs_negatives:.3f} and the 2D CNN {_vcn.auroc_flat_vs_negatives:.3f}, and "
+                  f"{_vdnf:.3f} from the non-flat records ({_vpr.auroc_nonflat_vs_negatives:.3f} against {_vcn.auroc_nonflat_vs_negatives:.3f})", SUPP))
+        c.append((f"yet ranked them above the acceptable records with an AUROC of {_vfd.loc['LightGBM_SQI'].auroc_flat_vs_negatives:.3f}", SUPP))
+    # round V21 (PAPER-002): Target 1 transfer with the 1,041-window models
+    tq = pd.read_csv(R / "threshold_transfer_quota_sensitivity.csv")
+    tq = tq[(tq.rule == "target1_fpr5") & ~tq.dataset.str.startswith("BUT")]
+    _qmet = {cq: set(zip(g[g.fpr <= 0.05].model, g[g.fpr <= 0.05].dataset)) for cq, g in tq.groupby("cohort")}
+    assert _qmet["primary"] == _qmet["sensitivity"] and len(_qmet["primary"]) == 2
+    _qs = tq[tq.cohort == "sensitivity"].set_index(["model", "dataset"])
+    _qm11 = _qs.loc[("Independent_SQI_MLP", "CinC2011 all 998 records (lead II)")]
+    _qr17 = tq[(tq.cohort == "sensitivity") & tq.dataset.str.startswith("CinC2017")].fpr
+    _qr11 = tq[(tq.cohort == "sensitivity") & tq.dataset.str.startswith("CinC2011")].fpr
+    if VARIANT == "srep":
+        c.append((f"that of the MLP on CinC 2011 (false reject rate {100 * _qm11.fpr:.1f}%, sensitivity {100 * _qm11.sens:.1f}%)", SUPP))
+        c.append((f"False reject rates ranged from {100 * _qr17.min():.1f}% to {100 * _qr17.max():.1f}% on CinC 2017 and from "
+                  f"{100 * _qr11.min():.1f}% to {100 * _qr11.max():.1f}% on CinC 2011", SUPP))
     # round V17 (S50 caption): the "-0.000" upper limit of the multimodal net is a negative value that rounds to zero
     mm = pairs[pairs.family.str.startswith("BUT") & (pairs.model_a == "2D_CNN_Image") & (pairs.model_b == "Multimodal_Fusion")]
     assert len(mm) == 1 and -0.0005 < -mm.ci_lo.iloc[0] < 0
@@ -745,7 +789,7 @@ def checks() -> list:
     if VARIANT == "srep":  # V15: shortened paragraph; the AUROCs and intervals dropped here stay in Table S49
         c.append((f"logistic regression and the MLP were no longer significantly below it (p_Holm = {hq(BUT, LR)} and {hq(BUT, MLP)}), "
                   f"whereas zero-shot d1-3B was, again at the 1/n floor (p_Holm = {hq(BUT, ZS)})", MAIN))
-        c.append((f"remained first and significantly above the 2D CNN (p_Holm = {f3(x.p_holm)})", MAIN))
+        # V21: this sentence was dropped for length; the value is in the generated Table 1 (sensitivity columns)
         c.append((f"its AUROC rose from {pa(Q11, HUB)} to {sa(Q11, HUB)} on CinC 2011 and fell from {pa(Q17, HUB)} to {sa(Q17, HUB)} on CinC "
                   f"2017, where the d1-3B probe became first ({sa(Q17, PROBE)}) and the HuBERT-ECG probe was significantly below it "
                   f"(p_Holm = {hq(C17, HUB)})", MAIN))

@@ -1,12 +1,12 @@
 # Supplementary Information
 
-**In-domain performance did not identify the electrocardiogram quality models that ranked best on heterogeneous external datasets**
+**In-domain performance did not identify the electrocardiogram quality models that ranked best on heterogeneous external datasets: a retrospective benchmark**
 
 Mehmet Kuntalp, Department of Electrical and Electronics Engineering, Dokuz Eylül University, İzmir, Turkey
 
 <!-- Scientific Reports version. Template filled by evaluation/assemble_q1_manuscript.py --variant srep (writes manuscript/srep/supplement_srep.md). -->
 
-Every table is generated from saved outputs by evaluation/build_manuscript_tables.py (results/v2_2026-11/manuscript_tables_2026-10-12.md), except Supplementary Table S20, which is read from results/v2_2026-11/heuristic_refit_summary.csv, and Supplementary Table S51, which summarises model documentation checked by hand. Where a table is computed by a separate script, its caption names the script and its output file (for example Supplementary Tables S50 and S52–S56). Supplementary Methods, Supplementary Results and the Supplementary Note are text. Positive class: unusable.
+Every table is generated from saved outputs by evaluation/build_manuscript_tables.py (results/v2_2026-11/manuscript_tables_2026-10-12.md), except Supplementary Table S20, which is read from results/v2_2026-11/heuristic_refit_summary.csv, Supplementary Table S51, which summarises model documentation checked by hand, and Supplementary Table S61, an inventory of the analyses compiled by hand from the Methods. Where a table is computed by a separate script, its caption names the script and its output file (for example Supplementary Tables S50 and S52–S60). Supplementary Methods, Supplementary Results and the Supplementary Note are text. Positive class: unusable.
 
 ## Supplementary Methods
 
@@ -121,6 +121,16 @@ The rhythm classifier reached a macro-F1 of 0.719 on the 8,234 CinC 2017 recordi
 
 **SQI inputs on PTB-XL.** On PTB-XL lead II (Supplementary Table S56), the flatline fraction was higher in clean than in globally noisy records (median 0.355 against 0.198; univariate AUROC for global noise 0.225). Standardised with the BUT QDB windows, whose flatline fraction is at most 0.0008, these medians lie 2,793 and 1,554 SDs above the BUT QDB mean. As on CinC 2011, the measure counts repeated sample values from amplitude quantization, and these were more frequent in the clean records. This is compatible with the AUROCs below 0.5 of logistic regression, the rule heuristic, whose formula adds 5.0 × flatline to the logit, and zero-shot d1-3B, whose prompt contains the flatline value (Supplementary Table S38), but it was not tested model by model. bSQI was lower in noisy records, the expected direction (AUROC 0.288), and the high-frequency ratio and the zero-crossing rate were higher (0.688 and 0.753). The mean over the 12 leads gave similar results. This diagnostic is descriptive.
 
+### Analyses added in the final review
+
+**Subject influence.** With each of the 15 BUT QDB subjects left out of the pooled evaluation in turn, without refitting (Supplementary Table S57), the 2D CNN kept the highest AUROC in 13 of 15 cases; without subject 100 or subject 125 the 1D CNN was highest and the 2D CNN second. The differences of logistic regression from the 2D CNN ranged from −0.116 to −0.062 and those of the MLP from −0.111 to −0.049, so neither changed sign, and the Spearman correlation of the 11 AUROCs with those of the full cohort was at least 0.88. This shows how much the pooled estimates depend on single subjects' windows, not how models trained without a subject would behave.
+
+**PTB-XL test fold.** On the 73 records of PTB-XL fold 10 (40 global noise, 33 clean), which the HuBERT-ECG developers' description implies was not used in its pre-training (Supplementary Table S51), the HuBERT-ECG probe reached an AUROC of 0.791 (95% CI 0.679–0.893) with the maximum, against 0.729 on the 527 records of folds 1–9, and LightGBM 0.739 (Supplementary Table S58). The fold 10 intervals are wide and cannot show that pre-training exposure had no effect, but they give no indication that the HuBERT-ECG result depends on the exposed records.
+
+**Flat records in the CinC 2011 margin.** Because all 73 flat records are unacceptable, the AUROC splits exactly into the contributions of flat and non-flat unacceptable records ranked against the same 773 acceptable records (Supplementary Table S59). The d1-3B probe's margin of 0.037 over the 2D CNN consists of 0.021 from the flat records, against which the probe reached 0.999 and the 2D CNN 0.933, and 0.016 from the non-flat records (0.740 against 0.716). Ranking and decision differ: LightGBM flagged none of the flat records at τ = 0.50 (Supplementary Table S26) yet ranked them above the acceptable records with an AUROC of 0.935.
+
+**Thresholds with the 1,041-window cohort.** With the models of the quota sensitivity cohort (Supplementary Table S60), the same two of 22 Target 1 thresholds met their target externally: that of the MLP on CinC 2011 (false reject rate 0.1%, sensitivity 33.3%) and that of zero-shot d1-3B on CinC 2017 (3.1%, 19.8%), whose scores are the same in both cohorts. False reject rates ranged from 3.1% to 56.9% on CinC 2017 and from 0.1% to 100.0% on CinC 2011. The transfer reproduced the stored primary-cohort thresholds exactly.
+
 ## Supplementary Note: extended results
 
 The main text of this version was shortened for the journal after all results were known. The paragraphs below are the full-length Results text of the earlier version, reproduced unchanged except for cross-references; no analysis was added or removed (main text, Methods, Deviations from the analysis plan). Table numbers refer to the main text of this version.
@@ -196,7 +206,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 <!-- source: Table 1e -->
 {{Table 1e}}
 
-## Supplementary Table S4. Thresholds chosen on pooled BUT QDB out-of-fold scores and applied unchanged to the external datasets. CinC 2011: all 998 records, lead II. CinC 2017: all 8,512 recordings (recording maximum).
+## Supplementary Table S4. Thresholds chosen on pooled BUT QDB out-of-fold scores and applied unchanged to the external datasets. CinC 2011: all 998 records, lead II. CinC 2017: all 8,512 recordings (recording maximum). Supplementary Table S60 repeats Target 1 with the models of the 1,041-window cohort.
 
 <!-- source: Table 2f -->
 {{Table 2f}}
@@ -348,7 +358,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 {{Table 18}}
 
-## Supplementary Table S38. Frozen test on PTB-XL v1.0.3 (one record per patient; models fitted on BUT QDB only). AUROC with 95% bootstrap interval. Global versus clean: 600 records, 300 global. Partial versus clean: 600 records, 300 partial. The outcome is annotated noise, a proxy for unusability, and the sampled prevalence is artificial. No record had a constant lead, so the planned analysis without such records is identical. The SQI inputs of this sample are described in Supplementary Table S56.
+## Supplementary Table S38. Frozen test on PTB-XL v1.0.3 (one record per patient; models fitted on BUT QDB only). AUROC with 95% bootstrap interval. Global versus clean: 600 records, 300 global. Partial versus clean: 600 records, 300 partial. The outcome is annotated noise, a proxy for unusability, and the sampled prevalence is artificial. No record had a constant lead, so the planned analysis without such records is identical. The SQI inputs of this sample are described in Supplementary Table S56, and AUROCs by PTB-XL fold are in Supplementary Table S58.
 
 {{Table 19}}
 
@@ -356,7 +366,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 {{Table 20}}
 
-## Supplementary Table S40. CinC 2011 lead II without the 73 records whose lead II is constant (925 records, 152 unacceptable): comparisons with the highest-AUROC model (DeLong). Post hoc sensitivity analysis added after an independent audit; fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted). Holm adjustment over all 55 pairs, as in the primary family, and over the 10 comparisons with the best model.
+## Supplementary Table S40. CinC 2011 lead II without the 73 records whose lead II is constant (925 records, 152 unacceptable): comparisons with the highest-AUROC model (DeLong). Supplementary Table S59 splits the all-record AUROC into the contributions of flat and non-flat records. Post hoc sensitivity analysis added after an independent audit; fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted). Holm adjustment over all 55 pairs, as in the primary family, and over the 10 comparisons with the best model.
 
 {{Table 21}}
 
@@ -393,7 +403,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 <!-- source: Table 11 -->
 {{Table 11}}
 
-## Supplementary Table S49. Quota sensitivity analysis for BUT QDB subject 105 (post hoc, requested in review; the plan was written before any model scored the added windows, with all primary results known). The primary cohort (988 windows) has 1 unusable window of subject 105. The sensitivity cohort (1,041 windows, 291 unusable) adds the 53 unusable windows that a quota drawn inside the official intervals selects (Supplementary Table S43) and is otherwise identical; folds are unchanged. The nine fitted models were refitted with the code, hyperparameters and seed of the primary analysis; the rule heuristic and zero-shot d1-3B are not fitted, so their external scores are the same. BUT QDB: pooled out-of-fold AUROC, with the subject-level cluster-bootstrap 95% CI for the sensitivity cohort, and the Holm-adjusted p-value (all 55 pairs) of the comparison with the 2D CNN, the best model in both cohorts. In the sensitivity cohort, as in the primary one, every BUT QDB pair with p_Holm < 0.05 has p = 0.0005, the 1/n floor reached when no resample reversed the sign, so these decisions depend on that convention (Supplementary Table S53). External sets: Δ = sensitivity − primary, DeLong 95% CI for paired scores, no multiplicity adjustment. Ranks are among the 11 models (1 = highest AUROC). Rows are ordered by in-domain AUROC in the sensitivity cohort. Bottom: Spearman correlation of the 11 AUROCs between evaluation sets (descriptive; n = 11 models). Discrimination only; thresholds, calibration and the other analyses were not repeated.
+## Supplementary Table S49. Quota sensitivity analysis for BUT QDB subject 105 (post hoc, requested in review; the plan was written before any model scored the added windows, with all primary results known). The primary cohort (988 windows) has 1 unusable window of subject 105. The sensitivity cohort (1,041 windows, 291 unusable) adds the 53 unusable windows that a quota drawn inside the official intervals selects (Supplementary Table S43) and is otherwise identical; folds are unchanged. The nine fitted models were refitted with the code, hyperparameters and seed of the primary analysis; the rule heuristic and zero-shot d1-3B are not fitted, so their external scores are the same. BUT QDB: pooled out-of-fold AUROC, with the subject-level cluster-bootstrap 95% CI for the sensitivity cohort, and the Holm-adjusted p-value (all 55 pairs) of the comparison with the 2D CNN, the best model in both cohorts. In the sensitivity cohort, as in the primary one, every BUT QDB pair with p_Holm < 0.05 has p = 0.0005, the 1/n floor reached when no resample reversed the sign, so these decisions depend on that convention (Supplementary Table S53). External sets: Δ = sensitivity − primary, DeLong 95% CI for paired scores, no multiplicity adjustment. Ranks are among the 11 models (1 = highest AUROC). Rows are ordered by in-domain AUROC in the sensitivity cohort. Bottom: Spearman correlation of the 11 AUROCs between evaluation sets (descriptive; n = 11 models). Discrimination only; threshold transfer is repeated in Supplementary Table S60, and calibration and the other analyses were not repeated.
 
 {{Table 28}}
 
@@ -405,7 +415,7 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 
 | Checkpoint | Documented pre-training data | Exposure to BUT QDB, CinC 2011, CinC 2017, PTB-XL and NSTDB |
 | :--- | :--- | :--- |
-| HuBERT-ECG base (revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465) | 9.1 million 12-lead ECGs from four countries (model card). The developers' preprint (Coppola et al., https://doi.org/10.1101/2024.11.14.24317328, version 4, Methods, Data and Preprocessing) gives the same total and lists the self-supervised pre-training data: Ribeiro (CODE, except its public test set), CPSC and CPSC-Extra, PTB, PTB-XL, Georgia, Chapman-Shaoxing, Ningbo, the Tianchi arrhythmia competition data, Shandong Provincial Hospital and MIMIC-IV-ECG. The preprint does not name the checkpoint revision used here; labels were removed for pre-training | PTB-XL: listed. The developers follow the original PTB-XL split and test on partitions not used in pre-training, so the test fold (strat_fold 10) was probably not used; of the 600 records of the primary PTB-XL comparison (global noise versus clean), 73 are in fold 10 and 527 in folds 1–9, 68 of them in fold 9, the validation fold, whose use is not stated (results/v2_2026-11/ptbxl_strat_fold_counts.csv, evaluation/ptbxl_fold_counts.py). BUT QDB, CinC 2011, CinC 2017 and NSTDB: not listed |
+| HuBERT-ECG base (revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465) | 9.1 million 12-lead ECGs from four countries (model card). The developers' preprint (Coppola et al., https://doi.org/10.1101/2024.11.14.24317328, version 4, Methods, Data and Preprocessing) gives the same total and lists the self-supervised pre-training data: Ribeiro (CODE, except its public test set), CPSC and CPSC-Extra, PTB, PTB-XL, Georgia, Chapman-Shaoxing, Ningbo, the Tianchi arrhythmia competition data, Shandong Provincial Hospital and MIMIC-IV-ECG. The preprint does not name the checkpoint revision used here; labels were removed for pre-training | PTB-XL: listed. The developers follow the original PTB-XL split and test on partitions not used in pre-training, so the test fold (strat_fold 10) was probably not used; of the 600 records of the primary PTB-XL comparison (global noise versus clean), 73 are in fold 10 (40 global noise, 33 clean; AUROCs in Supplementary Table S58) and 527 in folds 1–9, 68 of them in fold 9, the validation fold, whose use is not stated (results/v2_2026-11/ptbxl_strat_fold_counts.csv, evaluation/ptbxl_fold_counts.py). BUT QDB, CinC 2011, CinC 2017 and NSTDB: not listed |
 | LiquidAI d1-3B (revision 051bcc464b01b9f92942b364d9586b0ef5912432), post-trained from LFM2.5-VL-3B | Training data not described on the model card | Unknown for all five |
 | TabPFN-3 classifier checkpoint tabpfn-v3-classifier-v3_default.ckpt | "Trained purely on synthetic tabular tasks" (model card) | None documented: no real data in pre-training |
 | Models fitted in this study (tabular models, networks, probe heads) | No pre-training | BUT QDB development windows only; in leave-one-dataset-out training also the two non-held-out datasets (CinC 2017: 1,278 recordings) |
@@ -429,3 +439,42 @@ In the secondary comparisons (Supplementary Table S39; Holm over 18 tests), the 
 ## Supplementary Table S56. SQI inputs on the frozen PTB-XL sample, global noise (300 records) versus clean (300 records): median of each stored SQI and its univariate AUROC for global noise (values below 0.5: higher value associated with clean), for lead II and for the record mean over the 12 leads (post hoc, descriptive, added in review). Last row: flatline fraction standardised with the mean and SD of the 988 BUT QDB windows, approximately the scale on which the tabular models, standardised with BUT QDB training statistics, receive it. Source: results/v2_2026-11/ptbxl_sqi_diagnostic.csv (evaluation/ptbxl_sqi_diagnostic.py).
 
 {{Table 35}}
+
+## Supplementary Table S57. BUT QDB, primary cohort: influence of single subjects on the pooled out-of-fold comparison (post hoc, descriptive, added in review). Each row leaves one subject's windows out of the pooled evaluation; no model is refitted. Highest AUROC among the 11 models, rank of the 2D CNN (1 = highest), AUROC differences of logistic regression and the MLP from the 2D CNN, Spearman correlation of the 11 AUROCs with those of the full cohort, and the AUROCs of four models (all 11 are in the source file). Source: results/v2_2026-11/butqdb_subject_influence.csv (evaluation/subject_influence.py).
+
+{{Table 36}}
+
+## Supplementary Table S58. PTB-XL, global noise versus clean: AUROC [95% bootstrap CI] on the records of strat_fold 10, the PTB-XL test fold, which the HuBERT-ECG developers' description implies was not used in its pre-training (Supplementary Table S51), on folds 1–9 and on all 600 records (post hoc, descriptive, added in review; saved window scores re-aggregated, no model rescored). 12-lead maximum and mean; recording bootstrap with 2,000 resamples, seed 42. The values for all records equal Supplementary Table S38. TabPFN was not scored on PTB-XL. Source: results/v2_2026-11/ptbxl_fold10_subset.csv (evaluation/ptbxl_fold10_subset.py).
+
+{{Table 37}}
+
+## Supplementary Table S59. CinC 2011 lead II: AUROC split into the contributions of the 73 flat (constant lead II) and the 152 non-flat unacceptable records, each ranked against the 773 acceptable records (post hoc, descriptive, added in review). AUROC = (73/225) × AUROC of the flat records + (152/225) × AUROC of the non-flat records; the second AUROC equals the AUROC without the constant-lead records (Supplementary Tables S26 and S40). Ties count one half. Source: results/v2_2026-11/cinc2011_flat_lead_decomposition.csv (evaluation/flat_lead_decomposition.py).
+
+{{Table 38}}
+
+## Supplementary Table S60. Target 1 thresholds (maximum sensitivity at a false reject rate ≤ 5% on the pooled BUT QDB out-of-fold scores) chosen and transferred with the models of the primary cohort (988 windows) and of the quota sensitivity cohort (1,041 windows; Supplementary Table S49); post hoc, added in review, saved predictions only. FR: false reject rate; Sens.: sensitivity. External sets are scored as in Supplementary Table S4 (CinC 2017: recording maximum). Bold: target met externally. The rule heuristic and zero-shot d1-3B are not fitted, so their thresholds can differ between cohorts only through the BUT QDB selection set. The primary-cohort values reproduce Supplementary Table S4. Source: results/v2_2026-11/threshold_transfer_quota_sensitivity.csv (evaluation/threshold_transfer_quota_sensitivity.py).
+
+{{Table 39}}
+
+## Supplementary Table S61. Inventory of the reported analyses: development cohort, when each analysis was decided (item numbers of Deviations from the analysis plan, Methods) and its role. Compiled by hand from the Methods (added in review). The original analyses had no written protocol. Analyses listed with the 988-window cohort only were not reassessed with the 1,041-window cohort.
+
+| Analysis (tables) | Development cohort | When decided (Deviations item) | Role |
+| :--- | :--- | :--- | :--- |
+| In-domain discrimination and paired comparisons (Table 1, Fig. 2; S1, S28, S50, S53, S54, S57) | 988; 1,041 in Table 1 and S49 | Original analyses; cohort corrected (1); S50, S53, S54 and S57 added in review (14, 15, 17) | Primary (988); S49 sensitivity; S54 and S57 sensitivity and descriptive |
+| External discrimination on CinC 2011 and CinC 2017 (Tables 1 and 2; S13, S27, S28) | 988; 1,041 in Table 1 and S49 | Original analyses; a CinC 2011 subset used during development was replaced by all 998 records (2) | Primary (988) |
+| TabPFN and the HuBERT-ECG probe | 988; 1,041 in Table 1 and S49 | Added after the single-source results were known (5) | Part of the primary comparison |
+| d1-3B image-token probe as the primary probe (S18) | 988; 1,041 in Table 1 and S49 | Introduced after the zero-shot results and chosen after both probes' results were known (4) | Primary probe |
+| Rank agreement and in-domain selection (S44) | 988; correlations for 1,041 in S49 | Question placed first after all results were known (9); bootstrap intervals added in review (12) | Descriptive, post hoc |
+| Constant-lead analyses (S26, S35, S40, S59) | 988 | After the first results (5, 8, 17) | Descriptive; S40 sensitivity |
+| 12-lead scoring (S5) | 988 | Aggregation rules chosen after the main analysis (5) | Secondary |
+| Multi-source training (Table 3, Fig. 3; S21) | 988 | Added after the single-source results were known (5) | Secondary |
+| Threshold transfer (S4; S60) | 988; 1,041 in S60 | Original analysis; S60 added in review (17) | Secondary |
+| Local threshold re-setting and recalibration (Fig. 4; S22, S48) and calibration (S32) | 988 | Original analyses; zero-rejection columns and calibration solver revised in review (12) | Secondary |
+| Quantization-insensitive flatline input (S34) | 988 | After the CinC 2011 results (6) | Exploratory |
+| Harmonised pipeline (S46, S47) | 988 | Definition committed before any harmonised score, designed with knowledge of the external results (10) | Results-informed sensitivity |
+| PTB-XL frozen test (S38, S39) | 988 | Written plan before scoring (7) | Secondary |
+| PTB-XL diagnostics (S56, S58) | 988 | Added in review (15, 17) | Descriptive |
+| Quality gating of a rhythm classifier (S37) and multimodal-net diagnosis (S36) | 988 | Written plan (7) | Secondary, descriptive |
+| NSTDB stress (S7, S16) | 988 | Original analyses | Secondary |
+| Quota sensitivity analysis (S49) | 1,041 | Plan written before the added windows were scored, with the primary results known (13) | Sensitivity |
+| bSQI diagnostic (S55) | 988 | Added in review (15) | Descriptive |
