@@ -1,6 +1,6 @@
 # Supplementary Information
 
-**In-domain performance did not identify the electrocardiogram quality models that ranked best on heterogeneous external datasets: a retrospective benchmark**
+**In a retrospective benchmark, in-domain performance did not identify the electrocardiogram quality models that ranked best on heterogeneous external datasets**
 
 Mehmet Kuntalp, Department of Electrical and Electronics Engineering, Dokuz Eylül University, İzmir, Turkey
 

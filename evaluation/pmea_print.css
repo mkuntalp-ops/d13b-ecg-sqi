@@ -5,3 +5,5 @@ img{max-width:100%} em{color:#33322f} @page{size:A4;margin:1.6cm 0.4cm;@bottom-c
 tr,img,figure{break-inside:avoid;page-break-inside:avoid} thead{display:table-header-group}
 h1,h2,h3,h4{break-after:avoid;page-break-after:avoid} p:has(+ table){break-after:avoid}
 .tblock{break-inside:avoid;page-break-inside:avoid}
+/* V22: in main_srep the main tables follow the references under "## Tables"; each table starts a page with its legend */
+#tables{break-before:page} #tables ~ p:has(+ table) ~ p:has(+ table){break-before:page} #tables ~ p:has(+ table){break-inside:avoid}

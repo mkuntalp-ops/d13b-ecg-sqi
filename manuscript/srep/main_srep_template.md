@@ -1,4 +1,4 @@
-# In-domain performance did not identify the electrocardiogram quality models that ranked best on heterogeneous external datasets: a retrospective benchmark
+# In a retrospective benchmark, in-domain performance did not identify the electrocardiogram quality models that ranked best on heterogeneous external datasets
 
 <!-- Scientific Reports version (2026-11-13). Template: table blocks {{Table X}} are filled by
      evaluation/assemble_q1_manuscript.py --variant srep, which writes manuscript/srep/main_srep.md. Edit this file.
@@ -29,10 +29,6 @@ The evidence needed to judge such models is difficult to assemble. Studies diffe
 
 This study asks two questions. First, does in-domain performance under a subject-grouped protocol identify the ECG usability models that rank best on other datasets, whose acquisition, quality label and evaluation unit differ from those of the development data? Second, under dataset shift, do frozen foundation-model representations hold up better than classifiers built for the task? We compare eleven approaches under one protocol (Fig. 1): tabular SQI models, including a tabular foundation model; raw-signal, image and multimodal networks; a rule heuristic; zero-shot d1-3B; and linear probes on the frozen representations of d1-3B and of the ECG foundation model HuBERT-ECG. The intended use is an automatic gate before downstream ECG analysis, not a replacement for clinical interpretation. The contribution is an evaluation of this task, model set and failure mechanisms, not a new model or the first external evaluation of ECG quality models.
 
-![](../../results/v2_2026-11/figures/q1_figure0_flow.png)
-
-*Figure 1. Data flow and evaluation design. Counts are windows or recordings after the exclusions described in Methods. Source: cohort manifests and Supplementary Table S28.*
-
 ## Results
 
 ### In-domain AUROCs clustered above 0.93 and did not separate the models
@@ -43,21 +39,9 @@ The models differed at the decision level more than in ranking (Supplementary Ta
 
 ### In-domain rank did not reliably identify the models that ranked best externally
 
-*Table 1. Pooled AUROC of each model per evaluation set, for the primary development cohort (988 windows) and, side by side, for the quota sensitivity cohort (1,041 windows: the 53 omitted unusable windows of subject 105 restored and the nine fitted models refitted; Supplementary Table S49); external columns give the scores of the models developed on that cohort. In parentheses, the Holm-adjusted p-value (all 55 pairs) of the paired comparison with the best model of that set and cohort (bold). BUT QDB: subject-level cluster bootstrap with 2,000 resamples and the 1/n floor (values of 0.028 are at the floor; for the two primary-cohort comparisons at the floor, 20,000 resamples with one added to the tail count gave 0.022 for the MLP and 0.031 for logistic regression, Supplementary Table S54; this was not repeated for the sensitivity cohort); external sets: DeLong test. Fitted models were trained on BUT QDB only; the rule heuristic and zero-shot d1-3B were not fitted, so their external scores are the same in both cohorts. Positive class: unusable.*
-
-{{Table 32}}
-
-![](../../results/v2_2026-11/figures/q1_figure1.png)
-
-*Figure 2. AUROC of each model in the four evaluation sets. The marker shows the outcome of the Holm-adjusted paired comparison with the best model of that set: best (diamond), not significantly different (filled; not evidence of equivalence) or significantly worse (open). On BUT QDB the two open markers rest on the 1/n floor of the bootstrap p-value with 2,000 resamples; both remained significant with 20,000 resamples and one added to the tail count (Supplementary Table S54). Primary cohort; the 1,041-window cohort is in Table 1. Rows are grouped into tabular models, task-specific networks, the rule heuristic and the foundation-model approaches. Dashed line: chance. Source: Table 1.*
-
 Ranking the 11 models by AUROC in each set (Supplementary Table S44; descriptive, post hoc) shows how little of the in-domain order carried over. The Spearman correlation between in-domain and external AUROC was 0.61 on CinC 2011 and −0.02 on CinC 2017, and between the two external datasets 0.19; with 11 models these correlations are imprecise. Resampling BUT QDB subjects and external recordings for all models together (2,000 paired bootstrap resamples; post hoc, conditional on the fitted models) gave 95% intervals of 0.06 to 0.75 for CinC 2011, −0.35 to 0.32 for CinC 2017 and 0.04 to 0.31 between the external datasets (Supplementary Table S44). The CinC 2011 interval excludes zero but is wide, so part of the in-domain order carried over there, whereas the CinC 2017 interval is compatible with no association. The in-domain leader also led CinC 2011 in 11 of 2,000 resamples and CinC 2017 in none of the 2,000 (not observed, which does not make the probability zero; tie handling in Supplementary Table S44). Selecting the in-domain leader cost 0.037 AUROC on CinC 2011 and 0.057 on CinC 2017 relative to the best model of each dataset. These losses are retrospective, because each external best model was identified on the same records. Without the rule heuristic the correlations were 0.62 and −0.05. The 1D CNN was second in-domain (0.983), fifth on CinC 2011 and tenth on CinC 2017 (0.768); the 2D CNN, first in-domain, was second on CinC 2011 and eighth on CinC 2017; and the HuBERT-ECG probe, eighth in-domain (0.938), was ninth on CinC 2011 and first on CinC 2017.
 
 On CinC 2011 (Supplementary Table S28), where lead II is scored against 12-lead labels, the d1-3B image-token probe (chosen after results were known; Methods) ranked recordings best (AUROC 0.824, 95% CI 0.789–0.856) and was significantly better than all ten other models (all p_Holm ≤ 0.003), including the 2D CNN (0.787; difference 0.037, 95% CI 0.018–0.057). The HuBERT-ECG probe was close to chance (0.562), and a secondary probe of the d1-3B decision state was inverted (0.422; Supplementary Table S18). The SQI logistic regression was also inverted (0.322), and the multimodal net gave every record the same score (0.500), an input-scaling artefact of this seed (Supplementary Tables S9 and S36).
-
-*Table 2. CinC 2017 at natural prevalence (8,512 recordings, 278 noisy), fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted). Recording maximum (primary); the last column uses the recording mean (sensitivity analysis). Sens./FR: sensitivity and false reject rate at τ = 0.50; PPV/NPV: positive/negative predictive value. Confidence intervals for decision metrics: Supplementary Table S32.*
-
-{{Table 8c}}
 
 On CinC 2017 (Table 2; Supplementary Table S28), a single-lead label at natural prevalence, the HuBERT-ECG probe had the highest AUROC (0.906, 95% CI 0.893–0.920). Here, as throughout CinC 2017, the intervals and tests treat recordings as independent, which cannot be verified without patient identifiers (Methods). The d1-3B probe (0.894), LightGBM (0.891) and the rule heuristic (0.887) were not significantly different from it (p_Holm = 0.844, 0.844 and 0.525), and all others were significantly worse (all p_Holm ≤ 0.031), including the 1D CNN (0.768). With the recording mean instead of the maximum, every model's AUROC rose, by 0.025–0.083 (Table 2). Recording length is confounded with the label under the maximum: 110 of the 278 noisy recordings but only 490 of the 8,234 others contributed a single window, and the number of windows alone gave an AUROC of 0.698 (Supplementary Table S42; descriptive).
 
@@ -77,14 +61,6 @@ The harmonised pipeline (Supplementary Table S46; a post hoc, results-informed s
 
 ### Multi-source training helped some models and harmed others
 
-*Table 3. Leave-one-dataset-out AUROC [95% bootstrap CI] when training on the two other datasets (seed 42). Δ: paired difference from the model trained on BUT QDB alone, with Holm adjustment within each held-out dataset. With CinC 2011 or CinC 2017 held out, a source is added to BUT QDB; with BUT QDB held out, the two-source model contains no BUT QDB data and is compared with the BUT QDB out-of-fold predictions, so that column contrasts two training regimes rather than the addition of a source. Training-set size, label granularity and windows per recording change with the sources, and the sources were not reweighted. The rule heuristic has no trainable parameters. Seed repetition of the networks: Supplementary Table S21.*
-
-{{Table 10}}
-
-![](../../results/v2_2026-11/figures/q1_figure2.png)
-
-*Figure 3. Effect of multi-source training: AUROC when training on the two other datasets minus AUROC when training on BUT QDB alone. For BUT QDB, the two-source model replaces the BUT QDB training data rather than adding to it (Table 3). Markers: seed 42, filled if Holm-adjusted p < 0.05. Bars: range over five training seeds for the seed-dependent networks (a range, not a confidence interval). Source: Table 3 and Supplementary Table S21.*
-
 Changing the training sources changed AUROC substantially, in both directions (Table 3, Fig. 3). Across five training seeds (Supplementary Table S21), five effects of the networks were consistent (medians over seeds): the 1D CNN gained 0.078 on CinC 2011 and 0.116 on CinC 2017, the multimodal net gained 0.053 on CinC 2017, the 2D CNN lost 0.037 on CinC 2017, and the MLP lost 0.186 on CinC 2011. The HuBERT-ECG probe gained most on CinC 2011, from 0.562 to 0.802 (p_Holm < 0.001), whereas LightGBM lost 0.115 there. The d1-3B probe was stable on CinC 2011 (0.816, Δ −0.008, p_Holm = 0.286) and gained on CinC 2017 (0.922, Δ +0.028, p_Holm < 0.001).
 
 ### Transferred thresholds rarely met their target, and calibration did not transfer
@@ -92,10 +68,6 @@ Changing the training sources changed AUROC substantially, in both directions (T
 Thresholds chosen on the pooled BUT QDB scores for a false reject rate of at most 5% (Target 1) gave false reject rates of 3.1–58.1% across the 11 models on CinC 2017 and 0.0–100.0% on CinC 2011 (Supplementary Table S4). Two of these 22 thresholds met the target, the same two with the models of the 1,041-window cohort (Supplementary Table S60): that of the MLP on CinC 2011 (false reject rate 0.0%, sensitivity 32.9%) and that of zero-shot d1-3B on CinC 2017 (3.1%, 19.8%), so meeting the false-reject target did not imply useful detection. On CinC 2017 the transfer also changed the evaluation unit from a window to the maximum over up to three windows of a recording, so these results do not separate dataset shift from the change of unit. At the 3.3% prevalence of CinC 2017, the positive predictive value at the default threshold was low for all 11 models (0.064–0.199; Table 2), and the calibration intercept was negative for all of them (−2.47 to −14.75; Supplementary Table S32), indicating systematic overestimation of unusable risk after moving from 24.1% to 3.3% prevalence.
 
 Re-setting the threshold on a small labelled target sample kept false rejections near the target in most draws, but often by rejecting nothing (Fig. 4; Supplementary Tables S22 and S48). On CinC 2011, with n = 100, the false reject rate was at most 5% in 63–100% and at most 7.5% in 88–100% of draws, depending on the model, and the median sensitivity was 50.5% for the d1-3B probe, 37% for the heuristic and 14% for LightGBM. On CinC 2017, with n = 100, the false reject rate was at most 5% in 77–95% and at most 7.5% in at least 93% of draws, but the median sensitivity was only 0–28%. The local threshold flagged no held-out recording in 17–95% of these draws, depending on the model, so a false reject rate of at most 5% together with a sensitivity above zero was reached in only 0–70% of them. A draw of 100 recordings contains about three noisy recordings, and 21 of 500 draws contained none. Even with n = 200, the median sensitivity remained 0–36%. Platt scaling lowered the Brier score of every model, but on CinC 2017 the recalibrated scores (0.029–0.032 at n = 100) were close to that of a constant prediction at the prevalence (0.032).
-
-![](../../results/v2_2026-11/figures/q1_figure3.png)
-
-*Figure 4. Thresholds re-set on n labelled target recordings (Target 1, false reject rate ≤ 5%), evaluated on the remaining recordings: median over 500 draws for each model (grey) and the median over models (blue). On CinC 2017, 229 of 500 draws at n = 25 and 82 at n = 50 contained no noisy recording and kept the transferred threshold, which explains the values at n = 25. Medians of 0% for both the false reject rate and the sensitivity do not show that the same draws flagged no recording; the share of draws whose threshold flagged no held-out recording, and the share meeting the target with a sensitivity above zero, are given in Supplementary Table S22. Source: Supplementary Table S22.*
 
 ### On PTB-XL the probe exceeded the 2D CNN but discriminated annotated noise weakly
 
@@ -235,3 +207,39 @@ This research received no specific grant from any funding agency in the public, 
 **Competing interests.** The author declares no competing interests.
 
 **Supplementary information** accompanies this paper; the completed TRIPOD+AI checklist is provided as a separate supplementary file.
+
+<!-- V22 (2026-11-20): main figures and tables, each with its legend, follow the references and end matter, as the
+     Scientific Reports initial-submission checklist asks ('placed at the end of the manuscript, after the references');
+     the tables stay in the manuscript file in editable form. -->
+
+## Figures
+
+![](../../results/v2_2026-11/figures/q1_figure0_flow.png)
+
+*Figure 1. Data flow and evaluation design. Counts are windows or recordings after the exclusions described in Methods. Source: cohort manifests and Supplementary Table S28.*
+
+![](../../results/v2_2026-11/figures/q1_figure1.png)
+
+*Figure 2. AUROC of each model in the four evaluation sets. The marker shows the outcome of the Holm-adjusted paired comparison with the best model of that set: best (diamond), not significantly different (filled; not evidence of equivalence) or significantly worse (open). On BUT QDB the two open markers rest on the 1/n floor of the bootstrap p-value with 2,000 resamples; both remained significant with 20,000 resamples and one added to the tail count (Supplementary Table S54). Primary cohort; the 1,041-window cohort is in Table 1. Rows are grouped into tabular models, task-specific networks, the rule heuristic and the foundation-model approaches. Dashed line: chance. Source: Table 1.*
+
+![](../../results/v2_2026-11/figures/q1_figure2.png)
+
+*Figure 3. Effect of multi-source training: AUROC when training on the two other datasets minus AUROC when training on BUT QDB alone. For BUT QDB, the two-source model replaces the BUT QDB training data rather than adding to it (Table 3). Markers: seed 42, filled if Holm-adjusted p < 0.05. Bars: range over five training seeds for the seed-dependent networks (a range, not a confidence interval). Source: Table 3 and Supplementary Table S21.*
+
+![](../../results/v2_2026-11/figures/q1_figure3.png)
+
+*Figure 4. Thresholds re-set on n labelled target recordings (Target 1, false reject rate ≤ 5%), evaluated on the remaining recordings: median over 500 draws for each model (grey) and the median over models (blue). On CinC 2017, 229 of 500 draws at n = 25 and 82 at n = 50 contained no noisy recording and kept the transferred threshold, which explains the values at n = 25. Medians of 0% for both the false reject rate and the sensitivity do not show that the same draws flagged no recording; the share of draws whose threshold flagged no held-out recording, and the share meeting the target with a sensitivity above zero, are given in Supplementary Table S22. Source: Supplementary Table S22.*
+
+## Tables
+
+*Table 1. Pooled AUROC of each model per evaluation set, for the primary development cohort (988 windows) and, side by side, for the quota sensitivity cohort (1,041 windows: the 53 omitted unusable windows of subject 105 restored and the nine fitted models refitted; Supplementary Table S49); external columns give the scores of the models developed on that cohort. In parentheses, the Holm-adjusted p-value (all 55 pairs) of the paired comparison with the best model of that set and cohort (bold). BUT QDB: subject-level cluster bootstrap with 2,000 resamples and the 1/n floor (values of 0.028 are at the floor; for the two primary-cohort comparisons at the floor, 20,000 resamples with one added to the tail count gave 0.022 for the MLP and 0.031 for logistic regression, Supplementary Table S54; this was not repeated for the sensitivity cohort); external sets: DeLong test. Fitted models were trained on BUT QDB only; the rule heuristic and zero-shot d1-3B were not fitted, so their external scores are the same in both cohorts. Positive class: unusable.*
+
+{{Table 32}}
+
+*Table 2. CinC 2017 at natural prevalence (8,512 recordings, 278 noisy), fitted models trained on BUT QDB only (the rule heuristic and zero-shot d1-3B were not fitted). Recording maximum (primary); the last column uses the recording mean (sensitivity analysis). Sens./FR: sensitivity and false reject rate at τ = 0.50; PPV/NPV: positive/negative predictive value. Confidence intervals for decision metrics: Supplementary Table S32.*
+
+{{Table 8c}}
+
+*Table 3. Leave-one-dataset-out AUROC [95% bootstrap CI] when training on the two other datasets (seed 42). Δ: paired difference from the model trained on BUT QDB alone, with Holm adjustment within each held-out dataset. With CinC 2011 or CinC 2017 held out, a source is added to BUT QDB; with BUT QDB held out, the two-source model contains no BUT QDB data and is compared with the BUT QDB out-of-fold predictions, so that column contrasts two training regimes rather than the addition of a source. Training-set size, label granularity and windows per recording change with the sources, and the sources were not reweighted. The rule heuristic has no trainable parameters. Seed repetition of the networks: Supplementary Table S21.*
+
+{{Table 10}}
