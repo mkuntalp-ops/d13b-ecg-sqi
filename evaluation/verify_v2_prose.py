@@ -426,6 +426,67 @@ def checks() -> list:
     assert "with and without the 135 records that have at least one constant lead (signal SD 0; 129 of them unacceptable)" in _s
     if VARIANT == "srep":
         c.append((f"135 records had at least one constant lead, {135 - 129} of them acceptable (Table S35)", MAIN))
+    # round V19 (PAPER-005): 55 BUT QDB pairs with 20,000 resamples, plus-one convention without the 1/n floor
+    bb = pd.read_csv(R / "butqdb_bootstrap_b20000_sensitivity.csv")
+    assert len(bb) == 55 and (bb.n_valid == 20000).all()
+    bb = bb.set_index(["model_a", "model_b"])
+    hb = lambda a, b: f"{bb.loc[(a, b), 'p_plus1_holm']:.3f}"
+    h_mlp, h_lr = hb("Independent_SQI_MLP", "2D_CNN_Image"), hb("Logistic_Regression_SQI", "2D_CNN_Image")
+    floor_min = 2 * 55 / 20001
+    assert abs(bb.p_plus1_holm.min() - floor_min) < 1e-12 and int((bb.p_plus1_holm < 0.05).sum()) == 4
+    if VARIANT == "srep":
+        c.append((f"but with 20,000 both comparisons remained significant (p_Holm = {h_mlp} and {h_lr}; Table S54)", MAIN))
+        c.append((f"gave {h_mlp} for the MLP and {h_lr} for logistic regression", MAIN))
+        c.append((f"whose smallest attainable Holm-adjusted value is {floor_min:.4f} (Table S54)", MAIN))
+        c.append((f"the MLP against the 1D CNN ({bb.loc[('Independent_SQI_MLP', '1D_CNN_RawECG'), 'p_plus1_holm']:.4f}), against the 2D CNN "
+                  f"and against the rule heuristic (both {h_mlp}), and logistic regression against the 2D CNN ({h_lr})", SUPP))
+        assert hb("Independent_SQI_MLP", "Rule_Based_SQI_Heuristic") == h_mlp
+        lh = bb.loc[("Logistic_Regression_SQI", "Rule_Based_SQI_Heuristic")]
+        mh = bb.loc[("Independent_SQI_MLP", "Rule_Based_SQI_Heuristic")]
+        c.append((f"whereas logistic regression against the rule heuristic, {lh.p_holm_primary_2000:.3f} at the floor, gave "
+                  f"{lh.p_plus1_holm:.3f}, and the MLP against the heuristic, {mh.p_holm_primary_2000:.3f} with 2,000 resamples, gave "
+                  f"{mh.p_plus1_holm:.3f}. The next value was {bb.loc[('2D_CNN_Image', 'LiquidAI_d1_3B_Neural'), 'p_plus1_holm']:.3f}", SUPP))
+        assert sorted(bb.p_plus1_holm)[4] == bb.loc[("2D_CNN_Image", "LiquidAI_d1_3B_Neural"), "p_plus1_holm"]
+    # round V19 (PAPER-002): bSQI detector diagnostic
+    bs = pd.read_csv(R / "bsqi_diagnostic_summary.csv")
+    q = bs[bs.label >= 0].set_index(["dataset", "label", "quantity"])["median"]
+    au = bs[bs.label == -1].set_index(["dataset", "quantity"])["median"]
+    _c11, _bq = "CinC 2011 lead II", "BUT QDB"
+    if VARIANT == "srep":
+        c.append((f"detected a median of {q[(_c11, 0, 'n_pt')]:.0f} beats per record and agreed with the wfdb XQRS detector (median "
+                  f"agreement {q[(_c11, 0, 'pt_vs_xqrs')]:.3f}), whereas the second-difference detector detected {q[(_c11, 0, 'n_diff')]:.0f}, "
+                  f"about two peaks per beat, so the stored bSQI had a median of {q[(_c11, 0, 'bsqi_orig')]:.3f}", SUPP))
+        c.append((f"the second-difference detector detected {q[(_c11, 0, 'n_diff_lp40')]:.0f} beats, and bSQI computed with it had a "
+                  f"median of {q[(_c11, 0, 'bsqi_lp40')]:.3f} in these records. In usable BUT QDB windows the second-difference detector "
+                  f"detected {q[(_bq, 0, 'n_diff')]:.0f} beats ({q[(_bq, 0, 'n_diff_lp40')]:.0f} after the filter)", SUPP))
+        c.append((f"rose from {au[(_bq, 'AUROC bsqi_orig (all)')]:.3f} to {au[(_bq, 'AUROC bsqi_lp40 (all)')]:.3f} on BUT QDB and from "
+                  f"{au[(_c11, 'AUROC bsqi_orig (all)')]:.3f} to {au[(_c11, 'AUROC bsqi_lp40 (all)')]:.3f} on CinC 2011 lead II (from "
+                  f"{au[(_c11, 'AUROC bsqi_orig (without constant lead)')]:.3f} to {au[(_c11, 'AUROC bsqi_lp40 (without constant lead)')]:.3f} "
+                  f"without the 73 constant-lead records)", SUPP))
+        c.append((f"GQRS detected {q[(_bq, 0, 'n_gqrs')]:.0f} peaks against {q[(_bq, 0, 'n_xqrs')]:.0f} for XQRS, and the AUROC of their "
+                  f"agreement there was {au[(_bq, 'AUROC xqrs_vs_gqrs_150 (all)')]:.3f}", SUPP))
+        assert q[(_c11, 0, "bsqi_orig")] < 0.6 and abs(q[(_c11, 0, "n_diff")] / q[(_c11, 0, "n_pt")] - 2) < 0.25
+    # round V19 (PAPER-004): SQI inputs on PTB-XL
+    px = pd.read_csv(R / "ptbxl_sqi_diagnostic.csv").set_index(["unit", "sqi"])
+    l2 = lambda k: px.loc[("lead II", k)]
+    _oof = pd.read_csv(R / "cohort1000_consolidated_oof_predictions.csv")
+    z = l2("flatline_fraction, z relative to BUT QDB")
+    if VARIANT == "srep":
+        c.append((f"(median {l2('flatline_fraction').median_clean:.3f} against {l2('flatline_fraction').median_global:.3f}; univariate "
+                  f"AUROC for global noise {l2('flatline_fraction').auroc_global_vs_clean:.3f})", SUPP))
+        c.append((f"whose flatline fraction is at most {_oof.flatline_fraction.max():.4f}, these medians lie {z.median_clean:,.0f} and "
+                  f"{z.median_global:,.0f} SDs above the BUT QDB mean", SUPP))
+        c.append((f"the expected direction (AUROC {l2('bsqi_detector_agreement').auroc_global_vs_clean:.3f}), and the high-frequency ratio "
+                  f"and the zero-crossing rate were higher ({l2('high_frequency_noise_ratio').auroc_global_vs_clean:.3f} and "
+                  f"{l2('zero_crossing_rate').auroc_global_vs_clean:.3f})", SUPP))
+    # round V20 (PAPER-010): PTB-XL folds of the sampled records (HuBERT-ECG pre-training exposure, Table S51)
+    fc = pd.read_csv(R / "ptbxl_strat_fold_counts.csv")
+    prim = fc[fc.stratum.isin(["global", "clean"])]
+    n_prim, n_f10, n_f9 = int(prim.records.sum()), int(prim[prim.strat_fold == 10].records.sum()), int(prim[prim.strat_fold == 9].records.sum())
+    assert n_prim == 600 and int(fc.records.sum()) == 900
+    if VARIANT == "srep":
+        c.append((f"probably except the test fold that holds {n_f10} of the {n_prim} primary PTB-XL records", MAIN))
+        c.append((f"{n_f10} are in fold 10 and {n_prim - n_f10} in folds 1–9, {n_f9} of them in fold 9", SUPP))
     # round V17 (S50 caption): the "-0.000" upper limit of the multimodal net is a negative value that rounds to zero
     mm = pairs[pairs.family.str.startswith("BUT") & (pairs.model_a == "2D_CNN_Image") & (pairs.model_b == "Multimodal_Fusion")]
     assert len(mm) == 1 and -0.0005 < -mm.ci_lo.iloc[0] < 0

@@ -13,6 +13,7 @@ cinc2011protocol: PhysioNet/Computing in Cardiology Challenge 2011: challenge pr
 subbaswamy: Subbaswamy, A. & Saria, S. From development to deployment: dataset shift, causality, and shift-stable models in health AI. *Biostatistics* **21**, 345–352 (2020). https://doi.org/10.1093/biostatistics/kxz041
 guo2022: Guo, L. L. et al. Evaluation of domain generalization and adaptation on improving model robustness to temporal dataset shift in clinical medicine. *Sci. Rep.* **12**, 2726 (2022). https://doi.org/10.1038/s41598-022-06484-1
 benchecg: Lunelli, R. et al. BenchECG and xECG: a benchmark and baseline for ECG foundation models. *npj Digit. Med.* (2026). https://doi.org/10.1038/s41746-026-03196-y
+elgendi2023: Elgendi, M., van der Bijl, K. & Menon, C. An open-source graphical user interface-embedded automated electrocardiogram quality assessment: a balanced class representation approach. *Diagnostics* **13**, 3479 (2023). https://doi.org/10.3390/diagnostics13223479
 moeyersons: Moeyersons, J. et al. Artefact detection and quality assessment of ambulatory ECG signals. *Comput. Methods Programs Biomed.* **182**, 105050 (2019). https://doi.org/10.1016/j.cmpb.2019.105050
 tabpfn: Hollmann, N. et al. Accurate predictions on small data with a tabular foundation model. *Nature* **637**, 319–326 (2025). https://doi.org/10.1038/s41586-024-08328-6
 hubert: Coppola, E. et al. HuBERT-ECG base (model weights and code). *Hugging Face* https://huggingface.co/Edoardo-Coppola/hubert-ecg-base (revision 8ffa1ad3593366ca45f5351d75317d4ff8f14465, licence CC BY-NC 4.0, 2024).

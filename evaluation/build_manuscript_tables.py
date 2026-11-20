@@ -1424,6 +1424,158 @@ def table_30() -> str:
     return "\n".join(out)
 
 
+_VS_BEST_SETS = [("BUT_QDB (5-fold subject CV)", "BUT QDB"), ("CinC2011 lead II (998 records)", "CinC 2011 lead II"),
+                 ("CinC2017 (8,512 recordings)", "CinC 2017"), ("CinC2017 balanced subset (556 recordings)", "CinC 2017 balanced")]
+
+
+def _vs_best_cells(results_dir: Path) -> dict:
+    """AUROC and Holm-adjusted p (all 55 pairs) of the comparison with the best model of each set, from the stored
+    paired comparisons of one cohort; cross-checked against its paired_vs_best.csv."""
+    c = pd.read_csv(results_dir / "paired_comparisons.csv")
+    vb = pd.read_csv(results_dir / "paired_vs_best.csv")
+    cells = {}
+    for fam, _ in _VS_BEST_SETS:
+        g = c[c.family == fam]
+        s = pd.concat([g[["model_a", "auroc_a"]].set_axis(["m", "a"], axis=1), g[["model_b", "auroc_b"]].set_axis(["m", "a"], axis=1)])
+        auc = s.drop_duplicates("m").set_index("m")["a"]
+        if len(auc) != 11 or len(g) != 55:
+            raise ValueError(f"{results_dir.name} {fam}: expected 11 models and 55 pairs")
+        best = auc.idxmax()
+        v = vb[vb.family == fam]
+        if not (v.best == best).all():
+            raise ValueError(f"{results_dir.name} {fam}: best model differs from paired_vs_best.csv")
+        for m in auc.index:
+            if m == best:
+                cells[(fam, m)] = f"**{auc[m]:.3f}** (best)"
+                continue
+            r = g[((g.model_a == m) & (g.model_b == best)) | ((g.model_b == m) & (g.model_a == best))].iloc[0]
+            if abs(float(v[v.model == m].p_holm_all_pairs.iloc[0]) - r.p_holm) > 1e-9:
+                raise ValueError(f"{results_dir.name} {fam} {m}: p_Holm differs from paired_vs_best.csv")
+            cells[(fam, m)] = f"{auc[m]:.3f} ({_p_fmt(r.p_holm)})".replace("< 0.001", "<\u00a00.001")  # no line break inside
+    return cells
+
+
+def table_32() -> str:
+    """Main Table 1 of the Scientific Reports version (round V19, review finding PAPER-001): AUROC and Holm-adjusted p
+    against the best model of each set for the primary cohort (988 windows) and, side by side, for the quota
+    sensitivity cohort (1,041 windows; experiments/quota_sensitivity.py)."""
+    sens = RESULTS.parent / f"{RESULTS.name}_quota_sensitivity"
+    for path in (RESULTS / "paired_comparisons.csv", RESULTS / "paired_vs_best.csv", sens / "paired_comparisons.csv", sens / "paired_vs_best.csv"):
+        if not path.exists():
+            return _missing(path)
+    prim, alt = _vs_best_cells(RESULTS), _vs_best_cells(sens)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    head = []
+    for _, name in _VS_BEST_SETS:
+        head += [f"{name}, 988", f"{name}, 1,041"]
+    out = ["| Model | " + " | ".join(head) + " |", "| :--- | " + " | ".join([":---:"] * len(head)) + " |"]
+    for m in labels:
+        cells = []
+        for fam, _ in _VS_BEST_SETS:
+            cells += [prim[(fam, m)], alt[(fam, m)]]
+        out.append(f"| **{labels[m]}** | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
+def table_33() -> str:
+    """All 55 BUT QDB paired cluster-bootstrap comparisons repeated with 20,000 resamples, plus-one p-values without the
+    1/n floor (evaluation/bootstrap_b20000_sensitivity.py; round V19, review finding PAPER-005)."""
+    path = RESULTS / "butqdb_bootstrap_b20000_sensitivity.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    labels = {**MODEL_LABELS, **EXTRA_LABELS}
+    if len(d) != 55 or not (d.n_valid == 20000).all() or not (d.n_resamples == 20000).all():
+        raise ValueError("B = 20,000 sensitivity: expected 55 pairs, each with 20,000 valid resamples")
+    d = d.sort_values(["p_plus1", "model_a", "model_b"], kind="mergesort")
+
+    def g(x):
+        return f"{x:.4f}".rstrip("0").rstrip(".") if x < 1 else "1"
+
+    out = ["| Model A | Model B | Δ (A − B) | Resamples with Δ ≤ 0 | Resamples with Δ ≥ 0 | p (plus one) | p_Holm (plus one) | "
+           "p_Holm (1/n floor, 20,000 resamples) | p_Holm, primary (2,000 resamples, 1/n floor) |",
+           "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
+    for _, r in d.iterrows():
+        out.append(f"| {labels[r.model_a]} | {labels[r.model_b]} | {r.delta_a_minus_b:+.4f} | {int(r.n_delta_le0):,} | {int(r.n_delta_ge0):,} | "
+                   f"{g(r.p_plus1)} | {g(r.p_plus1_holm)} | {g(r.p_floor_holm)} | {g(r.p_holm_primary_2000)} |")
+    return "\n".join(out)
+
+
+_BSQI_ROWS = [("n_pt", "Beats detected, Pan–Tompkins re-implementation", 0), ("n_diff", "Beats detected, second-difference detector", 0),
+              ("n_diff_lp40", "Beats detected, second-difference detector after a 40-Hz low-pass filter", 0),
+              ("n_xqrs", "Beats detected, wfdb XQRS", 0), ("n_gqrs", "Beats detected, wfdb GQRS", 0),
+              ("bsqi_orig", "bSQI as used (Pan–Tompkins vs second difference, 50 ms; stored feature)", 3),
+              ("bsqi_orig_150", "bSQI, same detectors, 150 ms", 3),
+              ("bsqi_lp40", "bSQI with the low-pass second-difference detector, 50 ms", 3),
+              ("pt_vs_xqrs", "Agreement, Pan–Tompkins vs XQRS, 50 ms", 3), ("diff_vs_xqrs", "Agreement, second difference vs XQRS, 50 ms", 3),
+              ("xqrs_vs_gqrs_150", "Agreement, XQRS vs GQRS, 150 ms", 3)]
+
+
+def table_34() -> str:
+    """bSQI diagnostic: beat counts and detector agreement on BUT QDB and CinC 2011 lead II (evaluation/bsqi_diagnostic.py;
+    round V19, review finding PAPER-002)."""
+    path = RESULTS / "bsqi_diagnostic_summary.csv"
+    if not path.exists():
+        return _missing(path)
+    s = pd.read_csv(path)
+    cols = [("BUT QDB", 0, "BUT QDB, usable"), ("BUT QDB", 1, "BUT QDB, unusable"),
+            ("CinC 2011 lead II", 0, "CinC 2011 lead II, acceptable"), ("CinC 2011 lead II", 1, "CinC 2011 lead II, unacceptable")]
+    q = s[s.label >= 0].set_index(["dataset", "label", "quantity"])
+    ns = {(ds, y): int(q.loc[(ds, y)].n.iloc[0]) for ds, y, _ in cols}
+    if ns != {("BUT QDB", 0): 750, ("BUT QDB", 1): 238, ("CinC 2011 lead II", 0): 773, ("CinC 2011 lead II", 1): 225}:
+        raise ValueError(f"bSQI diagnostic: unexpected class sizes {ns}")
+    out = ["| Quantity, median [IQR] | " + " | ".join(f"{n} (n = {ns[(ds, y)]})" for ds, y, n in cols) + " |",
+           "| :--- | " + " | ".join([":---:"] * len(cols)) + " |"]
+    for k, name, nd in _BSQI_ROWS:
+        cells = []
+        for ds, y, _ in cols:
+            r = q.loc[(ds, y, k)]
+            cells.append(f"{r['median']:.{nd}f} [{r.q25:.{nd}f}–{r.q75:.{nd}f}]")
+        out.append(f"| {name} | " + " | ".join(cells) + " |")
+    a = s[s.label == -1].set_index(["dataset", "quantity"])
+    acols = [("BUT QDB", "all", "BUT QDB (988 windows)"), ("CinC 2011 lead II", "all", "CinC 2011 lead II, all (998 records)"),
+             ("CinC 2011 lead II", "without constant lead", "CinC 2011 lead II, without constant lead II (925 records)")]
+    out += ["", "| Univariate AUROC (positive class unusable; lower agreement scored as more likely unusable) | "
+            + " | ".join(n for _, _, n in acols) + " |", "| :--- | " + " | ".join([":---:"] * len(acols)) + " |"]
+    for k, name in [("bsqi_orig", "bSQI as used"), ("bsqi_orig_150", "bSQI, 150 ms"), ("bsqi_lp40", "bSQI with the low-pass second-difference detector"),
+                    ("xqrs_vs_gqrs_150", "Agreement, XQRS vs GQRS, 150 ms")]:
+        out.append(f"| {name} | " + " | ".join(f"{a.loc[(ds, f'AUROC {k} ({sub})'), 'median']:.3f}" for ds, sub, _ in acols) + " |")
+    return "\n".join(out)
+
+
+_SQI_NAMES = {"bsqi_detector_agreement": "bSQI", "baseline_wander_ratio": "Baseline-wander ratio", "high_frequency_noise_ratio": "High-frequency ratio",
+              "saturation_fraction": "Saturation fraction", "flatline_fraction": "Flatline fraction", "qrs_energy_ratio": "QRS-band ratio",
+              "kurtosis_ksqi": "Kurtosis", "skewness_ssqi": "Skewness", "zero_crossing_rate": "Zero-crossing rate",
+              "powerline_noise_ratio": "Powerline ratio", "signal_std": "Amplitude SD (mV)",
+              "flatline_fraction, z relative to BUT QDB": "Flatline fraction, standardised with the BUT QDB mean and SD (z)"}
+
+
+def table_35() -> str:
+    """SQI inputs on the frozen PTB-XL test, global noise versus clean (evaluation/ptbxl_sqi_diagnostic.py; round V19,
+    review finding PAPER-004)."""
+    path = RESULTS / "ptbxl_sqi_diagnostic.csv"
+    if not path.exists():
+        return _missing(path)
+    d = pd.read_csv(path)
+    units = ["lead II", "record mean over 12 leads"]
+    if set(d.unit) != set(units) or len(d) != 24:
+        raise ValueError("PTB-XL SQI diagnostic: expected 12 rows for each of two units")
+    d = d.set_index(["unit", "sqi"])
+
+    def v(x):
+        return f"{x:,.0f}" if abs(x) >= 100 else f"{x:.4g}"
+
+    out = ["| SQI | " + " | ".join(f"{u}: {c}" for u in ("Lead II", "Mean over 12 leads") for c in ("median, global noise", "median, clean", "AUROC, global vs clean")) + " |",
+           "| :--- | " + " | ".join([":---:"] * 6) + " |"]
+    for k, name in _SQI_NAMES.items():
+        cells = []
+        for u in units:
+            r = d.loc[(u, k)]
+            cells += [v(r.median_global), v(r.median_clean), f"{r.auroc_global_vs_clean:.3f}"]
+        out.append(f"| {name} | " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
 def main():
     oof = pd.read_csv(RESULTS / "cohort1000_consolidated_oof_predictions.csv")
     cinc = cinc_frame()
@@ -1488,6 +1640,10 @@ def main():
         ("Table 29", table_29()),
         ("Table 30", table_30()),
         ("Table 31", table_31()),
+        ("Table 32", table_32()),
+        ("Table 33", table_33()),
+        ("Table 34", table_34()),
+        ("Table 35", table_35()),
     ]
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(f"# Manuscript tables generated from {RESULTS.name}/\n\n")
