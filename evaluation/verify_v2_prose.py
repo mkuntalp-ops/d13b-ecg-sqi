@@ -960,6 +960,42 @@ def checklist_consistency(assembled_main: str) -> int:
     return fails
 
 
+# round V28: the Zenodo archive of release srep-submission-2026-11-21, named with the same commit and DOI in the code
+# availability statement and in TRIPOD+AI item 18f, and once in the reference list; no DOI placeholder is left
+ARCHIVE_COMMIT = "20aa28226867e83c32cdfe1aafb7e1ab4f6703e5"
+ARCHIVE_DOI = "10.5281/zenodo.24415747"
+
+
+def archive_doi() -> int:
+    d = ROOT / "manuscript" / VARIANT
+    asm = (d / f"main_{VARIANT}.md").read_text(encoding="utf-8")
+    tri = (d / f"tripod_ai_checklist_{VARIANT}.md").read_text(encoding="utf-8")
+    head = "## Code availability" if VARIANT == "srep" else "## Data and code availability"
+    stmt = asm[asm.index(head):]
+    stmt = stmt[:stmt.index("\n## ")]
+    refs = asm[asm.index("## References"):]
+    refs = refs[:refs.index("\n## ")] if "\n## " in refs else refs
+    item = [ln for ln in tri.splitlines() if ln.startswith("| 18f |")]
+    sentence = f"The repository at commit {ARCHIVE_COMMIT} is archived at https://doi.org/{ARCHIVE_DOI} ["
+    entry = ("Kuntalp, M. mkuntalp-ops/d13b-ecg-sqi: Scientific Reports submission, 21 November 2026. *Zenodo* "
+             f"https://doi.org/{ARCHIVE_DOI} (2026)." if VARIANT == "srep" else
+             f"Kuntalp M. mkuntalp-ops/d13b-ecg-sqi: Scientific Reports submission, 21 November 2026. Zenodo; 2026. doi:{ARCHIVE_DOI}")
+    problems = [(stmt.count(sentence) == 1, "the availability statement does not name the archived commit and DOI once"),
+                (refs.count(entry) == 1 and refs.count(ARCHIVE_DOI) == 1, "the reference list does not give the archive once"),
+                (asm.count(ARCHIVE_DOI) == 2, "the archive DOI occurs outside the availability statement and its reference"),
+                (len(item) == 1 and ARCHIVE_COMMIT in item[0] and f"https://doi.org/{ARCHIVE_DOI}" in item[0],
+                 "TRIPOD+AI item 18f does not give the archived commit and DOI"),
+                ("TO BE ADDED" not in asm and "TO BE ADDED" not in tri, "a placeholder is left")]
+    fails = 0
+    for ok, msg in problems:
+        if not ok:
+            print("ARCHIVE:", msg)
+            fails += 1
+    print(f"archive: commit {ARCHIVE_COMMIT[:7]} and DOI {ARCHIVE_DOI} checked in the availability statement, the "
+          f"reference list and TRIPOD+AI item 18f, {fails} failed")
+    return fails
+
+
 def SREP_REQUIRED(main_t: str, supp_t: str) -> list:
     """Statements the Scientific Reports version must keep (it is shortened, so the v2 sentences differ)."""
     return [("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
@@ -984,6 +1020,7 @@ def number_provenance(main_t: str, supp_t: str) -> int:
     prose = re.sub(r"\[@[^\]]+\]", "", prose)
     prose = re.sub(r"\b[0-9a-f]{40}\b", "", prose)  # V5: a commit id is an identifier, not a result; its digits
     # would otherwise be "matched" against the same id in the v2 text
+    prose = re.sub(r"https://doi\.org/\S+", "", prose)  # V28: a DOI is an identifier as well
     bad = sorted({n for n in re.findall(r"\d[\d,]*(?:\.\d+)?", prose) if n.rstrip(",") not in pool})
     for n in bad:
         print("NUMBER NOT IN CHECKED SOURCES:", n)
@@ -1026,7 +1063,9 @@ def main() -> int:
                  "mattered more than the model class", "Rankings are reported only where", "not converged (separation)",
                  "did not converge for logistic regression", "CinC 2017 in 0.0%", "arXiv:2605", "Preprint at",
                  "the 74 records at one clipping bound", "have no peer-reviewed version", "an implementation following Pan and Tompkins",
-                 "[COMMIT HASH AND ARCHIVE DOI", "increases without bound"]
+                 "[COMMIT HASH AND ARCHIVE DOI", "increases without bound",
+                 # V28: the archive DOI is filled in
+                 "TO BE ADDED AT SUBMISSION"]
     required = SREP_REQUIRED(main_t, supp_t) if VARIANT == "srep" else [
                 ("results-informed sensitivity analysis and not a pre-specified or independent validation", main_t),
                 ("designed with knowledge of the earlier external results", main_t),
@@ -1065,6 +1104,7 @@ def main() -> int:
             fails += 1
         fails += commit_pin()
         fails += checklist_consistency(_asm)
+    fails += archive_doi()
     for w, text in required:
         if w not in text:
             print("MISSING WORDING:", w)

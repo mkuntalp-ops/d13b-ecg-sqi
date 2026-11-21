@@ -50,3 +50,4 @@ ribeiro: Ribeiro AH, Ribeiro MH, Paixão GMM, et al. Automatic diagnosis of the 
 hannun: Hannun AY, Rajpurkar P, Haghpanahi M, et al. Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network. Nat Med. 2019;25(1):65–69. doi:10.1038/s41591-018-0268-3
 drew: Drew BJ, Harris P, Zègre-Hemsey JK, et al. Insights into the problem of alarm fatigue with physiologic monitor devices: a comprehensive observational study of consecutive intensive care unit patients. PLoS One. 2014;9(10):e110274. doi:10.1371/journal.pone.0110274
 ptbxl: Wagner P, Strodthoff N, Bousseljot RD, Kreiseler D, Lunze FI, Samek W, Schaeffter T. PTB-XL, a large publicly available electrocardiography dataset. Sci Data. 2020;7(1):154. doi:10.1038/s41597-020-0495-6
+zenodoarchive: Kuntalp M. mkuntalp-ops/d13b-ecg-sqi: Scientific Reports submission, 21 November 2026. Zenodo; 2026. doi:10.5281/zenodo.24415747

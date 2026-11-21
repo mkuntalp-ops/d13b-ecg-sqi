@@ -54,3 +54,4 @@ ptbxl: Wagner, P. et al. PTB-XL, a large publicly available electrocardiography 
 fan2026: Fan, J., Chang, H., Han, H. & Luo, J. Global-key region collaborative noise-aware for electrocardiogram signal quality assessment. *PLoS One* **21**, e0355335 (2026). https://doi.org/10.1371/journal.pone.0355335
 hallwilson: Hall, P. & Wilson, S. R. Two guidelines for bootstrap hypothesis testing. *Biometrics* **47**, 757 (1991). https://doi.org/10.2307/2532163
 hubertpreprint: Coppola, E. et al. HuBERT-ECG as a self-supervised foundation model for broad and scalable cardiac applications. Preprint at https://doi.org/10.1101/2024.11.14.24317328 (2026).
+zenodoarchive: Kuntalp, M. mkuntalp-ops/d13b-ecg-sqi: Scientific Reports submission, 21 November 2026. *Zenodo* https://doi.org/10.5281/zenodo.24415747 (2026).

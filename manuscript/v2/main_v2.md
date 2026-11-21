@@ -300,7 +300,7 @@ Generative-AI tools were used under the author's direction. Claude Code (Anthrop
 
 ## Data and code availability
 
-All datasets are public on PhysioNet [35, 41, 43, 44]. Code, saved predictions, pinned dependency versions, the dated analysis plan and the scripts that generate every table and figure are available at https://github.com/mkuntalp-ops/d13b-ecg-sqi. The analyses, tables and figures reported here correspond to commit a21e70b89d2448565624f15be6d6ec98caebdaca on the branch `v2-revision-2026-11` (analysis version). The quota sensitivity analysis (Table S48) was added afterwards and corresponds to commit a31d7800f76c7acdb0cb6e87b388ee1e8f3b6047 of the same branch; the scripts behind Tables S49, S51 and S52, which read saved predictions and label files only, were added afterwards to the same branch. An archived release is [ARCHIVE DOI, TO BE ADDED AT SUBMISSION]. The d1-3B (Liquid AI), HuBERT-ECG and TabPFN weights are obtained from their providers under their own licences.
+All datasets are public on PhysioNet [35, 41, 43, 44]. Code, saved predictions, pinned dependency versions, the dated analysis plan and the scripts that generate every table and figure are available at https://github.com/mkuntalp-ops/d13b-ecg-sqi. The analyses, tables and figures reported here correspond to commit a21e70b89d2448565624f15be6d6ec98caebdaca on the branch `v2-revision-2026-11` (analysis version). The quota sensitivity analysis (Table S48) was added afterwards and corresponds to commit a31d7800f76c7acdb0cb6e87b388ee1e8f3b6047 of the same branch; the scripts behind Tables S49, S51 and S52, which read saved predictions and label files only, were added afterwards to the same branch. The repository at commit 20aa28226867e83c32cdfe1aafb7e1ab4f6703e5 is archived at https://doi.org/10.5281/zenodo.24415747 [53]. The d1-3B (Liquid AI), HuBERT-ECG and TabPFN weights are obtained from their providers under their own licences.
 
 ## References
 
@@ -407,3 +407,5 @@ All datasets are public on PhysioNet [35, 41, 43, 44]. Code, saved predictions, 
 [51] Holm S. A simple sequentially rejective multiple test procedure. Scand J Stat. 1979;6(2):65–70.
 
 [52] Collins GS, Moons KGM, Dhiman P, et al. TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378. doi:10.1136/bmj-2023-078378
+
+[53] Kuntalp M. mkuntalp-ops/d13b-ecg-sqi: Scientific Reports submission, 21 November 2026. Zenodo; 2026. doi:10.5281/zenodo.24415747
