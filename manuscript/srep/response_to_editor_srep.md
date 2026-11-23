@@ -8,7 +8,7 @@
 
 23 November 2026
 
-Dear Editors,
+Dear Editor,
 
 Thank you for checking the submission. The comment is answered below. No additional experiments or analyses were carried out, and there is no requested change that I disagree with.
 
