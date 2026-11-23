@@ -186,7 +186,7 @@ Generative-AI tools were used under the author's direction. Claude Code (Anthrop
 
 ## Data availability
 
-All datasets are public on PhysioNet [@silva2011; @butqdb; @clifford2017; @nstdb; @ptbxl]. The saved predictions and label files used in the analyses are available with the code.
+All datasets analysed in this study are publicly available on PhysioNet: the PhysioNet/Computing in Cardiology Challenge 2011 (https://physionet.org/content/challenge-2011/1.0.0/), the Brno University of Technology ECG Quality Database (BUT QDB, https://doi.org/10.13026/kah4-0w24), the PhysioNet/Computing in Cardiology Challenge 2017 (https://physionet.org/content/challenge-2017/1.0.0/), the MIT-BIH Noise Stress Test Database (https://physionet.org/content/nstdb/1.0.0/) and PTB-XL version 1.0.3 (https://physionet.org/content/ptb-xl/1.0.3/). The saved predictions and label files used in the analyses are available with the code at https://github.com/mkuntalp-ops/d13b-ecg-sqi and archived at https://doi.org/10.5281/zenodo.24415747.
 
 ## Code availability
 

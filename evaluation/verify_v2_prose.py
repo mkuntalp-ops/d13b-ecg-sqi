@@ -982,7 +982,9 @@ def archive_doi() -> int:
              f"Kuntalp M. mkuntalp-ops/d13b-ecg-sqi: Scientific Reports submission, 21 November 2026. Zenodo; 2026. doi:{ARCHIVE_DOI}")
     problems = [(stmt.count(sentence) == 1, "the availability statement does not name the archived commit and DOI once"),
                 (refs.count(entry) == 1 and refs.count(ARCHIVE_DOI) == 1, "the reference list does not give the archive once"),
-                (asm.count(ARCHIVE_DOI) == 2, "the archive DOI occurs outside the availability statement and its reference"),
+                # V29: the srep Data availability statement also names the archive
+                (asm.count(ARCHIVE_DOI) == (3 if VARIANT == "srep" else 2),
+                 "the archive DOI occurs outside the availability statements and its reference"),
                 (len(item) == 1 and ARCHIVE_COMMIT in item[0] and f"https://doi.org/{ARCHIVE_DOI}" in item[0],
                  "TRIPOD+AI item 18f does not give the archived commit and DOI"),
                 ("TO BE ADDED" not in asm and "TO BE ADDED" not in tri, "a placeholder is left")]
@@ -994,6 +996,29 @@ def archive_doi() -> int:
     print(f"archive: commit {ARCHIVE_COMMIT[:7]} and DOI {ARCHIVE_DOI} checked in the availability statement, the "
           f"reference list and TRIPOD+AI item 18f, {fails} failed")
     return fails
+
+
+# round V29 (editorial check of 23 November 2026): the Data availability statement of the manuscript must be the one entered
+# in the submission system, word for word
+DATA_STATEMENT = (
+    "All datasets analysed in this study are publicly available on PhysioNet: the PhysioNet/Computing in Cardiology Challenge "
+    "2011 (https://physionet.org/content/challenge-2011/1.0.0/), the Brno University of Technology ECG Quality Database (BUT "
+    "QDB, https://doi.org/10.13026/kah4-0w24), the PhysioNet/Computing in Cardiology Challenge 2017 "
+    "(https://physionet.org/content/challenge-2017/1.0.0/), the MIT-BIH Noise Stress Test Database "
+    "(https://physionet.org/content/nstdb/1.0.0/) and PTB-XL version 1.0.3 (https://physionet.org/content/ptb-xl/1.0.3/). The "
+    "saved predictions and label files used in the analyses are available with the code at "
+    "https://github.com/mkuntalp-ops/d13b-ecg-sqi and archived at https://doi.org/10.5281/zenodo.24415747.")
+
+
+def data_statement() -> int:
+    asm = (ROOT / "manuscript" / "srep" / "main_srep.md").read_text(encoding="utf-8")
+    sec = asm[asm.index("## Data availability") + len("## Data availability"):]
+    sec = sec[:sec.index("\n## ")].strip()
+    ok = sec == DATA_STATEMENT
+    if not ok:
+        print("DATA AVAILABILITY: the manuscript statement differs from the one entered in the submission system")
+    print(f"data availability: statement compared word for word with the submission-system text, {0 if ok else 1} failed")
+    return 0 if ok else 1
 
 
 def SREP_REQUIRED(main_t: str, supp_t: str) -> list:
@@ -1020,7 +1045,7 @@ def number_provenance(main_t: str, supp_t: str) -> int:
     prose = re.sub(r"\[@[^\]]+\]", "", prose)
     prose = re.sub(r"\b[0-9a-f]{40}\b", "", prose)  # V5: a commit id is an identifier, not a result; its digits
     # would otherwise be "matched" against the same id in the v2 text
-    prose = re.sub(r"https://doi\.org/\S+", "", prose)  # V28: a DOI is an identifier as well
+    prose = re.sub(r"https://\S+", "", prose)  # V28: a DOI is an identifier as well; V29: so are the dataset web addresses
     bad = sorted({n for n in re.findall(r"\d[\d,]*(?:\.\d+)?", prose) if n.rstrip(",") not in pool})
     for n in bad:
         print("NUMBER NOT IN CHECKED SOURCES:", n)
@@ -1104,6 +1129,7 @@ def main() -> int:
             fails += 1
         fails += commit_pin()
         fails += checklist_consistency(_asm)
+        fails += data_statement()
     fails += archive_doi()
     for w, text in required:
         if w not in text:
