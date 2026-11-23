@@ -10,21 +10,23 @@
 
 Dear Editor,
 
-Thank you for checking the submission. The comment is answered below. No additional experiments or analyses were carried out, and there is no requested change that I disagree with.
+Thank you for the assessment. The comment is answered below. No additional experiments or analyses were carried out.
 
 ## Comment 1
 
-> We notice that there is mismatch in data availability section. Kindly provide the same data availability statement both in the submission system and manuscript.
+> We notice that you provided "Three experts, postdoctoral researchers with more than 5 years of clinical experience in Holter ECG evaluation who did not see the accelerometer signals" in the manuscript. Kindly clarify whether experts were involved in this study or not if yes kindly provide the Informed consent in the below mentioned format
 
-**Response.** I agree. The Data availability section of the manuscript (after the Methods) now gives, word for word, the statement entered in the submission system:
+**Response.** No experts were involved in this study. The sentence describes how the public Brno University of Technology ECG Quality Database (BUT QDB) was annotated by its data providers before this study, as reported in the dataset descriptor (Smital et al. 2026, cited in the manuscript). This study used those published labels without change; no experts, annotators or other participants were recruited, and I carried out all analyses. The sentence in Methods (Datasets) now reads:
 
-> All datasets analysed in this study are publicly available on PhysioNet: the PhysioNet/Computing in Cardiology Challenge 2011 (https://physionet.org/content/challenge-2011/1.0.0/), the Brno University of Technology ECG Quality Database (BUT QDB, https://doi.org/10.13026/kah4-0w24), the PhysioNet/Computing in Cardiology Challenge 2017 (https://physionet.org/content/challenge-2017/1.0.0/), the MIT-BIH Noise Stress Test Database (https://physionet.org/content/nstdb/1.0.0/) and PTB-XL version 1.0.3 (https://physionet.org/content/ptb-xl/1.0.3/). The saved predictions and label files used in the analyses are available with the code at https://github.com/mkuntalp-ops/d13b-ecg-sqi and archived at https://doi.org/10.5281/zenodo.24415747.
+> Before this study, the data providers had the recordings annotated by three experts, postdoctoral researchers with more than 5 years of clinical experience in Holter ECG evaluation who did not see the accelerometer signals [46], into the three quality classes of an earlier study [35]: …
 
-The earlier statement in the manuscript named the same datasets by reference number and did not give the web addresses or the archive.
+As no participants were recruited, informed consent was not obtained for this study. The study is a secondary analysis of five public, de-identified datasets. I cannot state that informed consent was obtained from all subjects of all five datasets, because this is documented for BUT QDB only: its providers state that informed written consent was obtained from all subjects (IRB Protocol EC:EK:05b/2018, Brno University of Technology). For PTB-XL, the providers report ethics committee approval for publishing the anonymous data (PTB-2020-1); the documentation of the PhysioNet/Computing in Cardiology Challenges 2011 and 2017 and of the MIT-BIH Noise Stress Test Database does not describe the consent procedure. The Ethics section, which already gave these statements, now also states, after its first sentence:
+
+> No experts, annotators or other participants were recruited for this study: all reference labels are those distributed with the datasets, and the author carried out all analyses. Informed consent was therefore not obtained for this study; for the datasets, consent is as stated by their providers.
 
 ## Changed files
 
-- Manuscript: only the Data availability statement was changed. The manuscript file contains no tracked changes.
+- Manuscript: only the two passages quoted above were changed (Methods, Datasets; Ethics). The manuscript file contains no tracked changes.
 - The Supplementary Information and the TRIPOD+AI checklist are unchanged.
 
 Yours sincerely,
